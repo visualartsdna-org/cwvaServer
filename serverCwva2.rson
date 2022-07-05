@@ -1,0 +1,17 @@
+# Configuration for the cwaServer
+{
+# port
+	"port":80,
+# host
+	"host": "http://visualartsdna.org",
+# base folder for all relative config references
+	"dir": "." ,
+# the instance data
+	"data": "ttl/art.ttl" ,
+# the model data
+	"model": "ttl/cwva.ttl",
+# the domain of the server
+	"domain": "http://visualartsdna.org" ,
+# the namespace prefix for the domain
+	"ns": "work"
+}

@@ -1,0 +1,251 @@
+package services
+
+import org.junit.Test
+
+import groovy.json.JsonSlurper
+import rdf.JenaUtils
+
+class IndexHtml {
+	
+	@Test
+	public void test() {
+		//def ttl = "test.ttl"
+		//def ttl = "/temp/art.ttl"
+		def ttl = "C:/stage/planned/node/ttl/art.ttl"
+		def s = new IndexHtml().get()
+		println s
+		new File("C:/test/vadna/junk.html").text = s
+	}
+	
+	def cfg=[:]
+	
+	IndexHtml(cfg){
+		this.cfg = cfg
+	}
+	
+	def get() {
+		
+	def grafTblArrangement = "</tr><tr></tr><tr>" // stacked
+	//def grafTblArrangement = "" // side-by-side
+	
+	def sb = new StringBuilder()
+	
+	def graphTables = """
+<table><tr><td>
+<table cellspacing="3" cellpadding="3" style="white-space: nowrap">
+<tr><th><a href="https://d3js.org/">D3 graphics</a></th></tr>
+<tr><td><a href="${cfg.host}/d3.wcDrawBasic">drawings and watercolors basic data</a></td></tr>
+<tr><td><a href="${cfg.host}/d3.wcBasic">watercolors basic data</a></td></tr>
+<tr><td><a href="${cfg.host}/d3.wcPhysical">watercolors physical data</a></td></tr>
+<tr><td><a href="${cfg.host}/d3.wcNFT">watercolors NFT data</a></td></tr>
+<tr><td><a href="${cfg.host}/d3.drawBasic">drawings basic data</a></td></tr>
+<tr><td><a href="${cfg.host}/d3.drawPhysical">drawings physical data</a></td></tr>
+<tr><td><a href="${cfg.host}/d3.drawNFT">drawings NFT data</a></td></tr>
+</table>
+</td>$grafTblArrangement<td>
+<table cellspacing="3" cellpadding="3" style="white-space: nowrap">
+<tr><th><a href="https://github.com/rspates/lsys">Lsys graphics</a></th></tr>
+<tr><td><a href="${cfg.host}/lsys.wcDrawBasic">drawings and watercolors basic data</a></td></tr>
+<tr><td><a href="${cfg.host}/lsys.wcBasic">watercolors basic data</a></td></tr>
+<tr><td><a href="${cfg.host}/lsys.wcPhysical">watercolors physical data</a></td></tr>
+<tr><td><a href="${cfg.host}/lsys.wcNFT">watercolors NFT data</a></td></tr>
+<tr><td><a href="${cfg.host}/lsys.drawBasic">drawings basic data</a></td></tr>
+<tr><td><a href="${cfg.host}/lsys.drawPhysical">drawings physical data</a></td></tr>
+<tr><td><a href="${cfg.host}/lsys.drawNFT">drawings NFT data</a></td></tr>
+</table>
+</td></tr></table>
+"""
+// <tr><td><a href="${cfg.host}/d3.all">all data</a></td></tr>
+// <tr><td><a href="${cfg.host}/lsys.all">all data</a></td></tr>
+
+	
+	sb.append HtmlTemplate.head(cfg.host)
+	sb.append """
+<style>
+p {
+  margin-left: 4%;
+}
+table {
+  margin-left: 10%;
+}
+</style>
+<center><h2>
+VisualArtsDNA
+</h2></center>
+<p/>
+VisualArtsDNA organizes the details of the visual arts creative process into an 
+information model expressed in the
+<a href="https://en.wikipedia.org/wiki/Web_Ontology_Language">Web Ontology Language (OWL)</a>,
+a type of
+<a href="https://en.wikipedia.org/wiki/Resource_Description_Framework">RDF model</a>.  
+<br/>
+<p/>
+This ontology is inspired by the 
+<a href="https://mc.movielabs.com">Creative Works Ontology for the Film &amp; TV Industry</a>.
+<br/>
+<br/>The ontology is available as a 
+<a href="${cfg.host}/graphInstructions.html">pan and zoom SVG</a>
+in
+<a href="${cfg.host}/model.graph">graphical form</a>
+and in an 
+<a href="${cfg.host}/model">RDF file (TTL/text)</a>.
+<p>
+The current instance data can be browsed by selecting "Browse" at the top of this page.
+The current instance data is also available in an 
+<a href="${cfg.host}/data">RDF file (TTL/text)</a>.  
+<br/>
+<p/>
+<p/>
+The data in the instance model can be viewed with:
+<p>
+$graphTables
+<p/>
+Development of the VisualArtsDNA ontology is motivated by:
+(1) a need to organize the <a href="http://rickspates.art">author's art stuff</a>,
+(2) other artists may benefit from using the model for their own art stuff, and
+(3) collaborating artists may need a common information model over the visual arts creative-process domain.
+<p/>
+<p/>
+<p/>
+The ontology is developed using TopBraid Composer available from 
+<a href="https://www.topquadrant.com/">TopQuadrant</a>.
+<p/>
+<p/>
+This ontology is not definitive or complete.  It is intended as a conversation starter. 
+"""
+//	The SVG graph is generated following this <a href="http://visualartsdna.org/graphInstructions.html">process</a>.
+//	<p/>
+	
+	sb.append HtmlTemplate.tail
+	
+	""+sb
+	}
+	
+	
+	def removeAt(s) {
+		if (s.contains("@"))
+			(s =~ /@(.*)/)[0][1]
+		else s
+	}
+
+	def get(ttl) {
+		
+	def sb = new StringBuilder()
+	sb.append HtmlTemplate.head
+	
+	def m = new JenaUtils().loadDirModel(ttl)
+//	def m = new JenaUtils().loadFileModelFilespec(ttl)
+	m.write(new File("/temp/temp.json-ld").newOutputStream(),"JSON-LD")
+	def map = new JsonSlurper().parse(new File("/temp/temp.json-ld"))
+	buildTables(map["@context"])
+	
+	sb.append HtmlTemplate.tableHead("Graph")
+	sb.append """
+<h2>
+VisualArtsDNA render...
+</h2>
+<br/>
+<a href="${cfg.host}/model">the Visual Arts model</a>.
+<br/>
+"""
+			
+	map["@graph"].each {
+		
+		sb.append "<tr><td><dl>"
+		it.each{k,v->
+		
+			if (k == "@id")
+			sb.append """<dt>${removeAt(k)}&emsp;${v}</dt>
+"""
+			else sb.append """<li>${removeAt(k)}&emsp;${v}</li><br/>
+"""
+		}
+		sb.append "</dl></td></tr>"
+	}
+	sb.append HtmlTemplate.tableTail
+	sb.append "<br/><hr/><br/>"
+	sb.append HtmlTemplate.tableHead("Context")
+			
+	map["@context"].each {k,v->
+		def kn = v instanceof Map ? k : "$k:"
+		sb.append "<tr><td><dl>"
+		
+			if (k == "@id")
+			sb.append """<dt>${removeAt(k)}&emsp;${v}</dt>
+"""
+			else sb.append """<li>${removeAt(kn)}&emsp;${v}</li><br/>
+"""
+		sb.append "</dl></td></tr>"
+	}
+	sb.append HtmlTemplate.tableTail
+
+
+	sb.append HtmlTemplate.tail
+	
+	""+sb
+	}
+	
+	def ns = [:]
+	def defs = [:]
+	def buildTables(cm) {
+		cm.each{k,v->
+			def m = [:]
+			if (v instanceof Map) {
+				v.each{k1,v1->
+					m[k1] = v1
+				}
+				defs["$k"] = m
+			}
+			else ns[k]=v
+		}
+	}
+	
+	def nsLu(s) {
+		def pre = (s =~ /([a-z]+):(.*)/)[0]
+		"${ns[pre[1]]}${pre[2]}"
+		
+	}
+
+	def get0(ttl) {
+		
+	def sb = new StringBuilder()
+	sb.append HtmlTemplate.head
+	
+	def m = new JenaUtils().loadFileModelFilespec(ttl)
+	m.write(new File("/temp/temp.json-ld").newOutputStream(),"JSON-LD")
+	def map = new JsonSlurper().parse(new File("/temp/temp.json-ld"))
+	buildTables(map["@context"])
+	
+	sb.append HtmlTemplate.tableHead("Graph")
+	sb.append """
+<h2>
+VisualArtsDNA render...
+</h2>
+<br/>
+<a href="${cfg.host}/model">the Visual Arts model</a>.
+<br/>
+"""
+			
+	map["@graph"].each {
+		
+		sb.append "<tr><td><dl>"
+		it.each{k,v->
+		
+			if (k == "@id")
+			sb.append """<dt>${removeAt(k)}&emsp;${v}</dt>
+"""
+			else sb.append """<li>${removeAt(k)}&emsp;${v}</li><br/>
+"""
+		}
+		sb.append "</dl></td></tr>"
+	}
+	sb.append HtmlTemplate.tableTail
+
+		
+	sb.append HtmlTemplate.tail
+	
+	""+sb
+	}
+	
+
+}

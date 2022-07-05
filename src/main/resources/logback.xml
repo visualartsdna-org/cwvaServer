@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+<logger name="org.eclipse.jetty" level="INFO" />
+ <logger name="log4j.logger.org.apache.jena" level="INFO"/> 
+
+</configuration>

@@ -1,0 +1,58 @@
+*.pydevproject
+*.xlsx
+.metadata
+bin/
+tmp/
+target/
+#*.zip
+*.log
+*.json
+*.jsonl
+*.json-ld
+#*.ttl
+*.tmp
+*.bak
+*.class
+*.swp
+*~.nib
+local.properties
+.loadpath
+#WEB-INF/
+META-INF/
+target/
+Servers/
+
+# Eclipse Core
+#.project
+.settings
+bin/
+lib/
+scripts/
+test/
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# JDT-specific (Eclipse Java Development Tools)
+#.classpath
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# TeXlipse plugin
+.texlipse
+
+# STS (Spring Tool Suite)
+.springBeans
