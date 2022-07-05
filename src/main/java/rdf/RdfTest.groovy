@@ -88,20 +88,4 @@ class RdfTest {
 		println "triples: ${mdl.size()}"
 	}
 
-	@Test
-	void testSparql() {
-
-		def m = new JenaUtilities().loadFiles("C:/test/cwva/ttl/data")
-		new rdf.tools.SparqlConsole().show(m)
-	}
-	@Test
-	void testSparqlInf() {
-
-	def data = new JenaUtilities().loadFiles("C:/test/cwva/ttl/data");
-	def schema = new JenaUtilities().loadFiles("C:/test/cwva/ttl/model/cwva.ttl");
-	def mdl = ModelFactory.createRDFSModel(schema, data);
-		//def m = new JenaUtils().loadFiles("C:/test/cwva/ttl/data")
-		new rdf.tools.SparqlConsole().show(mdl)
-	}
-
 }
