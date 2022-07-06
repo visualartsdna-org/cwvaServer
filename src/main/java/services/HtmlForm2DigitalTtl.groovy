@@ -12,8 +12,7 @@ import org.junit.Test
 
 class HtmlForm2DigitalTtl {
 
-	//def testPath = "C:/Users/ricks/Google Drive/art/visualartsdna.org/rdf/test"
-	def testPath = "C:/stage/february2022/node/ttl"
+	def testPath = "ttl"
 	@Test
 	public void test() {
 		def guid="ce9dfb4a-afdf-497a-a12f-c22f736df3f6"

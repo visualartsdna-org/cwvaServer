@@ -11,7 +11,7 @@ class Svg2Html {
 	@Test
 	void test0() {
 		def out = "junk.html"
-		def svg = "C:/Users/ricks/Google Drive/art/visualartsdna.org/rdf/test02.svg"
+		def svg = "test02.svg"
 		new File(svg).eachLine {
 			if (it.startsWith("<svg")) {
 				
@@ -23,7 +23,7 @@ class Svg2Html {
 	@Test
 	void test1() {
 		def out = "junk.html"
-		def svg = "C:/Users/ricks/Google Drive/art/visualartsdna.org/rdf/test02.svg"
+		def svg = "test02.svg"
 		def parser=new XmlSlurper()
 		parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
 		parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
@@ -39,7 +39,7 @@ class Svg2Html {
 	@Test
 	void test2() {
 		def out = "junk.html"
-		def svg = "C:/Users/ricks/Google Drive/art/visualartsdna.org/rdf/test02.svg"
+		def svg = "test02.svg"
 		def parser=new XmlSlurper()
 		parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
 		parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
@@ -92,7 +92,7 @@ version="1.1">
 	@Test
 	void test3() {
 		def out = "junk.html"
-		def svg = "C:/Users/ricks/Google Drive/art/visualartsdna.org/rdf/test02.svg"
+		def svg = "test02.svg"
 		def parser=new XmlSlurper()
 		parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
 		parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);

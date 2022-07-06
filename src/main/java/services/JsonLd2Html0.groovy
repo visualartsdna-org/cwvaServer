@@ -11,7 +11,6 @@ import org.junit.Test
 
 class JsonLd2Html0 {
 
-	//def testPath = "C:/Users/ricks/Google Drive/art/visualartsdna.org/rdf/test"
 	def testPath = "C:/stage/february2022/node/ttl"
 	@Test
 	public void test() {
