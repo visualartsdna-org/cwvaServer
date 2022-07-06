@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.*
 import rdf.JenaUtils
 import org.junit.jupiter.api.Test
 import util.Args
+import util.Tmp
 
 class Main {
 
+	def tmp = new Tmp()
 	@Test
 	void testQuery() {
 		//draw("basic",
@@ -95,7 +97,7 @@ Usage,
 		def qgdrive = new QueryGraphDriver()
 
 		if (!ruleFile) 
-			ruleFile = dgdrive.getTemp("rule",".json").getAbsolutePath()
+			ruleFile = tmp.getTemp("rule",".json")
 
 		switch(scope) {
 			case "onto":
@@ -145,5 +147,6 @@ Usage,
 				println "$scope is not a valid scope"
 				return
 		}
+		tmp.rmTemps()
 	}
 }

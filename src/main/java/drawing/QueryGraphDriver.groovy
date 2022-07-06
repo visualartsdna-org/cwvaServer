@@ -143,14 +143,6 @@ construct {
 		return desc.replaceAll(/^#[ ]*/,"")
 	}
 	
-	// for debugging can turn off deleteOnExit
-	def getTemp(pre,suf) {
-		File tempFile = File.createTempFile(pre, suf)
-		tempFile.deleteOnExit()
-		tempFile
-	}
-
-
 	static def driverSelectType(type) {
 		def sql = """
 # A selection of basic data for works of type $type
