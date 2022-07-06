@@ -81,11 +81,11 @@ class Servlet extends HttpServlet {
 				if (n>=0) kind = path.substring(n+1)
 				tmpFile = tmp.getTemp("lsys",".jpg")
 				new LsysDriver().doGet(data,kind,tmpFile)
-				sendImageFile(response,tmpFile)
+				sendJpegFile(response,tmpFile)
 				break
 
 			case ~/\/images.*/:
-				sendImageFile(response,"$dir${path.replaceAll("%20"," ")}")
+				sendJpegFile(response,"$dir${path.replaceAll("%20"," ")}")
 				break
 
 			case ~/\/dist.*/:
@@ -151,7 +151,8 @@ class Servlet extends HttpServlet {
 				break
 				
 			case "/favicon.ico":
-				break // ignore
+				sendIconFile(response,"$dir/images/favicon.ico")
+				break
 
 			default:
 				logOut "unrecognized command $path, $query"
@@ -193,10 +194,17 @@ class Servlet extends HttpServlet {
 
 	}
 	def sendImageFile(response, file) {
-		response.setContentType("image/jpeg");
 		def payload = new File(file).readBytes()
 		def os = response.getOutputStream()
 		os.write(payload)
+	}
+	def sendJpegFile(response, file) {
+		response.setContentType("image/jpeg");
+		sendImageFile(response, file)
+	}
+	def sendIconFile(response, file) {
+		response.setContentType("image/x-icon");
+		sendImageFile(response, file)
 	}
 	def sendModelFile(response, fileSpec) {
 		//response.setContentType("text/plain")
