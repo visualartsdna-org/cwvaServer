@@ -12,7 +12,7 @@ class Server {
 	Server(){
 		this([ // default test cfg
 			port:8080,
-			dir:"/test/cwva",
+			dir:"../cwva",
 			data: "ttl/data",
 			model: "ttl/model",
 			domain: "http://visualartsdna.org" ,
