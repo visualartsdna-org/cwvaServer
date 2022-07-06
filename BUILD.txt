@@ -1,0 +1,14 @@
+This build depends on:
+
+		<dependency>
+			<groupId>org.visualartsdna</groupId>
+			<artifactId>nals</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+See the NALS repo for installing NALS jar locally
+
+To create a jar of dependencies, from this directory do:
+
+mvn clean package shade:shade
+
