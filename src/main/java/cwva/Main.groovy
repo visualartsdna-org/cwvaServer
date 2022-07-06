@@ -28,7 +28,14 @@ cwva.Server -cfg cwvaServer.rson
 			return
 		}
 		def cfg = map["cfg"]
-		assert cfg , "no cfg"
+		//assert cfg , "no cfg"
+		if (cfg==null) {
+			new Server().startJetty()
+		}
+		else {
+			def cfgMap = Rson.load(cfg)
+			new Server(cfgMap).startJetty()
+		}
 		
 		def cfgMap = Rson.load(cfg)
 		new Server(cfgMap).startJetty()
