@@ -7,6 +7,7 @@ import java.awt.Color
 import drawing.translate.GenConfig
 import drawing.translate.Translate
 import drawing.lsys.LSystem
+import drawing.QueryGraphDriver
 import drawing.pen.*
 import util.Rson
 import util.Tmp
@@ -16,7 +17,7 @@ import rdf.JenaUtils
 import com.icafe4j.image.gif.GIFTweaker;
 import org.junit.jupiter.api.Test
 
-class QueryGraphDriver {
+class QueryGraphDriverLocal extends QueryGraphDriver{
 	
 	def tmp = new Tmp()
 	
@@ -130,7 +131,8 @@ construct {
 		def ts = trans.tree2Turtle(tree,root)
 		def desc = getQueryDesc(query)
 		
-		new GenConfig().write(ruleFile,ts,desc,size)
+		new GenConfig().write(ruleFile, ts, desc, size, "X=X", "realtime", "VisualArtsDNA.org")
+		//write(ruleFile,ts,desc,size)
 		tmp.rmTemps()
 	}
 	

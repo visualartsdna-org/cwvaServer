@@ -94,7 +94,7 @@ Usage,
 	def draw(scope, types, path, base, ruleFile, inFile, ontoPath, imgFile, query) {
 		
 		def dgdrive = new DataGraphDriver()
-		def qgdrive = new QueryGraphDriver()
+		def qgdrive = new QueryGraphDriverLocal()
 
 		if (!ruleFile) 
 			ruleFile = tmp.getTemp("rule",".json")
