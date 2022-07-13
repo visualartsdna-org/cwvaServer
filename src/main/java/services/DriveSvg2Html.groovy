@@ -27,7 +27,7 @@ Usage, services.Driver ...
 		assert html , "no html"
 		assert svg , "no svg"
 		
-		new Svg2Html().convert(html,svg)
+		new Svg2Html().convert(html,svg,"VisualArtsDNA Ontology")
 		
 	}
 }

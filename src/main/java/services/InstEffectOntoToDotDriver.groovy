@@ -52,7 +52,7 @@ Perform the ontology rendering in svg/html via dot
 		if( out.size() > 0 ) println "$out"
 		
 		def s2h = new Svg2Html()
-		s2h.convert(html,svg)
+		s2h.convert(html,svg,"Effective Ontology")
 		
 	
 	}

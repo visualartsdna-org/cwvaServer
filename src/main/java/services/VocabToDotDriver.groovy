@@ -3,7 +3,7 @@ package services
 import services.Svg2Html
 import util.Args
 
-class OntoToDotDriver {
+class VocabToDotDriver {
 	
 	/**
 	 * Perform the ontology 
@@ -29,7 +29,7 @@ Perform the ontology rendering in svg/html via dot
 		def html = map["html"]
 		assert html , "no html"
 
-		OntoToDot.driver(ttl,dot)
+		VocabToDot.driver(ttl,dot)
 		
 		// dot -Tsvg -o test100.svg test100.dot
 		Process process = "dot -Tsvg -o $svg $dot".execute()
@@ -41,7 +41,7 @@ Perform the ontology rendering in svg/html via dot
 		if( out.size() > 0 ) println "$out"
 		
 		def s2h = new Svg2Html()
-		s2h.convert(html,svg)
+		s2h.convert(html,svg,"VisualArtsDNA Thesaurus")
 	
 	}
 

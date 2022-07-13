@@ -84,7 +84,7 @@ This ontology is inspired by the
 <a href="https://mc.movielabs.com">Creative Works Ontology for the Film &amp; TV Industry</a>.
 <br/>
 <br/>The ontology is available as a 
-<a href="${cfg.host}/graphInstructions.html">pan and zoom SVG</a>
+<a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a>
 in
 <a href="${cfg.host}/model.graph">graphical form</a>
 and in an 
@@ -94,6 +94,14 @@ The current instance data can be browsed by selecting "Browse" at the top of thi
 The current instance data is also available in an 
 <a href="${cfg.host}/data">RDF file (TTL/text)</a>.  
 <br/>
+<br/>The vocabulary of concepts is available as a 
+<a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a>
+in
+<a href="${cfg.host}/vocab.graph">graphical form</a>
+and in an 
+<a href="${cfg.host}/vocab">RDF file (TTL/text)</a>.
+A list of <a href="${cfg.host}/html/vocab.html">vocabulary concepts</a> is also available.
+<p>
 <p/>
 <p/>
 The data in the instance model can be viewed with:

@@ -1,5 +1,6 @@
 package cwva
 
+import rdf.JenaUtilities
 import util.Tmp
 
 class DotDriver extends BaseDriver {
@@ -15,6 +16,21 @@ class DotDriver extends BaseDriver {
 				services.OntoToDotDriver.main(args)
 				Tmp.delTemp(svg)
 				Tmp.delTemp(dot)
+				break
+
+			case "svgVocab":
+				def ju = new JenaUtilities()
+				def svg = Tmp.getTemp(".svg")
+				def dot = Tmp.getTemp(".dot")
+				def ttlTmp = Tmp.getTemp(".ttl")
+				def m = ju.loadFiles(ttl)
+				ju.saveModelFile(m, ttlTmp, "TTL")
+				def args = toArgs("""
+				   -ttl $ttlTmp -dot $dot -html $html -svg $svg""")
+				services.VocabToDotDriver.main(args)
+				Tmp.delTemp(svg)
+				Tmp.delTemp(dot)
+				Tmp.delTemp(ttlTmp)
 				break
 
 			case "svgImpOnto":

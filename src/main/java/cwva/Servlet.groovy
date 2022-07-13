@@ -17,6 +17,7 @@ class Servlet extends HttpServlet {
 	def cfg = Server.getInstance().cfg
 	def dir = cfg.dir
 	def model = "$dir/${cfg.model}"
+	def vocab = "$dir/${cfg.data}/vocab"
 	def data = "$dir/${cfg.data}"
 	def domain = cfg.domain
 	def ns = cfg.ns
@@ -51,7 +52,10 @@ class Servlet extends HttpServlet {
 
 			case "/data":
 				sendModelFile(response, data)
-//				sendTextFile(response,"$data/art.ttl")
+				break
+
+			case "/vocab":
+				sendModelFile(response, "$data/vocab")
 				break
 
 			case ~/\/d3\..*/:
@@ -66,6 +70,12 @@ class Servlet extends HttpServlet {
 			case "/model.graph":
 				tmpFile = tmp.getTemp("dot",".html")
 				new DotDriver().doGet(model,"svg",tmpFile)
+				sendHtmlFile(response,tmpFile)
+				break
+
+			case "/vocab.graph":
+				tmpFile = tmp.getTemp("dot",".html")
+				new DotDriver().doGet(vocab,"svgVocab",tmpFile)
 				sendHtmlFile(response,tmpFile)
 				break
 
@@ -92,8 +102,12 @@ class Servlet extends HttpServlet {
 				sendJSFile(response,"$dir${path}")
 				break
 
-			case "/graphInstructions.html":
-				sendHtmlFile(response,"$dir${path}")
+//			case "/graphInstructions.html":
+//				sendHtmlFile(response,"$dir${path}")
+//				break
+
+			case ~/\/html.*/:
+				sendHtmlFile(response,"$dir/${path}")
 				break
 
 			case ~/\/work.*/:

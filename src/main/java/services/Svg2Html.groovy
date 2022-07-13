@@ -55,15 +55,6 @@ version="1.1">
 """
 	}
 	
-	def htmlProlog = """
-<html>
-  <head>
-    <script src="../dist/svg-pan-zoom.js"></script>
-  </head>
-  <body>
-    <h1>VisualArtsDNA Ontology</h1>
-    <div id="container" style="width: 1500px; height: 1000px; border:1px solid black; ">
-"""
 	def htmlEpilog = """
     </div>
     <button id="enable">enable</button>
@@ -118,7 +109,16 @@ ${htmlEpilog}
 		convert(out,svg)
 	}
 	
-	def convert(out,svg) {
+	def convert(out,svg, title) {
+	def htmlProlog = """
+<html>
+  <head>
+    <script src="../dist/svg-pan-zoom.js"></script>
+  </head>
+  <body>
+    <h1>$title</h1>
+    <div id="container" style="width: 1500px; height: 1000px; border:1px solid black; ">
+"""
 		def parser=new XmlSlurper()
 		parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
 		parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
