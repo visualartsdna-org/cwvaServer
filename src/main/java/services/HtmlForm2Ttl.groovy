@@ -12,7 +12,7 @@ import org.junit.Test
 
 class HtmlForm2Ttl {
 
-	def testPath = "C:/stage/february2022/node/ttl"
+	def testPath = "C:/temp/generatedFiles"
 	@Test
 	public void test() {
 		def guid="ce9dfb4a-afdf-497a-a12f-c22f736df3f6"
@@ -21,7 +21,7 @@ class HtmlForm2Ttl {
 	}
 	
 
-	def artistSite = "https://www.artist.art"
+	def artistSite = "https://rickspates.art"
 	/*
 	 * Some thoughts:
 	 * Make hasPaper, hasPaperFinish dropdowns, ensure inclusive
