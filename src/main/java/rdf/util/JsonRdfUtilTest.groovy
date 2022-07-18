@@ -35,10 +35,11 @@ class JsonRdfUtilTest {
 		process(src,dest,type,prefix)
 	}
 	
+	// see RewriteJson.test() for release version
 	@Test
 	public void test2() {
-		def src = "C:/temp/tratsi/Takeout/test"
-		def dest = "C:/temp/tratsi/Takeout/test"
+		def src = "C:/temp/generatedFiles"
+		def dest = "C:/temp/generatedFiles"
 		def js = new JsonSlurper()
 		def ju = new JenaUtils()
 		new File(src).eachFile {file->

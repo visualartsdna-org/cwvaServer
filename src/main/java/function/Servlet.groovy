@@ -9,6 +9,8 @@ import services.*
 import support.Guid
 import support.ParseDigitalQuery
 import support.ParseQuery
+import support.TagModel
+import support.VocabModel
 import util.Tmp
 
 class Servlet extends HttpServlet {
@@ -16,6 +18,10 @@ class Servlet extends HttpServlet {
 	def metrics = [:]
 	def cfg = Server.getInstance().cfg
 	def dir = cfg.dir
+	def vm = new VocabModel()
+	def vocab = "/temp/git/cwva/ttl/data/vocab"
+	def data = "/temp/git/cwva/ttl/data"
+	def tm = new TagModel(data,vocab)
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,6 +42,31 @@ class Servlet extends HttpServlet {
 		if (cfg.verbose) println "$path ${query?:""}"
 		switch (path) {
 
+			case "/tag":
+				//sendHtmlFile(response, "/temp/junk/vocab.html")
+				def s = tm.process("voc:visualArtTerm")
+				sendHtml(response, "$s")
+			break
+			
+			case "/tag.entry":
+				def m = vm.parse(query)
+				m.each { println it }
+				def s = tm.handleQueryParams(m)
+				sendHtml(response, "$s")
+				break
+	
+			case "/vocab":
+				//sendHtmlFile(response, "/temp/junk/vocab.html")
+				def s = vm.initial("voc:visualArtTerm")
+				sendHtml(response, "$s")
+			break
+			
+			case "/vocab.entry":
+				def m = vm.parse(query)
+				def s = vm.handleQueryParams(m)
+				sendHtml(response, "$s")
+				break
+	
 			case "/fxai/state":
 				sendTextFile(response,"./fxaiState.txt")
 				break

@@ -13,14 +13,14 @@ class RewriteJson {
 	def jsonDir = "json"
 	def ttlDir = "ttl"
 
+	// TODO: @Release of takout to ttl
 	// For processing takeout json to ttl
 	// extract new takeout folder
 	// point base var to the folder and run
 	// collect "published" ttl in the base/ttl folder
 	@Test
 	void test() {
-		def base = "C:/temp/rsart/Takeout/Keep"
-//		def base = "C:/temp/tratsi/Takeout/Keep"
+		def base = "C:/temp/generatedFiles"
 		setup(base)
 		process(base)
 		
