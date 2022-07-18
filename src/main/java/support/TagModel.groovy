@@ -128,6 +128,12 @@ th, td {
 	border-radius: 3px;
 		cursor: pointer;
 }
+img {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  width: 50px;
+}
 </style>
     </head>
 	<body>
@@ -260,17 +266,18 @@ prefix dc:    <http://purl.org/dc/elements/1.1/>
 prefix voc:   <http://visualartsdna.org/voc#>
 """, """
 			
-			select ?s ?label ?tag {
+			select ?s ?label ?tag ?image {
 					?s a ${type} .
-					#filter(?type in (vad:Watercolor))
 					optional {?s vad:tag ?tag .}
-					?s skos:label ?label
+					?s skos:label ?label .
+					?s schema:image ?image .
 			} order by ?label
 			""")
 		def wl= [:]
 		l.each{
 			if (!wl[it.s]) wl[it.s] = [:]
 			wl[it.s].label = it.label
+			wl[it.s].image = it.image
 			wl[it.s].tag = wl[it.s].tag ? wl[it.s].tag : ""
 			wl[it.s].tag += it.tag?it.tag.replaceAll("http://visualartsdna.org/voc#","voc:") + " ":""
 
@@ -285,27 +292,14 @@ prefix voc:   <http://visualartsdna.org/voc#>
 		int i=0
 		data.each { k,v->
 			sb.append "<tr><td>"
+			sb.append """
+<a target="_blank" href="${v.image}">
+  <img src="${v.image}" alt="Forest" style="width:50px">
+</a>
+"""
 			sb.append """<input type="checkbox" id="work${i}" name="work${i}" value="${k}">"""
 			sb.append """<label for="work${i}">${v.label}</label><br>"""
 			sb.append """${v.tag?:""}"""
-			sb.append "</td></tr>"
-			i++
-		}
-		sb.append """
-</table>
-"""
-	}
-
-	def printData0(data,sb) {
-		sb.append """
-<table>
-"""
-		int i=0
-		data.each {
-			sb.append "<tr><td>"
-			sb.append """<input type="checkbox" id="work${i}" name="work${i}" value="${it.s}">"""
-			sb.append """<label for="work${i}">${it.label}</label><br>"""
-			sb.append """${it.tag?it.tag.replaceAll("http://visualartsdna.org/voc#","voc:"):""}"""
 			sb.append "</td></tr>"
 			i++
 		}
@@ -318,8 +312,6 @@ prefix voc:   <http://visualartsdna.org/voc#>
 
 		map.each { k,v->
 			def s = """<li><button class="button" onclick="save('$k')">$k</button></li>"""
-			//def s = """<li><button type="button"; onclick="save('$k'); style="background-color: white;color: blue;border: 1px solid #e4e4e4;padding: 4px;border-radius: 3px;cursor: pointer; ">$k</button></li>"""
-			//def s = """<li><button style="background-color: white;color: blue;border: 1px solid #e4e4e4;padding: 4px;border-radius: 3px;cursor: pointer; onclick="save('$k')">$k</button></li>"""
 			sb.append "${tabs(level)}${s}"
 			if (v) {
 				sb.append "${tabs(level)}<ul>"

@@ -115,6 +115,10 @@ class Servlet extends HttpServlet {
 				
 				break
 	
+			case ~/\/images.*/:
+				sendJpegFile(response,"$dir${path.replaceAll("%20"," ")}")
+				break
+
 			case "/":
 			case "/status":
 				sendJson(response,""+[status:"ok"])
@@ -182,7 +186,10 @@ class Servlet extends HttpServlet {
 		def payload = new File(file).readBytes()
 		def os = response.getOutputStream()
 		os.write(payload)
-
+	}
+	def sendJpegFile(response, file) {
+		response.setContentType("image/jpeg");
+		sendImageFile(response, file)
 	}
 
 	def setState(k) {
