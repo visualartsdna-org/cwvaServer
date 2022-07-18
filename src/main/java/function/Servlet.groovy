@@ -44,7 +44,7 @@ class Servlet extends HttpServlet {
 
 			case "/tag":
 				//sendHtmlFile(response, "/temp/junk/vocab.html")
-				def s = tm.process("voc:visualArtTerm")
+				def s = tm.process("voc:visualArtTerm","vad:Watercolor")
 				sendHtml(response, "$s")
 			break
 			
