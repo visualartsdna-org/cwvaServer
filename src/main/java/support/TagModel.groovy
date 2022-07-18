@@ -4,32 +4,102 @@ import static org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
+import org.apache.jena.rdf.model.InfModel
+import org.apache.jena.rdf.model.Model
+import org.apache.jena.rdf.model.ModelFactory
 
 class TagModel {
 
-// TODO: <dt> tag, https://www.w3schools.com/tags/tag_dt.asp
+	def saveTags = "/temp/junk/tags.ttl"
+	
+	// TODO: <dt> tag, https://www.w3schools.com/tags/tag_dt.asp
 	def ju = new JenaUtilities()
-	def instances
-	def concepts
+	Model instanceModel
+	Model conceptModel
+	Model tagsModel = ju.newModel()
 	TagModel(instances,concepts){
-		this.instances = instances
-		this.concepts = concepts
+//		this.instanceModel = ju.loadFiles(instances)
+		conceptModel = ju.loadFiles(concepts)
+		if (new File(saveTags).exists())
+			tagsModel = ju.loadFiles(saveTags);
+		def data = ju.loadFiles(instances);
+		this.instanceModel = ModelFactory.createRDFSModel(data, tagsModel);
 	}
 	
 	def handleQueryParams(m) {
 		def html = ""
-
+		handleTags(m)
 		process(m.conceptRoots,m.workRoots)
 	}
-	
+
+	def handleTags(m) {
+
+		if (m.containsKey("gotoTags")) {
+			def wl = []
+			def tl = []
+			m.findAll { k,v->
+				k =~ /^work[0-9].*/
+			}.each{k,v->
+				wl += v
+			}
+			m.findAll { k,v->
+				k == "gotoTags"
+			}.each{k,v->
+				tl.addAll( v.trim().split(/[ ]+/))
+			}
+
+			def s = """
+@prefix vad: <http://visualartsdna.org/2021/07/16/model#> .
+@prefix work:	<http://visualartsdna.org/work/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix voc:	<http://visualartsdna.org/voc#> .
+"""
+			wl.each{w->
+				tl.each{t->
+					s += "<$w> vad:tag $t .\n"
+
+				}
+			}
+
+			def model = ju.saveStringModel(s,"TTL")
+			tagsModel.add(model)
+			ju.saveModelFile(tagsModel, saveTags, "TTL")
+		}
+		else if (m.containsKey("removeTags")) {
+			
+			def wl = []
+			m.findAll { k,v->
+				k =~ /^work[0-9].*/
+			}.each{k,v->
+				wl += v
+			}
+			wl.each{w->
+			ju.queryExecUpdate(instanceModel,"""
+prefix vad: <http://visualartsdna.org/2021/07/16/model#> 
+prefix work:	<http://visualartsdna.org/work/> 
+prefix skos: <http://www.w3.org/2004/02/skos/core#> 
+prefix voc:	<http://visualartsdna.org/voc#> 
+""","""
+			delete {
+			<$w> vad:tag ?o
+			} where {
+			<$w> vad:tag ?o
+			}
+"""
+)
+			}
+			
+		ju.saveModelFile(tagsModel, saveTags, "TTL")
+		}
+	}
+
 	def process(rootCpt,workType) {
-		
-		def data = getData(instances,workType)
-		def m = ju.loadFiles(concepts)
-		def map = [:] //["$rootCpt":[:]]
+
+		def data = getData(instanceModel,workType)
+		def map = [:]
 		map["$rootCpt"] = [:]
-		
-		def l = getNarrower(m, map, rootCpt)
+
+		def l = getNarrower(conceptModel, map, rootCpt)
 		def sb = new StringBuilder()
 		sb.append """
 <!Doctype html>
@@ -46,6 +116,18 @@ th, td {
   padding-left: 5px;
   padding-right: 5px;
 }
+.button {
+  background-color: #f0f0f0; /* Gray */
+  border:  1px solid #e4e4e4;
+  color: black;
+  padding: 5px 2px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+	border-radius: 3px;
+		cursor: pointer;
+}
 </style>
     </head>
 	<body>
@@ -59,8 +141,8 @@ th, td {
 <div id="menu">
     <ul id="nav">
 """
-		printHtml(map,0,sb)	
-			
+		printHtml(map,0,sb)
+
 		sb.append """
     </ul>
 </div>
@@ -72,15 +154,6 @@ th, td {
 <table>
 <tr>
 <td>
-<label for="workRoots">Choose a work root</label>
-<br/>
-
-<select name="workRoots" id="workRoots" onchange="this.form.submit()">
-  <option value="vad:Watercolor" ${workType=="vad:Watercolor"?"selected":""}>vad:Watercolor</option>
-  <option value="vad:Drawing" ${workType=="vad:Drawing"?"selected":""}>vad:Drawing</option>
-  <option value="vad:LindenMayerSystemImage" ${workType=="vad:LindenMayerSystemImage"?"selected":""}>vad:LindenMayerSystemImage</option>
-</select>
-<br/>
 <br/>
 <label for="conceptRoots">Choose a concept root</label>
 <br/>
@@ -94,12 +167,26 @@ th, td {
 </select>
 <br/>
 <br/>
+<br/>
+<label for="workRoots">Choose a work root</label>
+<br/>
+
+<select name="workRoots" id="workRoots" onchange="this.form.submit()">
+  <option value="vad:Watercolor" ${workType=="vad:Watercolor"?"selected":""}>vad:Watercolor</option>
+  <option value="vad:Drawing" ${workType=="vad:Drawing"?"selected":""}>vad:Drawing</option>
+  <option value="vad:LindenMayerSystemImage" ${workType=="vad:LindenMayerSystemImage"?"selected":""}>vad:LindenMayerSystemImage</option>
+</select>
+<br/>
+<br/>
+<br/>
 <textarea id="tags" name="tags" rows="9" cols="20"></textarea>
 <input type="hidden" id="menuitem" name="menuitem" value=""/>
 <input type="hidden" id="changeTags" name="gotoTags" value=""/>
+<input type="hidden" id="removeTags" name="removeTags" value=""/>
 <input type="hidden" id="changeVoc" name="chgVoc" value="" onchange="this.form.submit()"/>
 <br/>
 	<button onclick="changeTagGoto()">Tag</button>
+	<button onclick="removeTagGoto()">Detag</button>
 
 </td>
 <td>
@@ -131,6 +218,10 @@ function changeTagGoto() {
 		= textarea.value;
 	document.getElementById("tags").value = ""
 }
+function removeTagGoto() {
+	document.getElementById("removeTags").value
+		= true;
+}
 function changeVocSelect() {
 this.form.submit()
 		document.getElementById("changeVoc").value =document.getElementById("conceptRoots").value
@@ -152,9 +243,8 @@ version 1.0
 """
 		""+sb
 	}
-	
-	def getData(ttl,type) {
-		def mdl = ju.loadFiles(ttl)
+
+	def getData(mdl,type) {
 		def l = ju.queryListMap1(mdl, """
 prefix schema: <https://schema.org/> 
 prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
@@ -177,16 +267,41 @@ prefix voc:   <http://visualartsdna.org/voc#>
 					?s skos:label ?label
 			} order by ?label
 			""")
-		//l.each{
-		l
+		def wl= [:]
+		l.each{
+			if (!wl[it.s]) wl[it.s] = [:]
+			wl[it.s].label = it.label
+			wl[it.s].tag = wl[it.s].tag ? wl[it.s].tag : ""
+			wl[it.s].tag += it.tag?it.tag.replaceAll("http://visualartsdna.org/voc#","voc:") + " ":""
+
+		}
+		wl
 	}
-	
+
 	def printData(data,sb) {
 		sb.append """
 <table>
 """
 		int i=0
-		data.each { 
+		data.each { k,v->
+			sb.append "<tr><td>"
+			sb.append """<input type="checkbox" id="work${i}" name="work${i}" value="${k}">"""
+			sb.append """<label for="work${i}">${v.label}</label><br>"""
+			sb.append """${v.tag?:""}"""
+			sb.append "</td></tr>"
+			i++
+		}
+		sb.append """
+</table>
+"""
+	}
+
+	def printData0(data,sb) {
+		sb.append """
+<table>
+"""
+		int i=0
+		data.each {
 			sb.append "<tr><td>"
 			sb.append """<input type="checkbox" id="work${i}" name="work${i}" value="${it.s}">"""
 			sb.append """<label for="work${i}">${it.label}</label><br>"""
@@ -198,11 +313,11 @@ prefix voc:   <http://visualartsdna.org/voc#>
 </table>
 """
 	}
-	
+
 	def printHtml(map,level,sb) {
-		
+
 		map.each { k,v->
-			def s = """<li><button onclick="save('$k')">$k</button></li>"""
+			def s = """<li><button class="button" onclick="save('$k')">$k</button></li>"""
 			//def s = """<li><button type="button"; onclick="save('$k'); style="background-color: white;color: blue;border: 1px solid #e4e4e4;padding: 4px;border-radius: 3px;cursor: pointer; ">$k</button></li>"""
 			//def s = """<li><button style="background-color: white;color: blue;border: 1px solid #e4e4e4;padding: 4px;border-radius: 3px;cursor: pointer; onclick="save('$k')">$k</button></li>"""
 			sb.append "${tabs(level)}${s}"
@@ -213,15 +328,15 @@ prefix voc:   <http://visualartsdna.org/voc#>
 			}
 		}
 	}
-	
+
 	def print(map,level) {
-		
+
 		map.each { k,v->
 			println "${tabs(level)}$k"
 			if (v) print(v,level+1)
 		}
 	}
-	
+
 	def tabs(n) {
 		def s = ""
 		for (int i=0;i<n;i++) {
@@ -229,7 +344,7 @@ prefix voc:   <http://visualartsdna.org/voc#>
 		}
 		s
 	}
-	
+
 	def getNarrower(mdl, map, term) {
 
 		def l = ju.queryListMap1(mdl, """
@@ -259,5 +374,5 @@ select ?s {
 			getNarrower(mdl, map["$term"], st)
 		}
 	}
-	
+
 }

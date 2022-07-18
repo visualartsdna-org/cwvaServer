@@ -17,7 +17,7 @@ prefix voc:	<http://visualartsdna.org/voc#>
 """
 
 	def ju = new JenaUtilities()
-	def saveModel = "/temp/junk.ttl"
+	def saveModel = "/temp/junk/vocab.ttl"
 
 	VocabModel(){
 		def m = ju.loadFiles("/temp/git/cwva/ttl/data/vocab")
