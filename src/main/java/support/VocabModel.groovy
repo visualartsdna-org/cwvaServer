@@ -32,7 +32,7 @@ prefix voc:	<http://visualartsdna.org/voc#>
 
 	def saveInstance(term,instance) {
 		
-		def m = ju.loadFiles(concepts)
+		def m = conceptModel
 		ju.queryExecUpdate(m,prefixes, """
 
 INSERT Data{ 
@@ -45,7 +45,7 @@ INSERT Data{
 	
 	def updateInstance(term,instance) {
 		
-		def m = ju.loadFiles(concepts)
+		def m = conceptModel
 		ju.queryExecUpdate(m,prefixes, """
 
 DELETE { $term ?p ?o }
@@ -68,12 +68,7 @@ WHERE
 		def related = qTerms("related",work)
 		def member = qTerms2("member",work)
 		def instance = qTerm(work)
-		def s = ""
-		instance.eachLine{
-			if (!it.startsWith("@"))
-				s += "$it\n"
-		}
-		getHtml(concept,broader,inScheme,narrower,related,member,work,s)
+		getHtml(concept,broader,inScheme,narrower,related,member,work,instance)
 
 	}
 	
@@ -172,7 +167,15 @@ describe $work
 """)
 		
 		def ttl = ju.saveModelString(model,"TTL")
-		ttl
+		
+		// remove prefixes
+		def s = "" 
+		ttl.eachLine{
+			if (!it.startsWith("@"))
+				s += "$it\n"
+		}
+
+		s
 	}
 	
 	def qTerms(term,work) {
@@ -369,9 +372,6 @@ VisualArtsDNA Vocabulary Entry (skos)
 </tr>
 </table>
 <br><br>
-  Configuration:<br>
-  <br><label for="dir">Save TTL file:</label>
-  <input type="text" id="dir" name="dir" size="40" value="$concepts"> 
 </form>
 
 
@@ -380,8 +380,7 @@ function resetFunction() {
   document.getElementById("skosForm").reset();
 }
 function changeSaveGoto() {
-var path = document.getElementById("dir").value;  
-document.getElementById("changeSave").value=path;
+document.getElementById("changeSave").value="save";
 }
 function changeNewGoto() {
 document.getElementById("changeNew").value="new";
