@@ -7,14 +7,19 @@ import org.eclipse.jetty.servlet.ServletHandler;
 class Server {
 	
 	static Server instance
+	static def content = "/temp/git/cwvaContent"
 	
+	// TODO: consider $content/ttl for whole model load
 	def cfg
 	Server(){
 		this([ // default test cfg
 			port:8080,
-			dir:"../cwva",  // assumes adjacent to cwvaServer project
-			data: "ttl/data",
-			model: "ttl/model",
+			dir:"/temp/git/cwva",
+			data: "$content/ttl/data",
+			vocab: "$content/ttl/vocab",
+			tags: "$content/ttl/tags",
+			model: "$content/ttl/model",
+			images: "$content",
 			domain: "http://visualartsdna.org" ,
 			ns: "work",
 			host: "http://localhost:8080",

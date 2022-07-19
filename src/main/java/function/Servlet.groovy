@@ -18,10 +18,11 @@ class Servlet extends HttpServlet {
 	def metrics = [:]
 	def cfg = Server.getInstance().cfg
 	def dir = cfg.dir
-	def vm = new VocabModel()
-	def vocab = "/temp/git/cwva/ttl/data/vocab"
-	def data = "/temp/git/cwva/ttl/data"
-	def tm = new TagModel(data,vocab)
+	def vocab = cfg.vocab
+	def data = cfg.data
+	def tags = cfg.tags
+	def vm = new VocabModel(vocab)
+	def tm = new TagModel(data,vocab,tags)
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)

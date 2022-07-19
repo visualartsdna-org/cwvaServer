@@ -17,38 +17,35 @@ prefix voc:	<http://visualartsdna.org/voc#>
 """
 
 	def ju = new JenaUtilities()
-	def saveModel = "/temp/junk/vocab.ttl"
+	def concepts
+	def conceptModel
 
-	VocabModel(){
-		def m = ju.loadFiles("/temp/git/cwva/ttl/data/vocab")
-		ju.saveModelFile(m, saveModel, "TTL")
-	}
-	def getModel() {
-		ju.loadFiles(saveModel)
-		
+	VocabModel(concepts){
+		this.concepts = concepts
+		BackupFiles.backup(concepts)
+		conceptModel = ju.loadFiles(concepts)
 	}
 	
 	def initial(term) {
 		getInstance(term)
-		
 	}
 
 	def saveInstance(term,instance) {
 		
-		def m = ju.loadFiles(saveModel)
+		def m = ju.loadFiles(concepts)
 		ju.queryExecUpdate(m,prefixes, """
 
 INSERT Data{ 
 	$instance
  }
 """)
-		ju.saveModelFile(m, saveModel, "TTL")
+		ju.saveModelFile(m, concepts, "TTL")
 
 	}
 	
 	def updateInstance(term,instance) {
 		
-		def m = ju.loadFiles(saveModel)
+		def m = ju.loadFiles(concepts)
 		ju.queryExecUpdate(m,prefixes, """
 
 DELETE { $term ?p ?o }
@@ -59,7 +56,7 @@ WHERE
   { $term ?p ?o
   } 
 """)
-		ju.saveModelFile(m, saveModel, "TTL")
+		ju.saveModelFile(m, concepts, "TTL")
 
 	}
 	
@@ -150,7 +147,7 @@ $term  a            skos:Concept ;
 	
 	
 	def qConcept() {
-		def m = getModel()
+		def m = conceptModel
 		def ls = ""
 		def l = ju.queryListMap4(m, prefixes, """
 select distinct ?s {
@@ -168,7 +165,7 @@ select distinct ?s {
 	}
 	
 	def qTerm(work) {
-		def m = getModel()
+		def m = conceptModel
 
 		def model = ju.queryDescribe(m, prefixes, """
 describe $work 
@@ -179,7 +176,7 @@ describe $work
 	}
 	
 	def qTerms(term,work) {
-		def m = getModel()
+		def m = conceptModel
 		def ls = ""
 		def query = """
 select distinct ?s {
@@ -201,7 +198,7 @@ select distinct ?s {
 	}
 	
 	def qTerms2(term,work) {
-		def m = getModel()
+		def m = conceptModel
 		def ls = ""
 		def query = """
 select distinct ?s {
@@ -221,7 +218,7 @@ select distinct ?s {
 	}
 	
 	def qTerms3(term,work) {
-		def m = getModel()
+		def m = conceptModel
 		def ls = ""
 		def query = """
 select distinct ?s {
@@ -374,7 +371,7 @@ VisualArtsDNA Vocabulary Entry (skos)
 <br><br>
   Configuration:<br>
   <br><label for="dir">Save TTL file:</label>
-  <input type="text" id="dir" name="dir" size="40" value="$saveModel"> 
+  <input type="text" id="dir" name="dir" size="40" value="$concepts"> 
 </form>
 
 

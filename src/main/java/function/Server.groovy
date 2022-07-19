@@ -7,14 +7,18 @@ import org.eclipse.jetty.servlet.ServletHandler;
 class Server {
 	
 	static Server instance
+	static def content = "/temp/git/cwvaContent"
 	
 	def cfg
 	Server(){
 		this([ // default test cfg
 			port:8082,
 			dir:"/test/function",
-//			data: "ttl/art.ttl",
-//			model: "ttl/cwva.ttl",
+			data: "$content/ttl/data",
+			vocab: "$content/ttl/vocab/vocabulary.ttl",
+			tags: "$content/ttl/tags/tags.ttl",
+			model: "$content/ttl/model",
+			images: "$content/images",
 //			domain: "http://visualartsdna.org" ,
 //			ns: "work",
 			host: "http://localhost:8082",

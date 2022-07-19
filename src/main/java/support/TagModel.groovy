@@ -15,17 +15,19 @@ import org.apache.jena.rdf.model.ModelFactory
 	
 class TagModel {
 
-	def saveTags = "/temp/junk/tags.ttl"
-	
 	def ju = new JenaUtilities()
+	def tagsFile
 	Model instanceModel
 	Model conceptModel
 	Model tagsModel = ju.newModel()
-	TagModel(instances,concepts){
-//		this.instanceModel = ju.loadFiles(instances)
+	
+	TagModel(instances,concepts,tagsFile){
+		this.tagsFile = tagsFile
 		conceptModel = ju.loadFiles(concepts)
-		if (new File(saveTags).exists())
-			tagsModel = ju.loadFiles(saveTags);
+		if (new File(tagsFile).exists()) {
+			BackupFiles.backup(tagsFile)
+			tagsModel = ju.loadFiles(tagsFile)
+		}
 		def data = ju.loadFiles(instances);
 		this.instanceModel = ModelFactory.createRDFSModel(data, tagsModel);
 	}
@@ -67,7 +69,7 @@ class TagModel {
 
 			def model = ju.saveStringModel(s,"TTL")
 			tagsModel.add(model)
-			ju.saveModelFile(tagsModel, saveTags, "TTL")
+			ju.saveModelFile(tagsModel, tagsFile, "TTL")
 		}
 		else if (m.containsKey("removeTags")) {
 			
@@ -93,7 +95,7 @@ prefix voc:	<http://visualartsdna.org/voc#>
 )
 			}
 			
-		ju.saveModelFile(tagsModel, saveTags, "TTL")
+		ju.saveModelFile(tagsModel, tagsFile, "TTL")
 		}
 	}
 

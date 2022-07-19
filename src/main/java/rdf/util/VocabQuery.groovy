@@ -11,8 +11,9 @@ class VocabQuery {
 	// TODO: @Release This is a release task
 	@Test
 	void test() {
-		def vocab = "../cwva/ttl/data/vocab"
-		def target = "../cwva/html/vocab.html"
+		def server = new cwva.Server()
+		def vocab = server.cfg.vocab
+		def target = "${server.cfg.dir}/html/vocab.html"
 		def ju = new JenaUtilities()
 		def mdl = ju.loadFiles(vocab)
 		def l = ju.queryListMap1(mdl,"""

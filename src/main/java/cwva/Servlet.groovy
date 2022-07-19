@@ -16,10 +16,11 @@ class Servlet extends HttpServlet {
 	def metrics = [:]
 	def cfg = Server.getInstance().cfg
 	def dir = cfg.dir
-	def model = "$dir/${cfg.model}"
-	def vocab = "$dir/${cfg.data}/vocab"
-	def data = "$dir/${cfg.data}"
+	def model = cfg.model
+	def vocab = cfg.vocab
+	def data = cfg.data
 	def domain = cfg.domain
+	def images = cfg.images
 	def ns = cfg.ns
 	def ju = new JenaUtils()
 	
@@ -95,7 +96,7 @@ class Servlet extends HttpServlet {
 				break
 
 			case ~/\/images.*/:
-				sendJpegFile(response,"$dir${path.replaceAll("%20"," ")}")
+				sendJpegFile(response,"$images${path.replaceAll("%20"," ")}")
 				break
 
 			case ~/\/dist.*/:
