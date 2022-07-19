@@ -8,11 +8,15 @@ import org.apache.jena.rdf.model.InfModel
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 
+	// TODO: <dt> tag, https://www.w3schools.com/tags/tag_dt.asp
+	// for description fields
+	// TODO: put checkbox label in href link to work:* in new tab
+	// consider support for localhost vs visualartsdna.org
+	
 class TagModel {
 
 	def saveTags = "/temp/junk/tags.ttl"
 	
-	// TODO: <dt> tag, https://www.w3schools.com/tags/tag_dt.asp
 	def ju = new JenaUtilities()
 	Model instanceModel
 	Model conceptModel
