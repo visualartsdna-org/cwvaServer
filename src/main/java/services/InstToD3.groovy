@@ -24,13 +24,13 @@ class InstToD3 {
 ${rdf.Prefixes.forQuery}
 			
 construct {
-?s skos:label ?label .
+?s rdfs:label ?label .
 ?s schema:description ?desc .
 ?s a ?type .
 } {
 		?s a ?type .
 		FILTER ( ?type in (${type}))
-		?s skos:label ?label .
+		?s rdfs:label ?label .
 		?s schema:description ?desc .
 		}
 """
@@ -43,7 +43,7 @@ construct {
 ${rdf.Prefixes.forQuery}
 			
 construct {
-?s skos:label ?label .
+?s rdfs:label ?label .
 ?s schema:description ?desc .
 ?s vad:hasNFT ?nft .
 ?nft vad:hasNFTTokenID ?tid .
@@ -52,7 +52,7 @@ construct {
 } {
 		?s a ?type .
 		FILTER ( ?type in (${type}))
-		?s skos:label ?label .
+		?s rdfs:label ?label .
 		?s schema:description ?desc .
 		?s vad:hasNFT ?nft .
 		?nft vad:hasNFTTokenID ?tid .
@@ -68,7 +68,7 @@ construct {
 ${rdf.Prefixes.forQuery}
 			
 construct {
-?s skos:label ?label .
+?s rdfs:label ?label .
 ?s schema:description ?desc .
 ?s vad:hasPaperFinish ?finish .
 ?s vad:hasPaperWeight ?weight .
@@ -79,7 +79,7 @@ construct {
 } {
 		?s a ?type .
 		FILTER ( ?type in (${type}))
-		?s skos:label ?label .
+		?s rdfs:label ?label .
 		?s schema:description ?desc .
 		?s vad:hasPaper ?paper .
 		?s vad:hasPaperFinish ?finish .

@@ -63,20 +63,20 @@ ${rdf.Prefixes.forQuery}
 construct {
 	?s a schema:OnlineStore .
 	?s schema:offers ?offer .
-	?offer skos:prefLabel ?offLabel .
+	?offer rdfs:label ?offLabel .
 	?offer skos:member ?member .
 	?offer schema:about ?about .
-	?member skos:label ?memLabel .
+	?member rdfs:label ?memLabel .
 	?offer vad:hasArtistProfile ?prof .
 	?prof foaf:maker ?sw .
 	?sw schema:about ?swAbout .
 } {
 	?s a schema:OnlineStore .
 	?s schema:offers ?offer .
-	?offer skos:prefLabel ?offLabel .
+	?offer rdfs:label ?offLabel .
 	?offer skos:member ?member .
 	?offer schema:about ?about .
-	?member skos:label ?memLabel .
+	?member rdfs:label ?memLabel .
 	?offer vad:hasArtistProfile ?prof .
 	?prof foaf:maker ?sw .
 	?sw schema:about ?swAbout .
@@ -150,13 +150,13 @@ construct {
 # A selection of basic data for works of type $type
 ${rdf.Prefixes.forQuery}			
 construct {
-?s skos:label ?label .
+?s rdfs:label ?label .
 ?s schema:description ?desc .
 ?s a ?type .
 } {
 		?s a ?type .
 		FILTER ( ?type in (${type}))
-		?s skos:label ?label .
+		?s rdfs:label ?label .
 		?s schema:description ?desc .
 		}
 """
@@ -168,7 +168,7 @@ construct {
 # A selection of NFT data for works of type $type
 ${rdf.Prefixes.forQuery}			
 construct {
-?s skos:label ?label .
+?s rdfs:label ?label .
 ?s schema:description ?desc .
 ?s vad:hasNFT ?nft .
 ?nft vad:hasNFTTokenID ?tid .
@@ -177,7 +177,7 @@ construct {
 } {
 		?s a ?type .
 		FILTER ( ?type in (${type}))
-		?s skos:label ?label .
+		?s rdfs:label ?label .
 		?s schema:description ?desc .
 		?s vad:hasNFT ?nft .
 		?nft vad:hasNFTTokenID ?tid .
@@ -192,7 +192,7 @@ construct {
 # A selection of physical data for works of type $type
 ${rdf.Prefixes.forQuery}			
 construct {
-?s skos:label ?label .
+?s rdfs:label ?label .
 ?s schema:description ?desc .
 ?s vad:hasPaperFinish ?finish .
 ?s vad:hasPaperWeight ?weight .
@@ -203,7 +203,7 @@ construct {
 } {
 		?s a ?type .
 		FILTER ( ?type in (${type}))
-		?s skos:label ?label .
+		?s rdfs:label ?label .
 		?s schema:description ?desc .
 		?s vad:hasPaper ?paper .
 		?s vad:hasPaperFinish ?finish .

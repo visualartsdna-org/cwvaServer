@@ -51,23 +51,23 @@ class ParseQuery {
 ${rdf.Prefixes.forFile}
 ${m.id}
 	a vad:${m.type} ;
-	skos:label "${m.label}" ;
+	rdfs:label "${m.label}" ;
 	vad:media	${getList(m,"media")} ;
-	vad:height      "${m.height}"^^xs:float ;
-	vad:width       "${m.width}"^^xs:float ;
-	vad:guid        "${m.guid}" ;
-	vad:location "${m.location}" ;
-	vad:description "${m.description}" ;
+	schema:height      "${m.height}"^^xs:float ;
+	schema:width       "${m.width}"^^xs:float ;
+	schema:identifier        "${m.guid}" ;
+	schema:location "${m.location}" ;
+	schema:description "${m.description}" ;
 	skos:note "${m.note}" ;
-	vad:recordDateTime "${m.recordedDateTime}"^^xs:dateTime ;
-	vad:completedDateTime "${m.completedDateTime}"^^xs:dateTime ;
+	schema:datePublished "${m.recordedDateTime}"^^xs:dateTime ;
+	schema:dateCreated "${m.completedDateTime}"^^xs:dateTime ;
 	vad:hasPaper "${m.hasPaper}" ;
 	vad:hasPaperFinish "${m.hasPaperFinish}" ;
 	vad:hasPaperWeight "${m.hasPaperWeight}"^^xs:int ;
 	vad:workOnSite <${m.workOnSite}> ;
 	vad:hasArtistProfile ${m.hasArtistProfile} ;
 	vad:qrcode <${m.qrcode}> ;
-	vad:image <http://visualartsdna.org/images/${m.fileupload}> ;
+	schema:image <http://visualartsdna.org/images/${m.fileupload}> ;
 	.
 """
 	}
@@ -80,9 +80,9 @@ ${m.id}
 	assert m.height             , "no m.height           "
 	assert m.width              , "no m.width            "
 	assert m.guid               , "no m.guid             "
-	assert m.location           , "no m.location         "
+	//assert m.location           , "no m.location         "
 	assert m.description        , "no m.description      "
-	assert m.note               , "no m.:note            "
+	//assert m.note               , "no m.:note            "
 	assert m.recordedDateTime   , "no m.recordedDateTime "
 	assert m.completedDateTime  , "no m.completedDateTime"
 	assert m.hasPaper           , "no m.hasPaper         "

@@ -104,7 +104,7 @@ $term  a            skos:Concept ;
         skos:definition  "Definition." ;
         skos:inScheme    voc:digitalArtTerms ;
         skos:notation    "${UUID.randomUUID()}" ;
-        skos:prefLabel   "newTerm" .
+        rdfs:label   "newTerm" .
 """
 			saveInstance(term,instance)
 			html = getHtml(concept,broader,inScheme,narrower,related,member,term,instance)

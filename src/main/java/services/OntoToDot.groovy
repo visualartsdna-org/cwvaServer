@@ -113,7 +113,7 @@ SELECT ?s ?sc ?l ?c {
  optional { ?s rdfs:subClassOf ?sc }
  #optional { ?s rdfs:label ?l }
  optional { ?s rdfs:comment ?c }
- #optional { ?s skos:prefLabel ?pl }
+ #optional { ?s rdfs:label ?pl }
 		} order by ?s
 """)
 
@@ -203,7 +203,7 @@ SELECT ?s ?sc ?l ?c ?pl {
  optional { ?s rdfs:subClassOf ?sc }
  #optional { ?s rdfs:label ?l }
  optional { ?s rdfs:comment ?c }
- #optional { ?s skos:prefLabel ?pl }
+ #optional { ?s rdfs:label ?pl }
 		} order by ?s
 """)
 
@@ -237,7 +237,7 @@ SELECT ?s ?sc ?l ?c ?pl {
 				def s = it.pl
 				def id = s.hashCode()
 				l.add """"$id" [fillcolor="$literalColor" color="$literalColor" label="${fixLabel(s)}" shape="rect"]"""
-				g.add """"${it.s}" -> "$id" [label="skos:prefLabel"]"""
+				g.add """"${it.s}" -> "$id" [label="rdfs:label"]"""
 			}
 			if (it.sc) {
 				def s = it.sc

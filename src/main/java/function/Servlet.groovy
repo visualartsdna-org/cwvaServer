@@ -22,7 +22,7 @@ class Servlet extends HttpServlet {
 	def data = cfg.data
 	def tags = cfg.tags
 	def vm = new VocabModel(vocab)
-	def tm = new TagModel(data,vocab,tags)
+	def tm = new TagModel(data,vocab,tags,cfg.host)
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)

@@ -13,7 +13,7 @@ class Server {
 	Server(){
 		this([ // default test cfg
 			port:8082,
-			dir:"/test/function",
+			dir:"$content",
 			data: "$content/ttl/data",
 			vocab: "$content/ttl/vocab/vocabulary.ttl",
 			tags: "$content/ttl/tags/tags.ttl",

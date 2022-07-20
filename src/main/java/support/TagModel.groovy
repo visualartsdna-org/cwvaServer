@@ -17,11 +17,12 @@ class TagModel {
 
 	def ju = new JenaUtilities()
 	def tagsFile
+	def host
 	Model instanceModel
 	Model conceptModel
 	Model tagsModel = ju.newModel()
 	
-	TagModel(instances,concepts,tagsFile){
+	TagModel(instances,concepts,tagsFile,host){
 		this.tagsFile = tagsFile
 		conceptModel = ju.loadFiles(concepts)
 		if (new File(tagsFile).exists()) {
@@ -30,6 +31,7 @@ class TagModel {
 		}
 		def data = ju.loadFiles(instances);
 		this.instanceModel = ModelFactory.createRDFSModel(data, tagsModel);
+		this.host = host
 	}
 	
 	def handleQueryParams(m) {
@@ -58,6 +60,7 @@ class TagModel {
 @prefix vad: <http://visualartsdna.org/2021/07/16/model#> .
 @prefix work:	<http://visualartsdna.org/work/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix voc:	<http://visualartsdna.org/voc#> .
 """
 			wl.each{w->
@@ -84,6 +87,7 @@ class TagModel {
 prefix vad: <http://visualartsdna.org/2021/07/16/model#> 
 prefix work:	<http://visualartsdna.org/work/> 
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix voc:	<http://visualartsdna.org/voc#> 
 ""","""
 			delete {
@@ -275,7 +279,7 @@ prefix voc:   <http://visualartsdna.org/voc#>
 			select ?s ?label ?tag ?image {
 					?s a ${type} .
 					optional {?s vad:tag ?tag .}
-					?s skos:label ?label .
+					?s rdfs:label ?label .
 					?s schema:image ?image .
 			} order by ?label
 			""")
@@ -297,10 +301,11 @@ prefix voc:   <http://visualartsdna.org/voc#>
 """
 		int i=0
 		data.each { k,v->
+		def img = v.image.replaceAll("http://visualartsdna.org",host)
 			sb.append "<tr><td>"
 			sb.append """
-<a target="_blank" href="${v.image}">
-  <img src="${v.image}" alt="Forest" style="width:50px">
+<a target="_blank" href="${img}">
+  <img src="${img}" style="width:50px">
 </a>
 """
 			sb.append """<input type="checkbox" id="work${i}" name="work${i}" value="${k}">"""

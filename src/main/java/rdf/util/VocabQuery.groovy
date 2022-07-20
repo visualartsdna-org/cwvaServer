@@ -29,7 +29,7 @@ select distinct ?tc ?t ?s ?l ?d {
 ?cs skos:hasTopConcept ?tc .
 ?s skos:broader ?t .
 ?s skos:broader* ?tc .
-?s skos:prefLabel ?l .
+?s rdfs:label ?l .
 ?s skos:definition ?d .
 } order by ?tc ?t ?s
 """)
@@ -80,7 +80,7 @@ select distinct ?tc ?t ?s ?l ?d {
 ?cs skos:hasTopConcept ?tc .
 ?s skos:broader ?t .
 ?s skos:broader* ?tc .
-?s skos:prefLabel ?l .
+?s rdfs:label ?l .
 ?s skos:definition ?d .
 } order by ?tc ?t ?s
 """)
@@ -93,11 +93,11 @@ prefix voc:	<http://visualartsdna.org/voc#>
 ""","""
 select distinct ?l ?url ?d ?sl {
 ?col a skos:Collection .
-?col skos:prefLabel ?l .
+?col rdfs:label ?l .
 optional {?col skos:definition ?d . }
 ?col rdfs:seeAlso ?url .
 ?col skos:member ?s .
-?s skos:prefLabel ?sl .
+?s rdfs:label ?sl .
 #?s skos:inScheme ?cs .
 } order by ?l
 """)
@@ -172,7 +172,7 @@ prefix voc:	<http://visualartsdna.org/voc#>
 select distinct ?t ?s ?l ?d {
 ?s a skos:Concept .
 ?s skos:broader* ?t .
-?s skos:prefLabel ?l .
+?s rdfs:label ?l .
 ?s skos:definition ?d .
 } order by ?t ?s
 """)
@@ -198,7 +198,7 @@ prefix voc:	<http://visualartsdna.org/voc#>
 select distinct ?t ?s ?l ?d {
 ?s a skos:Concept .
 ?s skos:broader* ?t .
-?s skos:prefLabel ?l .
+?s rdfs:label ?l .
 ?s skos:definition ?d .
 } order by ?t ?s
 """)

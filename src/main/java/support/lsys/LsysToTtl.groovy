@@ -24,7 +24,7 @@ ${rdf.Prefixes.forFile}
 		"""
 work:${m.guid}
 	a vad:${m.type} ;
-	skos:label "${m.label}" ;
+	rdfs:label "${m.label}" ;
 	vad:media	"${m.media}" ;
 	vad:height      "${m.height}"^^xs:float ;
 	vad:width       "${m.width}"^^xs:float ;

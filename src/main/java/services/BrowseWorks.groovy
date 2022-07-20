@@ -26,9 +26,10 @@ class BrowseWorks {
 prefix vad:	<http://visualartsdna.org/2020/04/painting/>
 prefix work:	<http://visualartsdna.org/work/>
 prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 """, """
 select ?s ?lab ?image {
- ?s skos:label ?lab .
+ ?s rdfs:label ?lab .
 optional {?s	vad:image ?image }
  filter(!isblank(?s))
 } order by ?lab
@@ -60,9 +61,10 @@ optional {?s	vad:image ?image }
 prefix vad:	<http://visualartsdna.org/2020/04/painting/>
 prefix work:	<http://visualartsdna.org/work/>
 prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 """, """
 select ?s ?lab {
- ?s skos:label ?lab ;
+ ?s rdfs:label ?lab ;
 	.
 }
 """

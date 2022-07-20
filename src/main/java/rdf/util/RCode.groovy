@@ -38,7 +38,7 @@ tko:def ?def ;
 	filter (!isBlank(?o2))
 	?t tko:title ?title .
 	?t tko:tags ?label .
-	?tag skos:prefLabel ?label .
+	?tag rdfs:label ?label .
 	?tag skos:definition ?def .
 } 
 } 
