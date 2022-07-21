@@ -166,7 +166,7 @@ class Servlet extends HttpServlet {
 				break
 				
 			case "/favicon.ico":
-				sendIconFile(response,"$dir/images/favicon.ico")
+				sendIconFile(response,"$images/favicon.ico")
 				break
 
 			default:
