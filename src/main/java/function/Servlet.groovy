@@ -68,6 +68,14 @@ class Servlet extends HttpServlet {
 				sendHtml(response, "$s")
 				break
 	
+			case "/vocab.entry.text":
+				def m = vm.parse(query)
+				def inst = URLDecoder.decode(m.instance, "UTF-8")
+				m.instance = inst
+				def s = vm.handleQueryParamsText(m)
+				sendHtml(response, "$s")
+				break
+	
 			case "/fxai/state":
 				sendTextFile(response,"./fxaiState.txt")
 				break
