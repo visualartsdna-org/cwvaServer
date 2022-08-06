@@ -134,8 +134,8 @@ WHERE
 		def term = m["term"]
 		def instance = m["instance"]
 		def textMap = [:]
-		textMap.definition = qText("definition",work)
-		textMap.label = qText("rdfs","label",work)
+		textMap.definition = qText("definition",term)
+		textMap.label = qText("rdfs","label",term)
 		if (m.containsKey("gotoSave")) {
 			updateInstance(term,instance)
 			term = getUri(instance)
