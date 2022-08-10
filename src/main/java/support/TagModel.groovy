@@ -61,7 +61,7 @@ class TagModel {
 @prefix work:	<http://visualartsdna.org/work/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix voc:	<http://visualartsdna.org/voc#> .
+@prefix the:	<http://visualartsdna.org/thesaurus#> .
 """
 			wl.each{w->
 				tl.each{t->
@@ -88,7 +88,7 @@ prefix vad: <http://visualartsdna.org/2021/07/16/model#>
 prefix work:	<http://visualartsdna.org/work/> 
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix voc:	<http://visualartsdna.org/voc#> 
+prefix the:	<http://visualartsdna.org/thesaurus#> 
 ""","""
 			delete {
 			<$w> vad:tag ?o
@@ -174,12 +174,12 @@ img {
 <label for="conceptRoots">Choose a concept root</label>
 <br/>
 <select name="conceptRoots" id="conceptRoots" onchange="this.form.submit()">
-  <option value="voc:visualArtTerm" ${rootCpt=="voc:visualArtTerm"?"selected":""}>voc:visualArtTerm</option>
-  <option value="voc:digitalArtTerm" ${rootCpt=="voc:digitalArtTerm"?"selected":""}>voc:digitalArtTerm</option>
-  <option value="voc:watercolorMaterial" ${rootCpt=="voc:watercolorMaterial"?"selected":""}>voc:watercolorMaterial</option>
-  <option value="voc:watercolorTechnique" ${rootCpt=="voc:watercolorTechnique"?"selected":""}>voc:watercolorTechnique</option>
-  <option value="voc:watercolorTerm" ${rootCpt=="voc:watercolorTerm"?"selected":""}>voc:watercolorTerm</option>
-  <option value="voc:watercolorTool" ${rootCpt=="voc:watercolorTool"?"selected":""}>voc:watercolorTool</option>
+  <option value="the:visualArtTerm" ${rootCpt=="the:visualArtTerm"?"selected":""}>the:visualArtTerm</option>
+  <option value="the:digitalArtTerm" ${rootCpt=="the:digitalArtTerm"?"selected":""}>the:digitalArtTerm</option>
+  <option value="the:watercolorMaterial" ${rootCpt=="the:watercolorMaterial"?"selected":""}>the:watercolorMaterial</option>
+  <option value="the:watercolorTechnique" ${rootCpt=="the:watercolorTechnique"?"selected":""}>the:watercolorTechnique</option>
+  <option value="the:watercolorTerm" ${rootCpt=="the:watercolorTerm"?"selected":""}>the:watercolorTerm</option>
+  <option value="the:watercolorTool" ${rootCpt=="the:watercolorTool"?"selected":""}>the:watercolorTool</option>
 </select>
 <br/>
 <br/>
@@ -273,7 +273,7 @@ prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
 prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
 prefix foaf:  <http://xmlns.com/foaf/0.1/> 
 prefix dc:    <http://purl.org/dc/elements/1.1/> 
-prefix voc:   <http://visualartsdna.org/voc#>
+prefix the:   <http://visualartsdna.org/thesaurus#>
 """, """
 			
 			select ?s ?label ?tag ?image {
@@ -289,7 +289,7 @@ prefix voc:   <http://visualartsdna.org/voc#>
 			wl[it.s].label = it.label
 			wl[it.s].image = it.image
 			wl[it.s].tag = wl[it.s].tag ? wl[it.s].tag : ""
-			wl[it.s].tag += it.tag?it.tag.replaceAll("http://visualartsdna.org/voc#","voc:") + " ":""
+			wl[it.s].tag += it.tag?it.tag.replaceAll("http://visualartsdna.org/thesaurus#","the:") + " ":""
 
 		}
 		wl
@@ -362,7 +362,7 @@ prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
 prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
 prefix foaf:  <http://xmlns.com/foaf/0.1/> 
 prefix dc:    <http://purl.org/dc/elements/1.1/> 
-prefix voc:   <http://visualartsdna.org/voc#>
+prefix the:   <http://visualartsdna.org/thesaurus#>
 """, """
 
 select ?s {
@@ -371,7 +371,7 @@ select ?s {
 } order by ?s
 """)
 		l.each{
-			def st = it.s.replaceAll("http://visualartsdna.org/voc#","voc:")
+			def st = it.s.replaceAll("http://visualartsdna.org/thesaurus#","the:")
 			map[term]["$st"] = [:]
 			//println "$st"
 			getNarrower(mdl, map["$term"], st)

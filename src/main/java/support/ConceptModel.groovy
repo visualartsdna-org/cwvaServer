@@ -7,13 +7,12 @@ import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
 
-class VocabModel {
+class ConceptModel {
 	def prefixes = """
 prefix xs: <http://www.w3.org/2001/XMLSchema#> 
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-prefix schema: <https://schema.org/> 
 prefix the:	<http://visualartsdna.org/thesaurus#> 
 """
 
@@ -21,7 +20,7 @@ prefix the:	<http://visualartsdna.org/thesaurus#>
 	def concepts
 	def conceptModel
 
-	VocabModel(concepts){
+	ConceptModel(concepts){
 		this.concepts = concepts
 		BackupFiles.backup(concepts)
 		conceptModel = ju.loadFiles(concepts)
@@ -147,11 +146,11 @@ WHERE
 			broader = "the:visualArtTerm"
 			inScheme = "the:digitalArtTerms"
 			instance="""
-$term  a            the:Concept ;
+$term  a            skos:Concept ;
         skos:broader     the:visualArtTerm ;
         skos:definition  "Definition." ;
         skos:inScheme    the:digitalArtTerms ;
-        schema:identifier    "${UUID.randomUUID()}" ;
+        skos:notation    "${UUID.randomUUID()}" ;
         rdfs:label   "newTerm" .
 """
 			saveInstance(term,instance)
@@ -196,7 +195,7 @@ $term  a            the:Concept ;
 		def ls = ""
 		def l = ju.queryListMap4(m, prefixes, """
 select distinct ?s {
-		?s a the:Concept 
+		?s a skos:Concept 
 } order by ?s
 """)
 		l.each{
@@ -281,7 +280,7 @@ select distinct ?s {
 		def ls = ""
 		def query = """
 select distinct ?s {
-		?s the:$term  $work
+		?s skos:$term  $work
 } order by ?s
 """
 
@@ -698,7 +697,7 @@ Select one concept in a window with a "Goto," click the Goto.  New instance appe
 Save edited instance to server.  New creates a template instance.
 <br/>
 <br/>
-version 2.0
+version 1.1
 
 </body></html>
 """

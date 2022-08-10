@@ -45,7 +45,7 @@ class Servlet extends HttpServlet {
 
 			case "/tag":
 				//sendHtmlFile(response, "/temp/junk/vocab.html")
-				def s = tm.process("voc:visualArtTerm","vad:Watercolor")
+				def s = tm.process("the:visualArtTerm","vad:Watercolor")
 				sendHtml(response, "$s")
 			break
 			
@@ -58,7 +58,7 @@ class Servlet extends HttpServlet {
 	
 			case "/vocab":
 				//sendHtmlFile(response, "/temp/junk/vocab.html")
-				def s = vm.initial("voc:visualArtTerm")
+				def s = vm.initial("the:visualArtTerm")
 				sendHtml(response, "$s")
 			break
 			
