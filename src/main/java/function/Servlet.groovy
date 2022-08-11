@@ -10,7 +10,7 @@ import support.Guid
 import support.ParseDigitalQuery
 import support.ParseQuery
 import support.TagModel
-import support.VocabModel
+import support.ConceptModel
 import util.Tmp
 
 class Servlet extends HttpServlet {
@@ -21,7 +21,7 @@ class Servlet extends HttpServlet {
 	def vocab = cfg.vocab
 	def data = cfg.data
 	def tags = cfg.tags
-	def vm = new VocabModel(vocab)
+	def vm = new ConceptModel(vocab)
 	def tm = new TagModel(data,vocab,tags,cfg.host)
 	
 	@Override

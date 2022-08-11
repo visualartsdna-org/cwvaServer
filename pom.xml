@@ -24,6 +24,11 @@
 		
 		<dependency>
 			<groupId>org.visualartsdna</groupId>
+			<artifactId>rdfUtil</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.visualartsdna</groupId>
 			<artifactId>nals</artifactId>
 			<version>1.0.0</version>
 		</dependency>

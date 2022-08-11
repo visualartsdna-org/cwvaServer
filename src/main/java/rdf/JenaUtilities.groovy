@@ -3,117 +3,140 @@ import groovy.io.FileType
 import groovy.json.JsonSlurper
 import org.apache.jena.rdf.model.*
 import rdf.util.JsonRdfUtil
+
+/**
+ * The following section handles RDF list retrieval and creation
+supporting the use case of an RDF list containing URIs.
+Relies on TTL serialization and regex matching; 
+assumes list members are in prefix URI form
+TODO: change regex below to handle absolute URIs
+
+ * @author ricks
+ *
+ */
 class JenaUtilities extends JenaUtils {
 
+	
 	/**
-	 * Load a model from a dir of files of any model type
-	 * type is determined from file extension
-	 * or a single file of any model type
-	 * @param dirSpec or fileSpec
-	 * @return model
+	 * Get a given data property's value
+	 * for each of the URI refs in the RDF list at prop
+	 * for the initial list of URIs
+	 * @param m model with all data
+	 * @param dataProp a property to get like skos:definition
+	 * @param prop name of the RDF list property to follow
+	 * @param lw initial list of URIs
+	 * @return list of dataproperty results in order of nested URIs
 	 */
-	// TODO: add support for json found at spec
-	// conversion to model
-	def loadFiles(spec){
-		def model = newModel()
-		if (new File(spec).isDirectory()) {
-			new File(spec).eachFileRecurse(FileType.FILES) {
-				//println it
-				model.add( loadFile(""+it) )
+	def getListData(m,dataProp,prop,lw) {
+		
+		def l= getListDataList(m,prop,lw)
+		def rl = []
+		def pres = getPrefixes(m)
+		l.each{
+			def l2 = queryListMap1(m, pres,"""
+		select ?d {
+			$it $dataProp ?d
+		}
+""")
+			l2.each{
+				rl.add(it.d)
 			}
-
-			//files.each { println it }
-		} else {
-
-			model = loadFileModelFilespec(spec)
 		}
-		model
-	}
-
-	/**
-	 * Load any model file
-	 * Also translates JSON to analogous model file
-	 * the subdir of the JSON profides the namespace context
-	 * @param spec
-	 * @return model
-	 */
-	def loadFile(spec) {
-		def ext = (spec =~ /^.*\.([a-zA-Z-]+)$/)[0][1]
-		def model = newModel()
-
-		if (ext in [
-					"ttl",
-					"rdf",
-					"jsonld",
-					"json-ld",
-					"nt",
-					"nq",
-					"trig",
-					"trix",
-					"rt",
-					"trdf"
-				]) {
-			model = loadFileModelFilespec(spec,ext)
-//		} else if (ext in ["json"]) {
-//			def c
-//			try {
-//				c = util.Rson.load(spec)
-////				c = new JsonSlurper().parse(new File(spec))
-//				//c.message.remove("synopses")
-//			} catch (Exception ex) {
-//				println """
-//					$spec
-//					$ex
-//					"""
-//			}
-//			if (!c) return model
-//			
-//			// extract last sub dir for context
-//			def dir = (spec =~ /^.*[\/\\]([a-zA-Z]+)[\/\\].*$/)[0][1]
-//			def sb = new StringBuilder()
-//			sb.append  """
-//@prefix $dir: <http://visualartsdna.org/$dir#> .
-//@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
-//
-//"""
-//			try {
-//				JsonRdfUtil.jsonToTtl(["$dir":[c]], sb, "$dir:")
-//				// clean up escapes
-//				def s = (""+sb).replaceAll(/([^\\])\\([^tbnrf\\'"])/,/$1\\\\$2/)
-//				model = saveStringModel(s, "ttl")
-//			} catch (Exception ex) {
-//				println """
-//					$spec
-//					$sb
-//					$ex
-//					""" 
-//				ex.printStackTrace(System.out)
-//			}
-		}
-		model
+		rl
 	}
 	
 	/**
-	 * Save a string representation of RDF
-	 * in type (e.g., TTL) format to a model
-	 * @param ttldata
-	 * @param type
-	 * @return model
+	 * Recursively get nested list of URIs from RDF list
+	 * for given propery using list of URIs
+	 * @param m model with all data
+	 * @param prop name of the RDF list property to follow
+	 * @param lw initial list of URIs
+	 * @return URIs from nested RDF lists on property
 	 */
-	def saveStringModel(ttldata, type){
-		Model data = ModelFactory.createDefaultModel();
-//		def is = 
-//		
-//		new BufferedReader(new InputStreamReader(
-//		new ByteArrayInputStream(ttldata.getBytes())
-//		,"utf-8"))
-		def is = new ByteArrayInputStream(
-			ttldata.getBytes(
-				java.nio.charset.StandardCharsets.UTF_8))
-		data.read(is,null,type)
-//		//println "size=${data.size()}"
-		return data
+	def getListDataList(m,prop,lw) {
+		def rl = []
+		lw.each{
+			rl += it
+			def l= getList( m,prop,it)
+			rl.addAll getListDataList(m,prop,l)
+		}
+		rl
 	}
 	
+	/**
+	 * Canonical one-instance model
+	 * to set the ordered list items
+	 * in the instance
+	 * @param m one instance model
+	 * @param property with range rdf:List
+	 * @param l replacement list of items for the property
+	 * @return a model with the revised instance
+	 */
+	def setList(m,property,l) {
+		def s =  saveModelString(m,"TTL")
+		def lrev = ""
+		l.each{
+			lrev += "$it "
+		}
+		def s2 = s.replaceAll(/[ \t]*${property}[ \t]+\([A-Za-z0-9_\:\- ]+\)/,
+			"""		${property}	( ${lrev.trim()} ) ;\n"""
+			)
+		saveStringModel(s2,"TTL")
+	}
+
+	/**
+	 * Multi-instance model
+	 * to return the ordered list items
+	 * for list of URIs
+	 * @param m one instance model
+	 * @param property with range rdf:List
+	 * @param uri instance to get from the modelmodel
+	 * @return a List of the entries in property for the instances in m
+	 */
+	def getList(Model m,property,List uris) {
+		def m2 = newModel()
+		def rl = []
+		def pres = getPrefixes(m)
+		uris.each{uri->
+			m2.add queryDescribe(m, pres, """
+				describe $uri
+	""")
+			def l = getList(m2,property)
+			rl.addAll l
+		}
+		rl
+	}
+
+	/**
+	 * Multi-instance model
+	 * to return the ordered list items
+	 * for single given URI
+	 * @param m one instance model
+	 * @param property with range rdf:List
+	 * @param uri instance to get from the modelmodel
+	 * @return a List of the entries in property for the instance in m
+	 */
+	def getList(Model m,property,String uri) {
+		def pres = getPrefixes(m)
+		def m2 = queryDescribe(m, pres, """
+			describe $uri
+""")
+		getList(m2,property)
+	}
+
+	/**
+	 * Canonical one-instance model
+	 * to return the RDF list items
+	 * @param m one instance model
+	 * @param property with range rdf:List
+	 * @return a List of the entries in property for the instance in m
+	 */
+	def getList(m,property) {
+		def s =  saveModelString(m,"TTL")
+		
+		def match = (s =~ /[ \t]*${property}[ \t]+\(([A-Za-z0-9_\:\- ]+)\)/)
+		def ls = match ? match[0][1] : ""
+		ls == "" ? [] : ls.trim().split(" ")
+	}
 
 }

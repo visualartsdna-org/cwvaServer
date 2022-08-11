@@ -5,6 +5,7 @@ class Prefixes {
 	static def forQuery = """
 prefix vad: <http://visualartsdna.org/2021/07/16/model#> 
 prefix work:	<http://visualartsdna.org/work/> 
+prefix the:   <http://visualartsdna.org/thesaurus#> 
 prefix xs: <http://www.w3.org/2001/XMLSchema#> 
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix dc: <http://purl.org/dc/elements/1.1/> 
@@ -18,6 +19,7 @@ prefix owl: <http://www.w3.org/2002/07/owl#>
 	static def forFile = """
 @prefix vad: <http://visualartsdna.org/2021/07/16/model#> .
 @prefix work:	<http://visualartsdna.org/work/> .
+@prefix the:   <http://visualartsdna.org/thesaurus#> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
