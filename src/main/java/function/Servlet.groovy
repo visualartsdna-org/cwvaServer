@@ -17,6 +17,7 @@ class Servlet extends HttpServlet {
 
 	def metrics = [:]
 	def cfg = Server.getInstance().cfg
+	def dbm = Server.getInstance().dbm
 	def dir = cfg.dir
 	def vocab = cfg.vocab
 	def data = cfg.data

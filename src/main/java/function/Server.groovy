@@ -2,6 +2,7 @@ package function
 
 import java.text.SimpleDateFormat
 import org.eclipse.jetty.servlet.ServletHandler;
+import rdf.util.DBMgr
 
 // singleton
 class Server {
@@ -10,6 +11,8 @@ class Server {
 	static def content = "/temp/git/cwvaContent"
 	
 	def cfg
+	def dbm
+	
 	Server(){
 		this([ // default test cfg
 			port:8082,
@@ -30,6 +33,8 @@ class Server {
 		this.cfg = cfg
 		instance = this
 		cfg.each { println it }
+		dbm = new DBMgr(cfg)
+		dbm.print()
 
 	}
 	

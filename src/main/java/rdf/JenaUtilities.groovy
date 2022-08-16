@@ -139,4 +139,29 @@ class JenaUtilities extends JenaUtils {
 		ls == "" ? [] : ls.trim().split(" ")
 	}
 
+	/**
+	 * Load selectively and verbosely
+	 * Load a model from a dir of files of any model type
+	 * type is determined from file extension
+	 * or a single file of any model type
+	 * @param dirSpec or fileSpec
+	 * @return model
+	 */
+	def loadFiles(spec){
+		def model = newModel()
+		if (new File(spec).isDirectory()) {
+			new File(spec).eachFileRecurse(FileType.FILES) {
+				if (!(""+it).toLowerCase().endsWith(".ttl")) return
+				println "loading $it"
+				model.add( loadFile(""+it) )
+			}
+
+		} else {
+
+			model = loadFileModelFilespec(spec)
+		}
+		model
+	}
+
+
 }

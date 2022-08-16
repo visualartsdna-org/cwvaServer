@@ -2,6 +2,7 @@ package cwva
 
 import java.text.SimpleDateFormat
 import org.eclipse.jetty.servlet.ServletHandler;
+import rdf.util.DBMgr
 
 // singleton
 class Server {
@@ -11,6 +12,8 @@ class Server {
 	
 	// TODO: consider $content/ttl for whole model load
 	def cfg
+	def dbm
+	
 	Server(){
 		this([ // default test cfg
 			port:8080,
@@ -31,7 +34,8 @@ class Server {
 		this.cfg = cfg
 		instance = this
 		cfg.each { println it }
-
+		dbm = new DBMgr(cfg)
+		dbm.print()
 	}
 	
 	static def getInstance() {

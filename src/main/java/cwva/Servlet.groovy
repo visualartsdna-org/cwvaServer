@@ -15,10 +15,12 @@ class Servlet extends HttpServlet {
 	def tmp = new Tmp()
 	def metrics = [:]
 	def cfg = Server.getInstance().cfg
+	def dbm = Server.getInstance().dbm
 	def dir = cfg.dir
 	def model = cfg.model
 	def vocab = cfg.vocab
 	def data = cfg.data
+	def tags = cfg.tags
 	def domain = cfg.domain
 	def images = cfg.images
 	def ns = cfg.ns
@@ -41,6 +43,7 @@ class Servlet extends HttpServlet {
 		def tmpFile
 		setState(path)
 		if (cfg.verbose) println "$path ${query?:""}"
+		//dbm.reload()	// optional: useful for dev
 		switch (path) {
 
 			case "/model":
@@ -52,11 +55,11 @@ class Servlet extends HttpServlet {
 				break
 
 			case "/data":
-				sendModelFile(response, data)
+				sendModel(response, dbm.instances)
 				break
 
 			case "/vocab":
-				sendModelFile(response, "$data/vocab")
+				sendModel(response, dbm.vocab)
 				break
 
 			case ~/\/d3\..*/:
@@ -121,17 +124,15 @@ class Servlet extends HttpServlet {
 					def qs = new QuerySupport(data)
 					def m = qs.getOneInstanceModel("work",guid)
 					
-//					def m = ju.loadFiles(data)
-//					def m2 = jl2h.getOneInstanceModel(m,"work",guid)
 					sendModel(response, m, fmt.toLowerCase())
 				} else {
-					def s = jl2h.process(data,model,domain,relPath,ns,guid,cfg.host)
+					def s = jl2h.process(dbm.rdfs,domain,relPath,ns,guid,cfg.host)
 					sendHtml(response,s)
 				}
 				break
 
 			case "/browse":
-				def s = new BrowseWorks().browse(cfg.host,data)
+				def s = new BrowseWorks().browse(cfg.host,dbm.rdfs)
 				sendHtml(response,s)
 				break
 
@@ -222,9 +223,11 @@ class Servlet extends HttpServlet {
 		sendImageFile(response, file)
 	}
 	def sendModelFile(response, fileSpec) {
-		//response.setContentType("text/plain")
 		def m = ju.loadFiles(fileSpec)
 		sendModel(response, m, "TTL")
+	}
+	def sendModel(response, model) {
+		sendModel(response, model, "TTL")
 	}
 	// supported types: ttl rdf/xml jsonld json-ld nt nq trig trix rt trdf
 	// TODO: add: rdfa microdata

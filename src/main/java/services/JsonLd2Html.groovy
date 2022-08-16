@@ -76,32 +76,36 @@ class JsonLd2Html {
 		s.startsWith("http://") || s.startsWith("https://")
 	}
 
-	def process(ttl, schema, domain,path, ns, guid, host) {
-		def qs = new QuerySupport(ttl, schema)
-		this.pfxNsMap = qs.getPrefixNsMap()
+	def process(rdfs, domain,path, ns, guid, host) {
+		pfxNsMap = rdfs.getNsPrefixMap()
+		def qs = new QuerySupport(rdfs)
 		this.host = host
-		def scls = qs.getType(ns,guid)
-		def lmdl = qs.queriesByType(scls,ns,guid)
-		def desc = lmdl[1]
 		def ljld = []
-		int i=0
-		lmdl[0].each { m->
-			if (m.size()==0) desc[i++]=""
+		def desc = []
+		def mmdl = qs.query(ns,guid)
+		def label = mmdl.label
+		mmdl.remove("label")
+		mmdl.each{k,m->
+			desc += k
+			label
 			def baos = new ByteArrayOutputStream()
 			m.write(baos,"JSON-LD")
 			ljld += new JsonSlurper().parseText(""+baos)
+
 		}
-		def s = printHtml(ljld, desc, domain,path, ns, guid)
+		def s = printHtml(ljld, desc, domain,path, ns, guid, label)
 	}
 
 	// Under the About: title, add any label, e.g., scos:label
-	def printHtml(ljld, desc, domain,path, ns, guid) {
+	def printHtml(ljld, desc, domain,path, ns, guid, label) {
 		def sb = new StringBuilder()
 		sb.append HtmlTemplate.head(host)
-		sb.append HtmlTemplate.title(
-			"${domain}/${path}",
-			"${ns}:${guid}"
-			) 
+		sb.append """
+<h3 id="title">
+About:
+<a href="${domain}/${path}">$label</a> 
+</h3>
+"""
 			
 			int i=0
 			ljld.each{map->
@@ -140,7 +144,8 @@ class JsonLd2Html {
 				def m2=defs[k]
 				if (k=="@id") 
 					sb.append """<tr height="50"><td>ID</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
-				else if (k=="@type") {
+				else 
+					if (k=="@type") {
 					def vc = v instanceof List ? v : [v]
 					def s=""
 					int i=0
@@ -204,6 +209,7 @@ class JsonLd2Html {
 				defs["$k"] = m
 			}
 			else ns[k]=v
+			
 		}
 		//defs["@graph"]=[]
 	}

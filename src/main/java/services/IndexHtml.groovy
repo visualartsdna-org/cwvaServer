@@ -100,7 +100,8 @@ in
 <a href="${cfg.host}/vocab.graph">graphical form</a>
 and in an 
 <a href="${cfg.host}/vocab">RDF file (TTL/text)</a>.
-A list of <a href="${cfg.host}/html/vocab.html">vocabulary concepts</a> is also available.
+<!--A list of <a href="${cfg.host}/html/vocab.html">vocabulary concepts</a> is also available.
+-->
 <p>
 <p/>
 <p/>
