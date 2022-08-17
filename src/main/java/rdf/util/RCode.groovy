@@ -14,7 +14,7 @@ class RCode {
 	@Test
 	void testCode() {
 		def q = """# print just the tags for the work
-prefix the:	<http://visualartsdna.org/thesaurus#>
+prefix the:	<http://visualartsdna.org/thesaurus/>
 prefix tko:   <http://visualartsdna.org/takeout#>
 #select distinct ?title ?label ?def
 construct {

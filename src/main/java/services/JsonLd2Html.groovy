@@ -53,6 +53,10 @@ class JsonLd2Html {
 		(path =~ /^\/work\/([0-9A-Fa-f\-]+)$/)[0][1]
 	}
 	
+	def parseConcept(path) {
+		(path =~ /^\/thesaurus\/([0-9A-Za-z\-_]+)$/)[0][1]
+	}
+	
 	def pfxNsMap
 	def host
 	

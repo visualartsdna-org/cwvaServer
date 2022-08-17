@@ -29,7 +29,7 @@ prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
 prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
 prefix foaf:  <http://xmlns.com/foaf/0.1/> 
 prefix dc:    <http://purl.org/dc/elements/1.1/> 
-prefix the:   <http://visualartsdna.org/thesaurus#>
+prefix the:   <http://visualartsdna.org/thesaurus/>
 """, """
 construct {
 		?s vad:tag ?tag .
@@ -37,7 +37,7 @@ construct {
 		?bn tko:tags ?t .
 		?bn schema:identifier ?id .
 		bind(iri(concat("http://visualartsdna.org/work/",?id)) as ?s)
-		bind(iri(concat("http://visualartsdna.org/thesaurus#",?t)) as ?tag)
+		bind(iri(concat("http://visualartsdna.org/thesaurus/",?t)) as ?tag)
 		
 }
 """)

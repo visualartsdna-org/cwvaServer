@@ -131,6 +131,23 @@ class Servlet extends HttpServlet {
 				}
 				break
 
+			case ~/\/thesaurus.*/:
+				def jl2h = new JsonLd2Html()
+				def relPath = jl2h.parsePath(path)
+				def guid = jl2h.parseConcept(path)
+				
+				if (query) {
+					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
+					def qs = new QuerySupport(data)
+					def m = qs.getOneInstanceModel("work",guid)
+					
+					sendModel(response, m, fmt.toLowerCase())
+				} else {
+					def s = jl2h.process(dbm.rdfs,domain,relPath,"the",guid,cfg.host)
+					sendHtml(response,s)
+				}
+				break
+
 			case "/browse":
 				def s = new BrowseWorks().browse(cfg.host,dbm.rdfs)
 				sendHtml(response,s)
@@ -147,6 +164,10 @@ class Servlet extends HttpServlet {
 			case "/":
 				def s = new IndexHtml(cfg).get()
 				sendHtml(response,s)
+				break
+
+			case "/copyright":
+				sendHtmlFile(response,"$dir/copyright.html")
 				break
 
 			case "/status":

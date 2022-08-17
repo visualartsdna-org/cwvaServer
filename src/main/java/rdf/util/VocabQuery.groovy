@@ -21,7 +21,7 @@ prefix xs: <http://www.w3.org/2001/XMLSchema#>
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-prefix the:	<http://visualartsdna.org/thesaurus#>
+prefix the:	<http://visualartsdna.org/thesaurus/>
 ""","""
 select distinct ?tc ?t ?s ?l ?d {
 ?s a skos:Concept .
@@ -72,7 +72,7 @@ prefix xs: <http://www.w3.org/2001/XMLSchema#>
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-prefix the:	<http://visualartsdna.org/thesaurus#>
+prefix the:	<http://visualartsdna.org/thesaurus/>
 ""","""
 select distinct ?tc ?t ?s ?l ?d {
 ?s a skos:Concept .
@@ -89,7 +89,7 @@ prefix xs: <http://www.w3.org/2001/XMLSchema#>
 prefix skos: <http://www.w3.org/2004/02/skos/core#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix the:	<http://visualartsdna.org/thesaurus#>
+prefix the:	<http://visualartsdna.org/thesaurus/>
 ""","""
 select distinct ?l ?url ?d ?sl {
 ?col a skos:Collection .
@@ -154,7 +154,7 @@ ${HtmlTemplate.tail}
 
 	def fix(s) {
 		if (!s) return s
-		s.replaceAll("http://visualartsdna.org/thesaurus#","the:")
+		s.replaceAll("http://visualartsdna.org/thesaurus/","the:")
 	}
 	
 	@Test
@@ -167,7 +167,7 @@ prefix xs: <http://www.w3.org/2001/XMLSchema#>
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-prefix the:	<http://visualartsdna.org/thesaurus#>
+prefix the:	<http://visualartsdna.org/thesaurus/>
 ""","""
 select distinct ?t ?s ?l ?d {
 ?s a skos:Concept .
@@ -193,7 +193,7 @@ prefix xs: <http://www.w3.org/2001/XMLSchema#>
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-prefix the:	<http://visualartsdna.org/thesaurus#>
+prefix the:	<http://visualartsdna.org/thesaurus/>
 ""","""
 select distinct ?t ?s ?l ?d {
 ?s a skos:Concept .

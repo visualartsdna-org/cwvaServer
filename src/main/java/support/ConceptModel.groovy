@@ -197,7 +197,7 @@ select distinct ?s {
 			def s = it.s
 			ls += s
 			.replaceAll(/[<>]/,"")
-			.replaceAll("http://visualartsdna.org/thesaurus#","the:")
+			.replaceAll("http://visualartsdna.org/thesaurus/","the:")
 			ls += "\n"
 		}
 		ls
@@ -242,7 +242,7 @@ select distinct ?s {
 			def s = it.s
 			ls += s
 			.replaceAll(/[<>]/,"")
-			.replaceAll("http://visualartsdna.org/thesaurus#","the:")
+			.replaceAll("http://visualartsdna.org/thesaurus/","the:")
 			
 		}
 		ls
@@ -284,7 +284,7 @@ select distinct ?s {
 			def s = it.s
 			ls += s
 			.replaceAll(/[<>]/,"")
-			.replaceAll("http://visualartsdna.org/thesaurus#","the:")
+			.replaceAll("http://visualartsdna.org/thesaurus/","the:")
 			
 		}
 		ls
@@ -304,7 +304,7 @@ select distinct ?s {
 			def s = it.s
 			ls += s
 			.replaceAll(/[<>]/,"")
-			.replaceAll("http://visualartsdna.org/thesaurus#","the:")
+			.replaceAll("http://visualartsdna.org/thesaurus/","the:")
 			ls += "\n"
 		}
 		ls

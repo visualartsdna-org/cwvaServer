@@ -28,7 +28,7 @@ class JenaUtilitiesTest {
 		def m = ju.queryDescribe(data, """
 prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
 prefix work:  <http://visualartsdna.org/work/> 
-prefix the:   <http://visualartsdna.org/thesaurus#> 
+prefix the:   <http://visualartsdna.org/thesaurus/> 
 """, """
 									
 			describe work:0b2ea129-63eb-421b-9ec0-c622e365a6da99

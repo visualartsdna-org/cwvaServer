@@ -61,7 +61,7 @@ class TagModel {
 @prefix work:	<http://visualartsdna.org/work/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix the:	<http://visualartsdna.org/thesaurus#> .
+@prefix the:	<http://visualartsdna.org/thesaurus/> .
 """
 			wl.each{w->
 				tl.each{t->
@@ -88,7 +88,7 @@ prefix vad: <http://visualartsdna.org/2021/07/16/model#>
 prefix work:	<http://visualartsdna.org/work/> 
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix the:	<http://visualartsdna.org/thesaurus#> 
+prefix the:	<http://visualartsdna.org/thesaurus/> 
 ""","""
 			delete {
 			<$w> vad:tag ?o
@@ -273,7 +273,7 @@ prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
 prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
 prefix foaf:  <http://xmlns.com/foaf/0.1/> 
 prefix dc:    <http://purl.org/dc/elements/1.1/> 
-prefix the:   <http://visualartsdna.org/thesaurus#>
+prefix the:   <http://visualartsdna.org/thesaurus/>
 """, """
 			
 			select ?s ?label ?tag ?image {
@@ -289,7 +289,7 @@ prefix the:   <http://visualartsdna.org/thesaurus#>
 			wl[it.s].label = it.label
 			wl[it.s].image = it.image
 			wl[it.s].tag = wl[it.s].tag ? wl[it.s].tag : ""
-			wl[it.s].tag += it.tag?it.tag.replaceAll("http://visualartsdna.org/thesaurus#","the:") + " ":""
+			wl[it.s].tag += it.tag?it.tag.replaceAll("http://visualartsdna.org/thesaurus/","the:") + " ":""
 
 		}
 		wl
@@ -362,7 +362,7 @@ prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
 prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
 prefix foaf:  <http://xmlns.com/foaf/0.1/> 
 prefix dc:    <http://purl.org/dc/elements/1.1/> 
-prefix the:   <http://visualartsdna.org/thesaurus#>
+prefix the:   <http://visualartsdna.org/thesaurus/>
 """, """
 
 select ?s {
@@ -371,7 +371,7 @@ select ?s {
 } order by ?s
 """)
 		l.each{
-			def st = it.s.replaceAll("http://visualartsdna.org/thesaurus#","the:")
+			def st = it.s.replaceAll("http://visualartsdna.org/thesaurus/","the:")
 			map[term]["$st"] = [:]
 			//println "$st"
 			getNarrower(mdl, map["$term"], st)
