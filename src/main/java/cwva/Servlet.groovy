@@ -167,7 +167,7 @@ class Servlet extends HttpServlet {
 				break
 
 			case "/copyright":
-				sendHtmlFile(response,"$dir/copyright.html")
+				sendHtmlFile(response,"$dir/html/copyright.html")
 				break
 
 			case "/status":
