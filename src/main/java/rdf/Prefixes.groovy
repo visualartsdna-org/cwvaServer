@@ -8,7 +8,7 @@ prefix work:	<http://visualartsdna.org/work/>
 prefix the:   <http://visualartsdna.org/thesaurus/> 
 prefix xs: <http://www.w3.org/2001/XMLSchema#> 
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
-prefix dc: <http://purl.org/dc/elements/1.1/> 
+prefix dct: <http://purl.org/dc/terms/> 
 prefix foaf: <http://xmlns.com/foaf/0.1/> 
 prefix schema: <https://schema.org/> 
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
@@ -22,7 +22,7 @@ prefix owl: <http://www.w3.org/2002/07/owl#>
 @prefix the:   <http://visualartsdna.org/thesaurus/> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix schema: <https://schema.org/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
