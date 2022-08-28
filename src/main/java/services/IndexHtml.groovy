@@ -94,7 +94,7 @@ The current instance data can be browsed by selecting "Browse" at the top of thi
 The current instance data is also available in an 
 <a href="${cfg.host}/data">RDF file (TTL/text)</a>.  
 <br/>
-<br/>The vocabulary of concepts is available as a 
+<br/>A vocabulary of visual arts terms is available as a 
 <a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a>
 in
 <a href="${cfg.host}/vocab.graph">graphical form</a>
