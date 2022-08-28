@@ -22,7 +22,7 @@ class Server {
 			vocab: "$content/ttl/vocab",
 			tags: "$content/ttl/tags",
 			model: "$content/ttl/model",
-			images: "$content",
+			images: "$content/../..",
 			domain: "http://visualartsdna.org" ,
 			ns: "work",
 			host: "http://localhost:8080",

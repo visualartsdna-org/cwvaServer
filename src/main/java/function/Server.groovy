@@ -15,16 +15,17 @@ class Server {
 	
 	Server(){
 		this([ // default test cfg
-			port:8082,
+			port:8083,
 			dir:"$content",
 			data: "$content/ttl/data",
 			vocab: "$content/ttl/vocab/vocabulary.ttl",
 			tags: "$content/ttl/tags/tags.ttl",
+			studies: "$content/ttl/studies",
 			model: "$content/ttl/model",
-			images: "$content/images",
+			images: "$content/../..",
 //			domain: "http://visualartsdna.org" ,
 //			ns: "work",
-			host: "http://localhost:8082",
+			host: "http://localhost:8083",
 			verbose: true
 			])
 	}

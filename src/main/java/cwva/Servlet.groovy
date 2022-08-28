@@ -10,10 +10,9 @@ import rdf.QuerySupport
 import services.*
 import util.Tmp
 
-class Servlet extends HttpServlet {
+class Servlet extends ServletBase {
 
 	def tmp = new Tmp()
-	def metrics = [:]
 	def cfg = Server.getInstance().cfg
 	def dbm = Server.getInstance().dbm
 	def dir = cfg.dir
@@ -25,7 +24,7 @@ class Servlet extends HttpServlet {
 	def images = cfg.images
 	def ns = cfg.ns
 	def ju = new JenaUtils()
-	
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
@@ -39,7 +38,7 @@ class Servlet extends HttpServlet {
 	}
 
 	def handler(path,query,response) {
-		
+
 		def tmpFile
 		setState(path)
 		if (cfg.verbose) println "$path ${query?:""}"
@@ -98,17 +97,9 @@ class Servlet extends HttpServlet {
 				sendJpegFile(response,tmpFile)
 				break
 
-			case ~/\/images.*/:
-				sendJpegFile(response,"$images${path.replaceAll("%20"," ")}")
-				break
-
 			case ~/\/dist.*/:
 				sendJSFile(response,"$dir${path}")
 				break
-
-//			case "/graphInstructions.html":
-//				sendHtmlFile(response,"$dir${path}")
-//				break
 
 			case ~/\/html.*/:
 				sendHtmlFile(response,"$dir/${path}")
@@ -118,12 +109,12 @@ class Servlet extends HttpServlet {
 				def jl2h = new JsonLd2Html()
 				def relPath = jl2h.parsePath(path)
 				def guid = jl2h.parseGuid(path)
-				
+
 				if (query) {
 					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
 					def qs = new QuerySupport(data)
 					def m = qs.getOneInstanceModel("work",guid)
-					
+
 					sendModel(response, m, fmt.toLowerCase())
 				} else {
 					def s = jl2h.process(dbm.rdfs,domain,relPath,ns,guid,cfg.host)
@@ -135,12 +126,12 @@ class Servlet extends HttpServlet {
 				def jl2h = new JsonLd2Html()
 				def relPath = jl2h.parsePath(path)
 				def guid = jl2h.parseConcept(path)
-				
+
 				if (query) {
 					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
 					def qs = new QuerySupport(data)
 					def m = qs.getOneInstanceModel("work",guid)
-					
+
 					sendModel(response, m, fmt.toLowerCase())
 				} else {
 					def s = jl2h.process(dbm.rdfs,domain,relPath,"the",guid,cfg.host)
@@ -157,10 +148,6 @@ class Servlet extends HttpServlet {
 				sendHtmlFile(response,"$dir/browse.html")
 				break
 
-			//			case "/json*":
-			//				sendJsonFile(response,"$dirname/$path")
-			//				break
-
 			case "/":
 				def s = new IndexHtml(cfg).get()
 				sendHtml(response,s)
@@ -170,103 +157,12 @@ class Servlet extends HttpServlet {
 				sendHtmlFile(response,"$dir/html/copyright.html")
 				break
 
-			case "/status":
-				sendJson(response,""+[status:"ok"])
-				break
-
-			case "/metrics":
-				def payload = new JsonBuilder(metrics).toPrettyString()
-				logOut(payload)
-				sendJson(response,payload)
-				break
-
-			case "/cestfini":
-				def payload = new JsonBuilder(metrics).toPrettyString()
-				logOut(payload)
-				logOut "fini"
-				System.exit(0)
-				break
-				
-			case "/favicon.ico":
-				sendIconFile(response,"$images/favicon.ico")
-				break
-
 			default:
-				logOut "unrecognized command $path, $query"
+				serve(cfg,path,query,response)
 				break
 		}
 		response.setStatus(HttpServletResponse.SC_OK);
 		tmp.rmTemps()
-		
-	}
-
-	def sendHtml(response, so) {
-		response.setContentType("text/html");
-		response.getWriter().println(so)
-
-	}
-	def sendHtmlFile(response, file) {
-		response.setContentType("text/html");
-		response.getWriter().println(new File(file).text)
-
-	}
-	def sendTextFile(response, file) {
-		response.setContentType("text/plain");
-		response.getWriter().println(new File(file).text)
-
-	}
-	def sendJSFile(response, file) {
-		response.setContentType("text/javascript");
-		response.getWriter().println(new File(file).text)
-
-	}
-	def sendJsonFile(response, file) {
-		response.setContentType("application/json");
-		response.getWriter().println(new File(file).text)
-
-	}
-	def sendJson(response, s) {
-		response.setContentType("application/json");
-		response.getWriter().println("$s")
-
-	}
-	def sendImageFile(response, file) {
-		def payload = new File(file).readBytes()
-		def os = response.getOutputStream()
-		os.write(payload)
-	}
-	def sendJpegFile(response, file) {
-		response.setContentType("image/jpeg");
-		sendImageFile(response, file)
-	}
-	def sendIconFile(response, file) {
-		response.setContentType("image/x-icon");
-		sendImageFile(response, file)
-	}
-	def sendModelFile(response, fileSpec) {
-		def m = ju.loadFiles(fileSpec)
-		sendModel(response, m, "TTL")
-	}
-	def sendModel(response, model) {
-		sendModel(response, model, "TTL")
-	}
-	// supported types: ttl rdf/xml jsonld json-ld nt nq trig trix rt trdf
-	// TODO: add: rdfa microdata
-	def sendModel(response, m, type) {
-		response.setContentType("text/plain")
-		def s = ju.saveModelString(m, type)
-		response.getWriter().println("$s")
-	}
-
-	def setState(k) {
-		if (!metrics[k]) {
-			metrics[k]=0
-		}
-		metrics[k]++
-	}
-
-	def logOut(s) {
-		Server.getInstance().logOut(s)
 	}
 
 }
