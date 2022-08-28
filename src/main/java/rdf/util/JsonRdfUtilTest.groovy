@@ -17,12 +17,12 @@ class JsonRdfUtilTest {
 	
 	// json to ttl
 	@Test
-	public void testNotTko() {
-		def src = "C:/temp/junk/colors"
-		def dest = "C:/temp/tratsi/Takeout/Keep/ttl"
-		def type = "vad:Palette" // in this case
-		def prefix = "tko"
-		process(src,dest,type,prefix)
+	public void testVia() {
+		def src = "C:/test/via/json"
+		def dest = "C:/test/via/ttl"
+		def type = "vad:Via" // in this case
+		def prefix = "via"
+		new RewriteJson().process(src,dest,type,prefix)
 	}
 	
 	// json to ttl

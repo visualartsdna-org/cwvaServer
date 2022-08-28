@@ -2,6 +2,7 @@ package rdf.util
 
 import org.apache.jena.rdf.model.*
 import rdf.JenaUtilities
+import rdf.tools.SparqlConsole
 
 class DBMgr {
 
@@ -13,9 +14,36 @@ class DBMgr {
 	def rdfs
 	def cfg
 	
+	// needs work
+	DBMgr(List loads) {
+		this.cfg = cfg
+		def m = load(loads)
+//		new Thread().start{
+//			new SparqlConsole().show(m)
+//		}
+	}
+	
 	DBMgr(Map cfg) {
 		this.cfg = cfg
-		load()
+		def m = load()
+//		new Thread().start{
+//			new SparqlConsole().show(m)
+//		}
+	}
+	
+	def load(model,l) {
+			
+			def ju = new JenaUtilities()
+			
+			def data = ju.newModel()
+			l.each{
+				data.add ju.loadFiles(it)
+			}
+			
+			// TODO: fix reload exception
+			
+			schema = ju.loadFiles(model);
+			rdfs = ModelFactory.createRDFSModel(schema, data);
 	}
 	
 	def load() {
@@ -36,6 +64,7 @@ class DBMgr {
 			rdfs = ModelFactory.createRDFSModel(schema, data);
 	}
 	
+	// TODO: under construction
 	def reload() {
 		rdfs.close()
 		load()

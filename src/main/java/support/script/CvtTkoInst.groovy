@@ -8,6 +8,7 @@ import org.apache.jena.rdf.model.*
 
 class CvtTkoInst {
 
+	// just for Tags
 	@Test
 	void test() {
 		def ju = new JenaUtilities()

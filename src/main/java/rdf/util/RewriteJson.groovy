@@ -86,6 +86,7 @@ class RewriteJson {
 			}
 				def sb = new StringBuilder()
 				sb.append  """
+@prefix via: <http://visualartsdna.org/via#> .
 @prefix tko: <http://visualartsdna.org/takeout#> .
 @prefix vad: <http://visualartsdna.org/2021/07/16/model#> .
 @prefix work:	<http://visualartsdna.org/work/> .
