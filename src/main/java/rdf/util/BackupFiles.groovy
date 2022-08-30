@@ -1,4 +1,4 @@
-package support
+package rdf.util
 
 import static org.junit.jupiter.api.Assertions.*
 import org.apache.commons.io.*

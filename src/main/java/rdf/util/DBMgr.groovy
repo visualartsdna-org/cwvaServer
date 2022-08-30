@@ -14,7 +14,7 @@ class DBMgr {
 	def rdfs
 	def cfg
 	
-	// needs work
+	// needs work and direction!
 	DBMgr(List loads) {
 		this.cfg = cfg
 		def m = load(loads)

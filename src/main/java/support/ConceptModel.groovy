@@ -7,6 +7,8 @@ import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
 import rdf.Prefixes
+import rdf.util.BackupFiles
+import rdf.util.Transaction
 
 class ConceptModel {
 	def prefixes = Prefixes.forQuery
@@ -14,11 +16,12 @@ class ConceptModel {
 	def ju = new JenaUtilities()
 	def concepts
 	def conceptModel
-
+	Transaction tx
+	
 	ConceptModel(concepts){
 		this.concepts = concepts
-		BackupFiles.backup(concepts)
 		conceptModel = ju.loadFiles(concepts)
+		tx = new Transaction(conceptModel,concepts)
 	}
 	
 	def initial(term) {
@@ -27,21 +30,19 @@ class ConceptModel {
 
 	def saveInstance(term,instance) {
 		
-		def m = conceptModel
-		ju.queryExecUpdate(m,prefixes, """
+		ju.queryExecUpdate(conceptModel,prefixes, """
 
 INSERT Data{ 
 	$instance
  }
 """)
-		ju.saveModelFile(m, concepts, "TTL")
+		tx.save()
 
 	}
 	
 	def updateInstance(term,instance) {
 		
-		def m = conceptModel
-		ju.queryExecUpdate(m,prefixes, """
+		ju.queryExecUpdate(conceptModel,prefixes, """
 
 DELETE { $term ?p ?o }
 INSERT { 
@@ -51,14 +52,13 @@ WHERE
   { $term ?p ?o
   } 
 """)
-		ju.saveModelFile(m, concepts, "TTL")
+		tx.save()
 
 	}
 	
 	def updateInstance(term,prop,value) {
 		
-		def m = conceptModel
-		ju.queryExecUpdate(m,prefixes, """
+		ju.queryExecUpdate(conceptModel,prefixes, """
 
 DELETE { $term ${prop} ?o }
 INSERT { $term ${prop} \"\"\"$value\"\"\" }
@@ -66,7 +66,7 @@ WHERE
   { $term ${prop} ?o
   } 
 """)
-		ju.saveModelFile(m, concepts, "TTL")
+		tx.save()
 
 	}
 	

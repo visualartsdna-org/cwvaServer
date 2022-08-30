@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
+import rdf.util.BackupFiles
+import rdf.util.Transaction
 import org.apache.jena.rdf.model.InfModel
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
@@ -21,14 +23,15 @@ class TagModel {
 	Model instanceModel
 	Model conceptModel
 	Model tagsModel = ju.newModel()
+	Transaction tx
 	
 	TagModel(instances,concepts,tagsFile,host){
 		this.tagsFile = tagsFile
 		conceptModel = ju.loadFiles(concepts)
 		if (new File(tagsFile).exists()) {
-			BackupFiles.backup(tagsFile)
 			tagsModel = ju.loadFiles(tagsFile)
 		}
+		tx = new Transaction(tagsModel,tagsFile)
 		def data = ju.loadFiles(instances);
 		this.instanceModel = ModelFactory.createRDFSModel(data, tagsModel);
 		this.host = host
@@ -72,7 +75,7 @@ class TagModel {
 
 			def model = ju.saveStringModel(s,"TTL")
 			tagsModel.add(model)
-			ju.saveModelFile(tagsModel, tagsFile, "TTL")
+			tx.save()
 		}
 		else if (m.containsKey("removeTags")) {
 			
@@ -99,7 +102,7 @@ prefix the:	<http://visualartsdna.org/thesaurus/>
 )
 			}
 			
-		ju.saveModelFile(tagsModel, tagsFile, "TTL")
+		tx.save()
 		}
 	}
 
