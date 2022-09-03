@@ -21,6 +21,11 @@ class BackupFiles {
 		backup(fn,dn)
 	}
 		
+	static def backupNoExt(fn) {
+		def dn = FilenameUtils.getFullPathNoEndSeparator(fn)
+		backup(fn,dn,"")
+	}
+		
 	// for text files
 	/**
 	 * for text or binary files
@@ -30,6 +35,9 @@ class BackupFiles {
 	 * @return
 	 */
 	static void backup(fn,dn) {
+		backup(fn,dn,".bkp")
+	}
+	static void backup(fn,dn,bextension) {
 		def file = new File(fn)
 		def folder = new File(dn)
 		assert file.exists(), "File for backup, $fn, does not exist"
@@ -38,7 +46,7 @@ class BackupFiles {
 		def baseFn = FilenameUtils.getBaseName(fn)
 		def extFn = FilenameUtils.getExtension(fn)
 		def time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
-		def bfn = "$folder/${baseFn}_$time.${extFn}.bkp"
+		def bfn = "$folder/${baseFn}_$time.${extFn}${bextension}"
 		Path source = Paths.get(fn)
 		Path target = Paths.get(bfn)
 		Files.copy(source, target)
