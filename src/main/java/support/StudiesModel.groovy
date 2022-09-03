@@ -183,7 +183,7 @@ ${work[k]?"work: "+work[k]:""}
 			def guid = (m.s =~ /^.*\/([0-9A-Fa-f\-]+)$/)[0][1]
 
 			sb.append """
-			<a href="http://localhost:8083/study/${guid}">${m.l}</a>
+			<a href="${function.Server.getInstance().cfg.host}/study/${guid}">${m.l}</a>
 ${m.dt}
 <br/>
 """
