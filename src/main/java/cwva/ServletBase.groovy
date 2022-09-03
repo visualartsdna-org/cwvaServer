@@ -48,7 +48,7 @@ class ServletBase extends HttpServlet {
 				break
 
 			default:
-				logOut "unrecognized command $path, $query"
+				logOut "unrecognized command $path, ${query?:""}"
 				break
 		}
 	}
@@ -126,10 +126,6 @@ class ServletBase extends HttpServlet {
 		metrics[k]++
 	}
 
-	def logOut(s) {
-		Server.getInstance().logOut(s)
-	}
-	
 	/**
 	 * load request path images 
 	 * The policy is to search for the image

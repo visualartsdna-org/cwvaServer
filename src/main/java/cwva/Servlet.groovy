@@ -25,6 +25,10 @@ class Servlet extends ServletBase {
 	def ns = cfg.ns
 	def ju = new JenaUtils()
 
+	def logOut(s) {
+		Server.getInstance().logOut(s)
+	}
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {

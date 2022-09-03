@@ -9,14 +9,14 @@ class Server {
 	
 	static Server instance
 	static def content = "/temp/git/cwvaContent"
+	static def port = 8082
 	
 	def cfg
 	def dbm
-	
 	Server(){
 		this([ // default test cfg
-			port:8083,
-			dir:"$content",
+			port:port,
+			dir:"/temp/git/cwva",
 			data: "$content/ttl/data",
 			vocab: "$content/ttl/vocab/vocabulary.ttl",
 			tags: "$content/ttl/tags/tags.ttl",
@@ -25,7 +25,7 @@ class Server {
 			images: "$content/../..",
 //			domain: "http://visualartsdna.org" ,
 //			ns: "work",
-			host: "http://localhost:8083",
+			host: "http://localhost:$port",
 			verbose: true
 			])
 	}
@@ -36,7 +36,6 @@ class Server {
 		cfg.each { println it }
 		dbm = new DBMgr(cfg)
 		dbm.print()
-
 	}
 	
 	static def getInstance() {

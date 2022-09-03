@@ -10,7 +10,6 @@ class Server {
 	static Server instance
 	static def content = "/temp/git/cwvaContent"
 	
-	// TODO: consider $content/ttl for whole model load
 	def cfg
 	def dbm
 	

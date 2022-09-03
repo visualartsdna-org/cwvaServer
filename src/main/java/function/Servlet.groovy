@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import cwva.ServletBase
 import groovy.json.JsonBuilder
 import java.text.SimpleDateFormat
+import rdf.util.ViaToTtl
 import services.*
 import support.*
 import util.Tmp
@@ -24,6 +25,11 @@ class Servlet extends ServletBase {
 	def vm = new ConceptModel(vocab)
 	def tm = new TagModel(data,vocab,tags,cfg.host)
 	def sm = new StudiesModel(dbm.rdfs,studies)
+
+	def logOut(s) {
+		Server.getInstance().logOut(s)
+	}
+	
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -47,6 +53,14 @@ class Servlet extends ServletBase {
 			case ~/\/study.*/:
 				def s = sm.process(path,query)
 				sendHtml(response, "$s")
+				break
+
+			case ~/\/html.*/:
+				sendHtmlFile(response,"$dir/${path}")
+				break
+
+			case "/":
+				sendHtmlFile(response,"$dir/html/function.html")
 				break
 
 			case "/studies":
@@ -127,6 +141,14 @@ class Servlet extends ServletBase {
 				def tpls = new ParseDigitalQuery().parse(query)
 				sendText(response,"$tpls")
 
+				break
+
+			case "/translate":
+
+				def base = "${Server.getInstance().cfg.data}/study"
+				def html = new ViaToTtl().setup(base)
+				sendHtml(response,html)
+				
 				break
 
 			default:
