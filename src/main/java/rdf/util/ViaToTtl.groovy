@@ -6,11 +6,22 @@ import groovy.json.JsonSlurper
 import java.text.SimpleDateFormat
 import org.junit.jupiter.api.Test
 import rdf.JenaUtils
+import java.awt.*
 
 class ViaToTtl {
 
 	@Test
 	void test() {
+		def base = "C:/temp/git/cwvaContent/ttl/data/study"
+
+		setup(base)
+		
+		while (true)
+			sleep 100
+	}
+	
+	@Test
+	void test0() {
 		def base = "C:/test/via/json"
 
 		def m = new JsonSlurper().parse(new File("$base/via_waterfallStudy.json"))
@@ -23,8 +34,60 @@ class ViaToTtl {
 		println md.size()
 		new JenaUtils().saveModelFile(md,"C:/temp/git/cwvaContent/ttl/data/study/project2.ttl","TTL")
 	}
+	
+	def lastDir
+	def setup(base) {
+			//println "via to ttl"
+			def f = showFileDialog ()
+			println f
+			if (!f) 
+				return 			"""
+<html><head/><body><button onclick="history.back()">Go Back</button><br/>
+No file selected
+</body>
+</html>
+"""
 
-	def domain = "http://localhost:8080"
+				def name = (f.name =~ /(.*)\.json$/)[0][1]
+				def pfile = "$f"
+				def mfile = "$base/${name}.ttl"
+				if (new File(mfile).exists()) BackupFiles.backupNoExt(mfile)
+				def size = translate(pfile,mfile)
+			"""
+<html><head/><body><button onclick="history.back()">Go Back</button><br/>
+$pfile -> $mfile: $size triples
+</body>
+</html>
+"""
+	}
+	
+	def translate(pfile,mfile) {
+		
+				def m = new JsonSlurper().parse(new File(pfile))
+				//m.each{k,v-> println "$k=$v"}
+		
+				def s = process(m)
+				//println s
+				def md = new JenaUtils().saveStringModel(s,"TTL")
+				println md.size()
+				new JenaUtils().saveModelFile(md,mfile,"TTL")
+				md.size()
+	}
+	
+	private File showFileDialog () {
+		def f = new Frame("Java frame")
+		FileDialog dialog = new FileDialog(f, "Select VIA projects", FileDialog.LOAD);
+		if (lastDir != null) dialog.setDirectory(lastDir);
+		dialog.setVisible(true);
+		final String file = dialog.getFile();
+		final String dir = dialog.getDirectory();
+		if (dir == null || file == null || file.trim().length() == 0)
+		  return null;
+		lastDir = dir;
+		new File(dir, file);
+	  }
+
+	def domain = "http://localhost:8082"
 	def process(m) {
 
 		def ju = new JenaUtils()
