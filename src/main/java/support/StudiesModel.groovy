@@ -7,6 +7,7 @@ import javax.imageio.ImageIO
 import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
 import java.awt.Graphics2D
+import util.FileUtil
 
 class StudiesModel {
 	def rdfs
@@ -64,6 +65,30 @@ table, th, td {
 			} order by ?file
 			""")
 			
+			// tags collected separately due to cross product
+		def ltag = ju.queryListMap1(rdfs,rdf.Prefixes.forQuery,"""
+			select  ?label ?file ?tag {
+			bind(work:$studyGUID as ?s)
+			?s a vad:Project .
+			?s the:design ?d .
+			?d vad:filename ?file .
+			?d the:member ?m .
+			?m rdfs:label ?label .
+			optional {
+				?m the:tag ?t .
+				?t rdfs:label ?tag .
+			}
+			} order by ?file
+			""")
+			
+		def mtag = [:]
+		ltag.each{m->
+			if (!mtag[m.file]) mtag[m.file] = [:]
+			if (!mtag[m.file][m.label]) mtag[m.file][m.label] = ""
+			mtag[m.file][m.label] += 
+			"${mtag[m.file][m.label] ? ", "+m.tag : m.tag ?: ""}"
+		}
+			
 		def work = [:]
 		def m2 = [:]
 		l.each{m->
@@ -75,14 +100,14 @@ table, th, td {
 			m2[m.file][m.label].x = m.x as int
 			m2[m.file][m.label].y = m.y as int
 			m2[m.file][m.label].def = m.def
-			m2[m.file][m.label].tag = m.tag
 			m2[m.file][m.label].note = m.note
-			
+			//if (mtag[m.file])
+			m2[m.file][m.label].tag = mtag[m.file][m.label] ?: ""
 		}
 
 		m2.each{k,v->
-				
-			def ifile = "/temp/images/study/${k}"
+			def ifabspath = findFile("/temp/images/study",k)
+			def ifile = "$ifabspath"
 			def ofile = tmp.getTemp("study",".jpg")
 			def oname = new File(ofile).name
 			def img = "$imgDir/$oname"
@@ -95,6 +120,13 @@ $ifile
 <br/>
 ${work[k]?"work: "+work[k]:""}
 <table>
+<tr>
+<th>#</th>
+<th>label</th>
+<th>def</th>
+<th>notes</th>
+<th>tag</th>
+</tr>
 """
 			int n=1
 			v.each{k2,v2->
@@ -104,7 +136,7 @@ ${work[k]?"work: "+work[k]:""}
 <td>${k2}</td>
 <td>${v2.def?v2.def:""}</td>
 <td>${v2.note?v2.note:""}</td>
-<td>${v2.tag?v2.tag.replaceAll("http://visualartsdna.org/thesaurus/","the:"):""}</td>
+<td>${v2.tag?:""}</td>
 </tr>
 """
 			}
@@ -120,6 +152,11 @@ ${work[k]?"work: "+work[k]:""}
 
 """ 
 		""+sb
+	}
+	
+	def findFile(base,file) {
+		def f = FileUtil.loadImage(base,file)
+		""+f
 	}
 
 
@@ -142,8 +179,8 @@ ${work[k]?"work: "+work[k]:""}
 		m.each{k,v->
 			ig2.drawRect(v.x as int,
 				 v.y as int,
-				  v.height as int,
-				   v.width as int
+				  v.width as int,
+				  v.height as int
 				   )
 		ig2.setPaint(Color.white);
 		

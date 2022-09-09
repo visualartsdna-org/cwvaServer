@@ -54,6 +54,35 @@ construct {
 		mm
 	}
 	
+	def queryCertAuth(ns,guid) {
+		def mm = [:]
+		
+		mm ["$ns:$guid"] = ju.queryDescribe(mdl, prefixes, """
+describe ${ns}:${guid}
+""")
+		mm ["label"] = ju.queryListMap1(mdl, prefixes, """
+select ?label { ${ns}:${guid} rdfs:label ?label }
+""")[0]["label"]
+		mm ["Profile"] =
+		ju.queryDescribe(mdl, prefixes, """
+# print the profile
+describe ?c {
+		bind (${ns}:${guid} as ?s)
+		?s vad:hasArtistProfile ?c .
+}
+""")
+		mm ["Artist"] =
+		ju.queryDescribe(mdl, prefixes, """
+# print the profile
+describe ?a {
+		bind (${ns}:${guid} as ?s)
+		?s vad:hasArtistProfile ?c .
+		?c vad:artist ?a .
+}
+""")
+		mm
+	}
+	
 	// query support methods
 	def getOneInstanceModel(ns,guid) {
 		getOneInstanceModel("$ns:$guid")
