@@ -87,7 +87,7 @@ $pfile -> $mfile: $size triples
 		new File(dir, file);
 	  }
 
-	def domain = "http://localhost:8082"
+//	def domain = "http://localhost:8082"
 	def process(m) {
 
 		def ju = new JenaUtils()
@@ -118,11 +118,13 @@ work:${UUID.randomUUID()}
 	[
 		a vad:ViaImageAnnotation ;
 		rdfs:label "image annotation" ;
-		schema:image <${domain + "/images/study/"+ filename}> ;
-		vad:filename "${filename}" ;
+		schema:image <${filename}> ;
 		${work?"the:work work:$work ;":""
 				}
 		the:member"""
+		if (m["_via_img_metadata"][k].regions.size()==0) {
+			sb.append "[]"
+		} else {
 		int i=0
 		m["_via_img_metadata"][k].regions.each{r->
 
@@ -145,6 +147,7 @@ work:${UUID.randomUUID()}
 			${tags=="" ? "" :"the:tag "+tags + " ;"} 
 			]
 """
+		}
 		}
 
 		sb.append """

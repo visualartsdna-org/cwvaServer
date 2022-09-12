@@ -64,7 +64,7 @@ class Servlet extends ServletBase {
 				break
 
 			case "/studies":
-				def s = sm.directory(path,query)
+				def s = sm.directory(path,query,cfg.host)
 				sendHtml(response, "$s")
 				break
 

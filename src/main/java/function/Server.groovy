@@ -22,10 +22,10 @@ class Server {
 			tags: "$content/ttl/tags/tags.ttl",
 			studies: "$content/ttl/studies",
 			model: "$content/ttl/model",
-			images: "$content/../..",
+			images: "$content/../../images",
 //			domain: "http://visualartsdna.org" ,
 //			ns: "work",
-			host: "http://localhost:$port",
+			host: "http://192.168.1.71:$port",
 			verbose: true
 			])
 	}

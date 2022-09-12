@@ -47,7 +47,7 @@ table, th, td {
 			bind(work:$studyGUID as ?s)
 			?s a vad:Project .
 			?s the:design ?d .
-			?d vad:filename ?file .
+			?d schema:image ?file .
 			optional {
 				?d the:work ?work 
 			}
@@ -57,11 +57,9 @@ table, th, td {
 			?m vad:width ?width .
 			?m vad:x ?x .
 			?m vad:y ?y .
-			optional {
-				?m skos:definition ?def .
-				?m skos:note ?note .
-				?m the:tag ?tag .
-			}
+			optional { ?m skos:definition ?def }
+			optional { ?m skos:note ?note }
+			optional { ?m the:tag ?tag }
 			} order by ?file
 			""")
 			
@@ -71,7 +69,7 @@ table, th, td {
 			bind(work:$studyGUID as ?s)
 			?s a vad:Project .
 			?s the:design ?d .
-			?d vad:filename ?file .
+			?d schema:image ?file .
 			?d the:member ?m .
 			?m rdfs:label ?label .
 			optional {
@@ -101,22 +99,19 @@ table, th, td {
 			m2[m.file][m.label].y = m.y as int
 			m2[m.file][m.label].def = m.def
 			m2[m.file][m.label].note = m.note
-			//if (mtag[m.file])
 			m2[m.file][m.label].tag = mtag[m.file][m.label] ?: ""
 		}
 
 		m2.each{k,v->
-			def ifabspath = findFile("/temp/images/study",k)
-			def ifile = "$ifabspath"
 			def ofile = tmp.getTemp("study",".jpg")
 			def oname = new File(ofile).name
 			def img = "$imgDir/$oname"
-			annote(ifile,ofile,v)
+			annote(k,ofile,v)
 			sb.append """
 <tr><td>
 <img src="${img}" style="width:800px">
 </td><td>
-$ifile
+$k
 <br/>
 ${work[k]?"work: "+work[k]:""}
 <table>
@@ -161,7 +156,7 @@ ${work[k]?"work: "+work[k]:""}
 
 
 	def annote(ifile,ofile,m ){
-		BufferedImage sbi = ImageIO.read(new File(ifile));
+		BufferedImage sbi = ImageIO.read(new URL(ifile));
 		assert sbi, "Image file $ifile is not JPG"
 		def ht = sbi.getHeight()
 		//def wt = sbi.getWidth()
@@ -200,7 +195,7 @@ ${work[k]?"work: "+work[k]:""}
 		ImageIO.write(sbi, "JPEG", img);
 	}
 	
-	def directory(path,query) {
+	def directory(path,query,host) {
 		def l = ju.queryListMap1(rdfs,rdf.Prefixes.forQuery,"""
 			select  ?s ?l ?dt {
 			?s a vad:Project .
@@ -211,9 +206,10 @@ ${work[k]?"work: "+work[k]:""}
 			
 	def sb = new StringBuilder()
 	sb.append """
+<a href="$host">Function menu</a>
+<br/>
+<br/>
 <h2>Projects</h2>
-<br/>
-<br/>
 <br/>
 """
 		l.each{m->

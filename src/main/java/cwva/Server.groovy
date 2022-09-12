@@ -9,22 +9,23 @@ class Server {
 	
 	static Server instance
 	static def content = "/temp/git/cwvaContent"
+	static def port = 8080
 	
 	def cfg
 	def dbm
 	
 	Server(){
 		this([ // default test cfg
-			port:8080,
+			port: port,
 			dir:"/temp/git/cwva",
 			data: "$content/ttl/data",
 			vocab: "$content/ttl/vocab",
 			tags: "$content/ttl/tags",
 			model: "$content/ttl/model",
-			images: "$content/../..",
+			images: "$content/../../images",
 			domain: "http://visualartsdna.org" ,
 			ns: "work",
-			host: "http://localhost:8080",
+			host: "http://192.168.1.71:$port",
 			verbose: true
 			])
 	}
