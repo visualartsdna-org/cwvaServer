@@ -28,7 +28,7 @@ Servers/
 bin/
 lib/
 scripts/
-test/
+#test/
 
 # External tool builders
 .externalToolBuilders/

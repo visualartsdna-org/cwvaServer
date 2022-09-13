@@ -36,6 +36,7 @@ class FileUtil {
 		fl.first()
 	}
 
+	// TODO: refactor and reorg
 	// gcp bucket enabled
 	static def loadImage(dir,fn) {
 		def fl=[]
@@ -70,12 +71,9 @@ class FileUtil {
 	}
 	
 	static def getLs(src,file,tgt) {
-//		def tgt = "C:/temp/images"
-//		def src = "images"
-//		def file = "IMG_1944.jpg"
 		def a = Gcp.gcpLs(src,file)
-		println "${a[0]}"
-		println "${a[1]}"
+//		println "${a[0]}"
+//		println "${a[1]}"
 		if (a[0].isEmpty()
 			&& a[1].contains("One or more URLs matched no objects"))
 			return null

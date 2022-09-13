@@ -10,6 +10,7 @@ class Gcp {
 		gcpCp(src,file,tgt,bucket)
 	}
 	
+	// TODO: refactor and reorg
 	// gcp gsutil copy from bucket to local
 	static def gcpCp(url,tgt) {
 
@@ -31,6 +32,7 @@ class Gcp {
 	static def gcpLs(src,file) {
 
 		def bucket = System.getProperty("gcp_bucket")
+		assert bucket, "no gcp bucket"
 		def cmd = """$gsutil ls "gs://$bucket/$src/**/$file" """
 		def oa = new Exec().execQuiet(cmd)
 //		if (! oa[1].contains("Operation completed"))
