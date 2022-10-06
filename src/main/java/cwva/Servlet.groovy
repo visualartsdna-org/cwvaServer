@@ -25,10 +25,6 @@ class Servlet extends ServletBase {
 	def ns = cfg.ns
 	def ju = new JenaUtils()
 
-	def logOut(s) {
-		Server.getInstance().logOut(s)
-	}
-	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
@@ -44,6 +40,7 @@ class Servlet extends ServletBase {
 	def handler(path,query,response) {
 
 		def tmpFile
+		def status = HttpServletResponse.SC_OK
 		setState(path)
 		if (cfg.verbose) println "$path ${query?:""}"
 		//dbm.reload()	// optional: useful for dev
@@ -116,10 +113,11 @@ class Servlet extends ServletBase {
 
 				if (query) {
 					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
-					def qs = new QuerySupport(data)
+					def qs = new QuerySupport(dbm.rdfs)
 					def m = qs.getOneInstanceModel("work",guid)
 
-					sendModel(response, m, fmt.toLowerCase())
+					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
+					else sendModel(response, m, fmt.toLowerCase())
 				} else {
 					def s = jl2h.process(dbm.rdfs,domain,relPath,ns,guid,cfg.host)
 					sendHtml(response,s)
@@ -133,10 +131,11 @@ class Servlet extends ServletBase {
 
 				if (query) {
 					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
-					def qs = new QuerySupport(data)
+					def qs = new QuerySupport(dbm.rdfs)
 					def m = qs.getOneInstanceModel("work",guid)
-
-					sendModel(response, m, fmt.toLowerCase())
+					
+					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
+					else sendModel(response, m, fmt.toLowerCase())
 				} else {
 					def s = jl2h.process(dbm.rdfs,domain,relPath,"the",guid,cfg.host)
 					sendHtml(response,s)
@@ -165,7 +164,7 @@ class Servlet extends ServletBase {
 				serve(cfg,path,query,response)
 				break
 		}
-		response.setStatus(HttpServletResponse.SC_OK);
+		response.setStatus(status);
 		tmp.rmTemps()
 	}
 

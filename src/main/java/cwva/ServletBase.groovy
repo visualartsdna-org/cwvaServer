@@ -11,6 +11,10 @@ class ServletBase extends HttpServlet {
 
 	def metrics = [:]
 	
+	def logOut(s) {
+		Server.getInstance().logOut(s)
+	}
+	
 	def serve(cfg,path,query,response) {
 		def dir = cfg.dir
 		def model = cfg.model
@@ -95,6 +99,10 @@ class ServletBase extends HttpServlet {
 	}
 	def sendJpegFile(response, file) {
 		response.setContentType("image/jpeg");
+		sendImageFile(response, file)
+	}
+	def sendGifFile(response, file) {
+		response.setContentType("image/gif");
 		sendImageFile(response, file)
 	}
 	def sendIconFile(response, String file) {

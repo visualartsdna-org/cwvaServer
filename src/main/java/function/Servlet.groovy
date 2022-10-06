@@ -13,7 +13,7 @@ import util.Tmp
 
 class Servlet extends ServletBase {
 
-	def metrics = [:]
+	//def metrics = [:]
 	def cfg = Server.getInstance().cfg
 	def dbm = Server.getInstance().dbm
 	def dir = cfg.dir
@@ -25,11 +25,25 @@ class Servlet extends ServletBase {
 	def vm = new ConceptModel(vocab)
 	def tm = new TagModel(data,vocab,tags,cfg.host)
 	def sm = new StudiesModel(dbm.rdfs,studies)
+	def artist = [:]
 
-	def logOut(s) {
-		Server.getInstance().logOut(s)
+	Servlet(){
+		cfg.artist.each{k,v->
+			artist[k] = new ArtistSite(v)
+		}
 	}
-	
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	throws ServletException, IOException {
+
+		try {
+			handler(request._uri._path,request._uri._query,response,request)
+		} catch (Exception e) {
+			logOut e.printStackTrace()
+			throw new RuntimeException("Something went wrong")
+		}
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,7 +58,11 @@ class Servlet extends ServletBase {
 	}
 
 	def handler(path,query,response) {
-
+		handler(path,query,response,null)
+	}
+		
+	def handler(path,query,response,request) {
+			
 		def tmp
 		setState(path)
 		if (cfg.verbose) println "$path ${query?:""}"
@@ -149,6 +167,16 @@ class Servlet extends ServletBase {
 				def html = new ViaToTtl().setup(base)
 				sendHtml(response,html)
 				
+				break
+
+			case ~/\/artist.*/:
+				try {
+					def name = (path =~ /artist\/([a-z]+)[\/]*.*/)[0][1]
+					def svr = artist[name]
+					svr.serve(path,query,response,request)
+				} catch ( IndexOutOfBoundsException e) {
+					 //println "bad path $path"
+				}
 				break
 
 			default:

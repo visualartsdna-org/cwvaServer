@@ -20,6 +20,7 @@ class QuerySupport {
 		mm ["$ns:$guid"] = ju.queryDescribe(mdl, prefixes, """
 describe ${ns}:${guid}
 """)
+		if (mm["$ns:$guid"].size()==0) return mm
 		mm ["label"] = ju.queryListMap1(mdl, prefixes, """
 select ?label { ${ns}:${guid} rdfs:label ?label }
 """)[0]["label"]

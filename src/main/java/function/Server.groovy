@@ -26,7 +26,14 @@ class Server {
 //			domain: "http://visualartsdna.org" ,
 //			ns: "work",
 			host: "http://192.168.1.71:$port",
-			verbose: true
+			verbose: true,
+			artist: [
+				rspates: [
+					dir: "C:/temp/git/rspates",
+					imageDir: "C:/temp/git/rspates/images",
+					path: "/artist/rspates"
+					]
+				]
 			])
 	}
 	
