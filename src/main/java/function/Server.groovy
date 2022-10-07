@@ -31,7 +31,8 @@ class Server {
 				rspates: [
 					dir: "C:/temp/git/rspates",
 					imageDir: "C:/temp/git/rspates/images",
-					path: "/artist/rspates"
+					path: "/artist/rspates",
+					cache: "C:/temp/git/rspates/cache"
 					]
 				]
 			])

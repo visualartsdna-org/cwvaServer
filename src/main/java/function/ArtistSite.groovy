@@ -21,7 +21,7 @@ class ArtistSite extends ServletBase {
 		if (request) {
 			def stream = request.getInputStream()
 			def data = stream.readAllBytes()
-			new File("${cfg.dir}/lsys.jpg").bytes = data
+			new File("${cfg.cache}/lsys.jpg").bytes = data
 		} 
 		else
 		switch(file) {
