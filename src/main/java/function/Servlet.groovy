@@ -65,7 +65,14 @@ class Servlet extends ServletBase {
 			
 		def tmp
 		setState(path)
-		if (cfg.verbose) println "$path ${query?:""}"
+		def lowLevelRequest = 
+		(request && request.getMethod() == "POST") || (path =~ /\/artist\/.*\.jpg/)
+		
+		if (cfg.verbose && !lowLevelRequest) 
+			println "$path ${query?:""}"
+		else if (cfg.verboseAll && lowLevelRequest) 
+			println "$path ${query?:""}"
+			
 		switch (path) {
 
 			case ~/\/study.*/:

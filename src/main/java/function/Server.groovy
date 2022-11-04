@@ -27,6 +27,7 @@ class Server {
 //			ns: "work",
 			host: "http://192.168.1.71:$port",
 			verbose: true,
+			verboseAll: false,
 			artist: [
 				rspates: [
 					dir: "C:/temp/git/rspates",
