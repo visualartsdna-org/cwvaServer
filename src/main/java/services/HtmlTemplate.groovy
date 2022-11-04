@@ -126,11 +126,9 @@ About:
 <a href="mailto:inquiry@visualartsdna.org"/>inquiry@visualartsdna.org</a><br/>
 Copyright &copy; 2022 visualartsdna.org. All Rights Reserved.
 <br/>
-v 2.0.4
+v ${cwva.Server.version}
 </font></center>
 </body></html>
 """
-	//Copyright © 2020 visualartsdna.org. All Rights Reserved.
-
 
 }

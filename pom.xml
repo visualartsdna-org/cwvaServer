@@ -8,6 +8,11 @@
 	<name>server</name>
 	<packaging>jar</packaging>
 	<description>cwva project</description>
+	<properties>
+	     <app.date>${maven.build.timestamp}</app.date>
+	     <maven.build.timestamp.format>yyyy-MM-dd:HH:mm:ss</maven.build.timestamp.format>  
+	     <app.version>${pom.version}</app.version>
+    </properties>	
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/net.glxn.qrgen/core -->
 		<dependency>
@@ -83,6 +88,16 @@
 </dependency>
 	</dependencies>
 	<build>
+	  <resources>
+    <resource>
+      <directory>src/main/resources</directory>
+      <filtering>true</filtering>
+      <includes>
+        <include>**/version.properties</include>
+      </includes>
+    </resource>
+  </resources>
+	
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

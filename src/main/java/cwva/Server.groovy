@@ -10,6 +10,7 @@ class Server {
 	static Server instance
 	static def content = "/temp/git/cwvaContent"
 	static def port = 8080
+	static version = ""
 	
 	def cfg
 	def dbm
@@ -36,6 +37,7 @@ class Server {
 		cfg.each { println it }
 		dbm = new DBMgr(cfg)
 		dbm.print()
+		version = util.BuildProperties.getProperties()
 	}
 	
 	static def getInstance() {
