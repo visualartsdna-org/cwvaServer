@@ -124,6 +124,28 @@ class Servlet extends ServletBase {
 				sendHtml(response, "$s")
 				break
 
+			case "/file/synch":
+				def dir = URLDecoder.decode(query, "UTF-8")
+				try {
+					def text = new util.CompDirs().insynchReport(dbm.data, dir)
+					sendText(response, text)
+				} catch (java.io.FileNotFoundException fne) {
+					sendText(response, "File not found")
+				}
+				break
+
+			case "/file/compare":
+				def dirs = URLDecoder.decode(query, "UTF-8")
+				def d1 = (dirs=~/(.*)\&.*/)[0][1]
+				def d2 = (dirs=~/.*\&(.*)/)[0][1]
+				try {
+					def text = new util.CompDirs().compareReport(d1,d2)
+					sendText(response, text)
+				} catch (java.io.FileNotFoundException fne) {
+					sendText(response, "File not found")
+				}
+				break
+
 			case "/fxai/state":
 				sendTextFile(response,"./fxaiState.txt")
 				break
