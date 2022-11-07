@@ -50,4 +50,9 @@ class ArtistSite extends ServletBase {
 				break
 		}
 	}
+	
+	def logOut(s) {
+		Server.getInstance().logOut(s)
+	}
+	
 }
