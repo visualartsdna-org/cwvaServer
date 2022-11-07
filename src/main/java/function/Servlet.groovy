@@ -215,4 +215,9 @@ class Servlet extends ServletBase {
 		response.setStatus(HttpServletResponse.SC_OK);
 		if (tmp) Tmp.delTemp(tmp)
 	}
+	
+	def logOut(s) {
+		Server.getInstance().logOut(s)
+	}
+	
 }

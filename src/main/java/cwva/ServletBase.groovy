@@ -11,10 +11,6 @@ class ServletBase extends HttpServlet {
 
 	def metrics = [:]
 	
-	def logOut(s) {
-		Server.getInstance().logOut(s)
-	}
-	
 	def serve(cfg,path,query,response) {
 		def dir = cfg.dir
 		def model = cfg.model

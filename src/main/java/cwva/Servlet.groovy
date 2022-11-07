@@ -168,4 +168,8 @@ class Servlet extends ServletBase {
 		tmp.rmTemps()
 	}
 
+	def logOut(s) {
+		Server.getInstance().logOut(s)
+	}
+	
 }
