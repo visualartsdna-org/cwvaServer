@@ -2,7 +2,8 @@ package util
 
 class Gcp {
 
-	static def gsutil = "gsutil.cmd"
+	static def gsutil = System.getProperty("os.name")
+	.toLowerCase().startsWith("windows") ? "gsutil.cmd" : "gsutil"
 	// gcp gsutil copy from bucket to local
 	static def gcpCp(src,file,tgt) {
 		def bucket = System.getProperty("gcp_bucket")
