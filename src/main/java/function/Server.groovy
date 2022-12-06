@@ -24,6 +24,7 @@ class Server {
 			studies: "$content/ttl/studies",
 			model: "$content/ttl/model",
 			images: "$content/../../images",
+			cloud:[src:"ttl",tgt:content],
 //			domain: "http://visualartsdna.org" ,
 //			ns: "work",
 			host: "http://192.168.1.71:$port",

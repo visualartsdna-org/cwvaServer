@@ -19,6 +19,7 @@ class Server {
 		this([ // default test cfg
 			port: port,
 			dir:"/temp/git/cwva",
+			cloud:[src:"ttl",tgt:content],
 			data: "$content/ttl/data",
 			vocab: "$content/ttl/vocab",
 			tags: "$content/ttl/tags",
