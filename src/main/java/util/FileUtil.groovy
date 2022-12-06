@@ -58,12 +58,12 @@ class FileUtil {
 				def url = getLs(src,f,dir)
 				if (url) Gcp.gcpCp(url,dir)
 			} catch (RuntimeException re) {
-				System.err.println ("$re")
-				assert false, "$f not found"
+				System.err.println ("$f not found, $re")
+				throw new FileNotFoundException("$f not found") 
 			}
 			def f2 = new File("$dir/$f")
 			if (!f2.exists()) {
-				assert false, "$f not found"
+				throw new FileNotFoundException("$f not found") 
 			}
 			fl= [f2]
 		}

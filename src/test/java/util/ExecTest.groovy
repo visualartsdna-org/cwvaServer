@@ -10,6 +10,15 @@ class ExecTest {
 	def bucket = ""
 
 	@Test
+	void test() {
+		def tgt = "C:/test/junk"
+		def src = "ttl"
+		//def file = "gs://$bucket/ttl"
+		def f = Gcp.gcpCpDirRecurse(src,tgt)
+		//println "$f"
+	}
+	
+	@Test
 	void test6() {
 		def tgt = "C:/test/junk"
 		//def src = "images"
@@ -45,7 +54,7 @@ class ExecTest {
 	}
 	
 	@Test
-	void test() {
+	void test7() {
 		def tgt = "C:/test/junk"
 		//def src = "images"
 		def file = "IMG_1944.jpg"
