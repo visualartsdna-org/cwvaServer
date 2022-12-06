@@ -5,7 +5,7 @@ import org.apache.commons.lang.NotImplementedException
 class Gcp {
 
 	static def gsutil = System.getProperty("os.name")
-	.toLowerCase().startsWith("windows") ? "gsutil.cmd" : "gsutil"
+	.toLowerCase().startsWith("windows") ? "gsutil.cmd" : "sudo gsutil"
 	
 	// gcp gsutil copy from bucket to local
 	static def gcpCp(src,file,tgt) {
