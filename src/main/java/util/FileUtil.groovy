@@ -57,7 +57,7 @@ class FileUtil {
 		if (fl.isEmpty()) {
 			def src = "images"
 			try {
-				def url = getLs(src,f,dir)
+				def url = Gcp.gcpLs(src,f)
 				if (url) println "found url: ${url}" // debug
 				if (url) Gcp.gcpCp(url,dir)
 			} catch (RuntimeException re) {
@@ -74,15 +74,5 @@ class FileUtil {
 			fl= [f2]
 		}
 		fl.first()
-	}
-	
-	static def getLs(src,file,tgt) {
-		def a = Gcp.gcpLs(src,file)
-//		println "${a[0]}"
-//		println "${a[1]}"
-		if (a[0].isEmpty()
-			&& a[1].contains("One or more URLs matched no objects"))
-			return null
-		a[0]
 	}
 }

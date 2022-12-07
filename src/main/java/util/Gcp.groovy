@@ -63,7 +63,8 @@ class Gcp {
 		def oa = new Exec().execQuiet(cmd)
 		if (oa[1].contains("Exception"))
 			throw new RuntimeException("${oa[1]}")
-		oa
+		def url = oa.isEmpty() ? null : oa[0]
+		url
 	}
 	static def gcpLs(src, boolean full) {
 
