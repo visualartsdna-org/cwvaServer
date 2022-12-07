@@ -5,7 +5,7 @@ import org.apache.commons.lang.NotImplementedException
 class Gcp {
 
 	static def gsutil = System.getProperty("os.name")
-	.toLowerCase().startsWith("windows") ? "gsutil.cmd" : "/home/rick_spates/gsutil.cmd"
+	.toLowerCase().startsWith("windows") ? "gsutil.cmd" : "/usr/local/bin/gsutil.cmd"
 //	static def gsutil = "gsutil.cmd"
 	
 	// gcp gsutil copy from bucket to local
