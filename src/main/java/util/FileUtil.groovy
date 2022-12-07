@@ -51,17 +51,23 @@ class FileUtil {
 					fl += it
 			}
 		}
+		
+		if (!fl.isEmpty()) println "found file: ${fl.first()}" // debug
 
 		if (fl.isEmpty()) {
 			def src = "images"
 			try {
 				def url = getLs(src,f,dir)
+				if (url) println "found url: ${url}" // debug
 				if (url) Gcp.gcpCp(url,dir)
 			} catch (RuntimeException re) {
 				System.err.println ("$f not found, $re")
 				throw new FileNotFoundException("$f not found") 
 			}
 			def f2 = new File("$dir/$f")
+			
+			if (f2.exists()) println "url to file: ${f2}" // debug
+			
 			if (!f2.exists()) {
 				throw new FileNotFoundException("$f not found") 
 			}
