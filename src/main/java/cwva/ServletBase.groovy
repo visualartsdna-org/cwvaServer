@@ -78,6 +78,11 @@ class ServletBase extends HttpServlet {
 		response.getWriter().println(new File(file).text)
 
 	}
+	def sendCSSFile(response, file) {
+		response.setContentType("text/css");
+		response.getWriter().println(new File(file).text)
+
+	}
 	def sendJsonFile(response, file) {
 		response.setContentType("application/json");
 		response.getWriter().println(new File(file).text)

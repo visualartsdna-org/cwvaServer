@@ -45,6 +45,16 @@ class ArtistSite extends ServletBase {
 				sendHtmlFile(response,"${cfg.dir}/$file")
 				break
 
+			case ~/.*\.js$/:
+				def path2 = (path=~/.*\/([A-Za-z]+\.js)$/)[0][1]
+				sendJSFile(response,"${cfg.dir}/${path2}")
+				break
+
+			case ~/.*\.css$/:
+				def path2 = (path=~/.*\/([A-Za-z]+\.css)$/)[0][1]
+				sendCSSFile(response,"${cfg.dir}/${path2}")
+				break
+
 			default:
 				logOut "unrecognized command $path, ${query?:""}"
 				break
