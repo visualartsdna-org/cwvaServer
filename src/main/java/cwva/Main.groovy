@@ -3,15 +3,32 @@ import static org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 import util.*
+	import org.eclipse.jetty.util.log.Logger;
 
 class Main {
 
 	@Test
 	void test() {
-		new Server().startJetty()
+	def content = "/temp/git/cwvaContent"
+	def port = 80
+
+		new Server([ // default test cfg
+			port: port,
+			dir:"/temp/git/cwva",
+			cloud:[src:"ttl",tgt:content],
+			data: "$content/ttl/data",
+			vocab: "$content/ttl/vocab",
+			tags: "$content/ttl/tags",
+			model: "$content/ttl/model",
+			images: "$content/../../images",
+			domain: "http://visualartsdna.org" ,
+			ns: "work",
+			host: "http://192.168.1.71:$port",
+			verbose: true
+		]).startJetty()
 		
 	}
-
+	
 	@Test
 	void testStudy() {
 		def content0 = "/temp/git/cwvaContent"

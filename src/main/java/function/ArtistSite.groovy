@@ -62,7 +62,7 @@ class ArtistSite extends ServletBase {
 	}
 	
 	def logOut(s) {
-		Server.getInstance().logOut(s)
+		cwva.Server.getInstance().logOut(s)
 	}
 	
 }

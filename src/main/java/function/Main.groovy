@@ -3,12 +3,38 @@ import static org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 import util.*
+import cwva.Server
 
 class Main {
 
 	@Test
 	void test() {
-		new Server().startJetty()
+	def content = "/temp/git/cwvaContent"
+	def port = 8082
+		new Server([ // default test cfg
+			port:port,
+			dir:"/temp/git/cwva",
+			data: "$content/ttl/data",
+			vocab: "$content/ttl/vocab/vocabulary.ttl",
+			tags: "$content/ttl/tags/tags.ttl",
+			studies: "$content/ttl/studies",
+			model: "$content/ttl/model",
+			images: "$content/../../images",
+			cloud:[src:"ttl",tgt:content],
+//			domain: "http://visualartsdna.org" ,
+//			ns: "work",
+			host: "http://192.168.1.71:$port",
+			verbose: true,
+			verboseAll: false,
+			artist: [
+				rspates: [
+					dir: "C:/temp/git/rspates",
+					imageDir: "C:/temp/git/rspates/images",
+					path: "/artist/rspates",
+					cache: "C:/temp/git/rspates/cache"
+					]
+				]
+			]).startJetty(Servlet.class)
 		
 	}
 	

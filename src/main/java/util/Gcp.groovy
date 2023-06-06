@@ -1,6 +1,8 @@
 package util
 
+import java.text.SimpleDateFormat
 import org.apache.commons.lang.NotImplementedException
+import static groovy.io.FileType.FILES
 
 class Gcp {
 
@@ -80,12 +82,14 @@ class Gcp {
 			it != url
 		}
 	}
+	// get only file specs
 	static def gcpLsNoDir(src, boolean full) {
 		def l = gcpLs(src, false)
 		l.findAll{
 			it =~ /.*[^\/]$/
 		}
 	}
+	// get only dir specs
 	static def gcpLsOnlyDir(src, boolean full) {
 		def l = gcpLs(src, false)
 		l.findAll{
@@ -111,6 +115,69 @@ class Gcp {
 	static def gcpCpBucket(src,tgt,bucket) {
 		throw new NotImplementedException()
 	}
+	
+	static def folderCleanup(gDir,fDir,filter) {
+		folderCleanup(gDir,fDir,filter, false)
+	}
+	// compares dates of gcp listing with
+	// file dates for same name
+	// deletes older files
+	static def folderCleanup(gDir,fDir,filter, listOnly) {
+		def m = getGcpMap(gDir)
+
+		def m2 = getDirMap(fDir,filter)
+
+		m.each{k,v->
+			if (m2[k]) {
+				//println "$k, gcp:${v.date}, dir:${m2[k].date}, gcpIsNewer:${v.date>m2[k].date}"
+				if (v.date>m2[k].date) {
+					if (!listOnly) {
+						m2[k].path.delete()
+					}
+					println "delete ${m2[k].path}"
+				}
+			}
+		}
+	}
+
+	// returns map of file data
+	// for a folder and a filter
+	static def getDirMap(src, filter) {
+		def m = [:]
+		def dir = new File(src);
+		def files = [];
+		dir.traverse(type: FILES, maxDepth: 0) { files.add(it) }
+
+		files.findAll{
+			it.name =~ filter
+		}.each{
+
+			def sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
+			TimeZone gmtTime = TimeZone.getTimeZone("GMT")
+			sdf.setTimeZone(gmtTime)
+			def dt = sdf.format(new Date(it.lastModified()))
+			m[it.name] = [size:it.length(), date:dt, path:it.getAbsoluteFile() ]
+		}
+		m
+	}
+
+	// returns map of gcp data
+	static def getGcpMap(src) {
+		def m = [:]
+		def l = Gcp.gcpLs(src, true)
+		l
+				.findAll{
+					it.split(/[ ]+/).size() == 4
+				}
+				.each{
+					def l2 = it.split(/[ ]+/)
+					def name = (l2[3] =~ /.*\/([A-Za-z0-9_\-\.',!]+)$/)[0][1]
+					m[name] = [size:l2[1], date:l2[2], path:l2[3]]
+				}
+		m
+	}
+
+
 }
 
 

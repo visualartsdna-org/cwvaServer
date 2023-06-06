@@ -1,6 +1,7 @@
 package cwva
 
 import jakarta.servlet.ServletException;
+import util.Token
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +25,29 @@ class ServletBase extends HttpServlet {
 			case ~/\/images.*/:
 				def f = FileUtil.loadImage(images,path)
 				sendJpegFile(response,f)
+				break
+
+			case "/cmd":
+				def qm = queryToMap(query)
+				def token = qm.token
+				def cmd = qm.cmd
+				def parm = qm.parm
+				def b = new Token().validate(token)
+				if (b) {
+					println "$cmd, $parm"
+					switch (cmd) {
+						
+						case "restart":
+						def server = Server.getInstance()
+						if (!server) server = function.Server.getInstance()
+						server.dbm = new rdf.util.DBMgr(server.cfg)
+						server.dbm.print()
+
+						break;
+						
+					}
+					sendJson(response,new JsonBuilder([status:"ok"]))
+				}
 				break
 
 			case "/status":
@@ -133,6 +157,17 @@ class ServletBase extends HttpServlet {
 			metrics[k]=0
 		}
 		metrics[k]++
+	}
+	
+	// token=123&cmd=abc
+	def queryToMap(query) {
+		def m=[:]
+		def l = query.split("&")
+		l.each{
+			def l2 = it.split("=")
+			m[l2[0]]=l2[1]
+		}
+		m
 	}
 
 }

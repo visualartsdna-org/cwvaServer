@@ -2,7 +2,7 @@ package support
 
 import static org.junit.Assert.*
 
-import function.Server
+import cwva.Server
 import org.apache.jena.rdf.model.Model
 
 import groovy.json.JsonSlurper

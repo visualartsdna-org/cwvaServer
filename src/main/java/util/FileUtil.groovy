@@ -75,4 +75,35 @@ class FileUtil {
 		}
 		fl.first()
 	}
+	
+	// TODO: refactor and reorg
+	// gcp bucket enabled
+	static def deleteImage(dir,fn) {
+		def fl=[]
+		def file = fn.replaceAll("%20"," ")
+		def f1 = new File(file)
+		def f = f1.getName()
+		def path = dir// + f
+		if (new File(path).isDirectory()) {
+			new File(path).eachFileRecurse(FileType.FILES) {
+				if (it.name == f)
+					it.delete()
+			}
+		}
+		
+	}
+	
+	// TODO: refactor and reorg
+	// gcp bucket enabled
+	static def purgeImages(dir) {
+		def fl=[]
+		def path = dir
+		if (new File(path).isDirectory()) {
+			new File(path).eachFileRecurse(FileType.FILES) {
+				if (it.name =~ /.*\.JPG|.*\.jpg/)
+					it.delete()
+			}
+		}
+		
+	}
 }

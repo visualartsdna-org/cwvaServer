@@ -6,58 +6,49 @@ import rdf.util.DBMgr
 
 // singleton
 class Server {
-	
+
 	static Server instance
-	static def content = "/temp/git/cwvaContent"
-	static def port = 8080
 	static version = ""
-	
+
 	def cfg
 	def dbm
-	
-	Server(){
-		this([ // default test cfg
-			port: port,
-			dir:"/temp/git/cwva",
-			cloud:[src:"ttl",tgt:content],
-			data: "$content/ttl/data",
-			vocab: "$content/ttl/vocab",
-			tags: "$content/ttl/tags",
-			model: "$content/ttl/model",
-			images: "$content/../../images",
-			domain: "http://visualartsdna.org" ,
-			ns: "work",
-			host: "http://192.168.1.71:$port",
-			verbose: true
-			])
-	}
-	
+
 	Server(cfg){
+
 		this.cfg = cfg
 		instance = this
 		cfg.each { println it }
 		dbm = new DBMgr(cfg)
 		dbm.print()
+		util.Gcp.folderCleanup(
+			"images", // gDir
+			cfg.images,	// fDir
+			/.*\.JPG|.*\.jpg/) // filter
 		version = util.BuildProperties.getProperties()
 	}
 	
 	static def getInstance() {
 		instance
 	}
-
+	
 	def startJetty() {
 
-		startJetty(cfg.port)
+		startJetty(cfg.port,Servlet.class)
 	}
 
-	def startJetty(port) {
+	def startJetty(theClass) {
+
+		startJetty(cfg.port,theClass)
+	}
+
+	def startJetty(port,theClass) {
 
 		def server = new org.eclipse.jetty.server.Server(port)
 
 		def handler = new ServletHandler();
 		server.setHandler(handler);
 
-		handler.addServletWithMapping(Servlet.class, "/*");
+		handler.addServletWithMapping(theClass, "/*");
 		server.start();
 		server.join();
 	}
