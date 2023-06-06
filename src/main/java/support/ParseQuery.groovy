@@ -30,20 +30,22 @@ class ParseQuery {
 			println "$k = $v"
 		}
 		verify(m)
+		def filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir)
+		m.fileupload = filename
 		def ttl = printTtl(m)
 		println ttl
-		dir=m.dir
-		new File("$dir/${m.guid}.ttl").text = ttl
+		//dir=m.dir
+		new File("${m.dir}/${m.guid}.ttl").text = ttl
 		
-		printQRC(m.guid)
+		//printQRC(m.guid)
 		
-		def mdl = new JenaUtils().loadFiles("$dir/${m.guid}.ttl")
+		def mdl = new JenaUtils().loadFiles("${m.dir}/${m.guid}.ttl")
 		"triples: ${mdl.size()}"
 
 	}
-	def printQRC(guid) {
-		new QRCode().qrcode(guid,dir)
-	}
+//	def printQRC(guid) {
+//		ImageMgt.qrcode(guid,dir)
+//	}
 
 	def printTtl(m) {
 		"""

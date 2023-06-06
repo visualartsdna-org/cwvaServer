@@ -42,7 +42,7 @@ class ParseDigitalQuery {
 
 	}
 	def printQRC(guid) {
-		new QRCode().qrcode(guid,dir)
+		ImageMgt.qrcode(guid,dir)
 	}
 
 	def printTtl(m) {

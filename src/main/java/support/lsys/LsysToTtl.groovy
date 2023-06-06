@@ -7,9 +7,9 @@ import rdf.JenaUtils
 import groovy.io.FileType
 import groovy.json.JsonSlurper
 import services.HtmlForm2Ttl
-import support.QRCode
 import java.nio.*
 import java.nio.file.*
+import support.ImageMgt
 
 class LsysToTtl {
 
@@ -68,7 +68,7 @@ work:${m.guid}
 		def lr = extract(dir)
 		lr.each {
 			 new File("$outDir/$file").append printTtl(it)
-			 new QRCode().qrcode(it.guid,outDir)
+			 ImageMgt.qrcode(it.guid,outDir)
 		}
 		def l = getJson(dir)
 		def mdl = new JenaUtils().loadFiles("$outDir/$file")
