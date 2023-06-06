@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-<logger name="org.eclipse.jetty" level="INFO" />
+  <logger name="org.eclipse.jetty" level="OFF" />
+  <root level="ERROR"/>
+ <logger name="org.eclipse.jetty" level="ERROR" />
  <logger name="log4j.logger.org.apache.jena" level="INFO"/> 
 
 </configuration>
