@@ -66,7 +66,7 @@ class ImageMgt {
 	   * @param ofile, the output file
 	   * @return
 	   */
-	  def static overlay(ifile,BufferedImage overlay,i3file,ofile) {
+	  def static overlay(ifile,BufferedImage overlay,i3file,ofile,signature) {
 		  
 		  int grcSize=80
 		  
@@ -83,16 +83,31 @@ class ImageMgt {
 		  // paint both images, preserving the alpha channels
 		  Graphics2D g = combined.getGraphics();
 		  g.drawImage(image, 0, 0, null);
-		  g.drawImage(overlay,
-			  (image.getWidth() - grcSize * 1.5) as int,
-			  (image.getHeight() - grcSize * 1.5 as int),
-			  null);
-		  g.setPaint(Color.white)
 		  
-		  g.drawImage(overlay2,
-			  (image.getWidth() - grcSize * 2.5) as int,
-			  (image.getHeight() - grcSize * 1.5) as int,
-			  null);
+		  if (signature=="left") {
+			  g.drawImage(overlay,
+				  (grcSize * 0.5) as int,
+				  (image.getHeight() - grcSize * 1.5 as int),
+				  null);
+			  g.setPaint(Color.white)
+			  
+			  g.drawImage(overlay2,
+				  (grcSize * 1.5) as int,
+				  (image.getHeight() - grcSize * 1.5) as int,
+				  null);
+	
+		  } else if (signature=="right") {
+			  g.drawImage(overlay,
+				  (image.getWidth() - grcSize * 1.5) as int,
+				  (image.getHeight() - grcSize * 1.5 as int),
+				  null);
+			  g.setPaint(Color.white)
+			  
+			  g.drawImage(overlay2,
+				  (image.getWidth() - grcSize * 2.5) as int,
+				  (image.getHeight() - grcSize * 1.5) as int,
+				  null);
+		  }
   // a way to apply a font-based signature
   //		g.setPaint(Color.white)
   //
@@ -144,7 +159,7 @@ class ImageMgt {
 		"$dir/$qrcName"
 	}
 
-	def static makeStampedFile(guid,ifile,title,dir) {
+	def static makeStampedFile(guid,ifile,title,dir,signature) {
 		def sigfile = util.FileUtil.loadImage(
 			cwva.Server.getInstance().cfg.images,
 			"rsart.jpg")
@@ -152,15 +167,15 @@ class ImageMgt {
 		def ns = "http://visualartsdna.org/work"
 		def factor=0.64
 		int size=125 // default 125
-		makeStampedFile(guid,ifile,title,dir,ns,sigfile,factor,size)
+		makeStampedFile(guid,ifile,title,dir,ns,sigfile,factor,size,signature)
 	}
 		
 	def static makeStampedFile(guid,ifile,title) {
 		def dir = "/stage/temp"
-		makeStampedFile(guid,ifile,title,dir)
+		makeStampedFile(guid,ifile,title,dir,"right")
 	}
 		
-	def static makeStampedFile(guid,ifile,title,dir,ns,sigfile,factor,size) {
+	def static makeStampedFile(guid,ifile,title,dir,ns,sigfile,factor,size,signature) {
 		def fname = "${util.Text.camelCase(title)}.jpg"
 		def ofile = "$dir/$fname"
 		def qrcFile = qrcode(guid,dir,ns,size)
@@ -171,7 +186,7 @@ class ImageMgt {
 		def w = bi1.getWidth()
 		def bi2 = ImageMgt.scale(bi1, BufferedImage.TYPE_INT_RGB, (w*factor) as int, (h*factor) as int, factor, factor)
 
-		ImageMgt.overlay("$dir/$ifile",bi2,sigfile,ofile)
+		ImageMgt.overlay("$dir/$ifile",bi2,sigfile,ofile,signature)
 		fname
 	}
 }

@@ -53,6 +53,12 @@ VADNA RDF Entry
   <label for="type2">Drawing</label><br>
 </td></tr><tr><td>
          <input type = "file" name = "fileupload" id = "file" accept = "image/*" />
+  <br>
+  <br><label for="id">Signature:</label><br>
+  <input type="radio" id="sig1" name="sig" value="right" checked>
+  <label for="type1">Right</label><br>
+  <input type="radio" id="sig2" name="sig" value="left">
+  <label for="type2">Left</label><br>
 </td><td>
   <label for="id">Media:</label><br>
   <input type="checkbox" id="media1" name="media1" value="Watercolor">

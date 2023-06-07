@@ -30,7 +30,7 @@ class ParseQuery {
 			println "$k = $v"
 		}
 		verify(m)
-		def filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir)
+		def filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
 		m.fileupload = filename
 		def ttl = printTtl(m)
 		println ttl
