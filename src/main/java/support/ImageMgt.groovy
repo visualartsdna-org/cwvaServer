@@ -186,7 +186,8 @@ class ImageMgt {
 		def w = bi1.getWidth()
 		def bi2 = ImageMgt.scale(bi1, BufferedImage.TYPE_INT_RGB, (w*factor) as int, (h*factor) as int, factor, factor)
 
-		ImageMgt.overlay("$dir/$ifile",bi2,sigfile,ofile,signature)
+		ImageMgt.overlay("$dir/$ifile",bi2,sigfile,ofile,
+			signature?:"right") // default for rdf digital
 		fname
 	}
 }
