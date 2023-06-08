@@ -129,7 +129,7 @@ class Gcp {
 
 		m.each{k,v->
 			if (m2[k]) {
-				//println "$k, gcp:${v.date}, dir:${m2[k].date}, gcpIsNewer:${v.date>m2[k].date}"
+				println "$k, gcp:${v.date}, dir:${m2[k].date}, gcpIsNewer:${v.date>m2[k].date}"
 				if (v.date>m2[k].date) {
 					if (!listOnly) {
 						m2[k].path.delete()
