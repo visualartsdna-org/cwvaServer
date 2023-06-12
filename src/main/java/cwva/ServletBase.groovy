@@ -7,11 +7,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import groovy.json.JsonBuilder
 import util.FileUtil
+import util.Tmp
 
 class ServletBase extends HttpServlet {
 
+	def tmp = new Tmp()
+	def cfg = Server.getInstance().cfg
+	def dir = cfg.dir
+	def model = cfg.model
+	def vocab = cfg.vocab
+	def data = cfg.data
+	def tags = cfg.tags
+	def domain = cfg.domain
+	def ns = cfg.ns
 	def metrics = [:]
 	
+	def dbm() {
+		Server.getInstance().dbm
+	}
+
 	def serve(cfg,path,query,response) {
 		def dir = cfg.dir
 		def model = cfg.model

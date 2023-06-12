@@ -14,18 +14,9 @@ import util.Tmp
 
 class Servlet extends ServletBase {
 
-	//def metrics = [:]
-	def cfg = Server.getInstance().cfg
-	def dbm = Server.getInstance().dbm
-	def dir = cfg.dir
-	def images = cfg.images
-	def vocab = cfg.vocab
-	def data = cfg.data
-	def tags = cfg.tags
-	def studies = cfg.studies
 	def vm = new ConceptModel(vocab)
 	def tm = new TagModel(data,vocab,tags,cfg.host)
-	def sm = new StudiesModel(dbm.rdfs,studies)
+	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
 	def artist = [:]
 
 	Servlet(){
@@ -128,7 +119,7 @@ class Servlet extends ServletBase {
 			case "/file/synch":
 				def dir = URLDecoder.decode(query, "UTF-8")
 				try {
-					def text = new util.CompDirs().insynchReport(dbm.data, dir)
+					def text = new util.CompDirs().insynchReport(dbm().data, dir)
 					sendText(response, text)
 				} catch (java.io.FileNotFoundException fne) {
 					sendText(response, "File not found")

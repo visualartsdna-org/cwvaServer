@@ -1,14 +1,31 @@
 This build depends on:
 
-		<dependency>
-			<groupId>org.visualartsdna</groupId>
-			<artifactId>nals</artifactId>
-			<version>1.0.0</version>
-		</dependency>
+                <dependency>
+                        <groupId>org.visualartsdna</groupId>
+                        <artifactId>nals</artifactId>
+                        <version>1.0.0</version>
+                </dependency>
 
 See the NALS repo for installing NALS jar locally
 
+Consider backing up current cwvaServer jar.
+
+git pull origin main
+
+Before mvn do:
+mvn clean
+
+mkdir target
+mkdir target/classes
+
+cp src/main/java/logback.xml target/classes
+
 To create a jar of dependencies, from this directory do:
 
-mvn clean package shade:shade
+mvn package shade:shade
 
+
+Could adding cwva/resources to the CP do this?
+
+Upon cwvaServer startup make sure 
+jar version number reference up to date!

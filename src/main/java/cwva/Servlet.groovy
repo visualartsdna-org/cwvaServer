@@ -12,18 +12,6 @@ import util.Tmp
 
 class Servlet extends ServletBase {
 
-	def tmp = new Tmp()
-	def cfg = Server.getInstance().cfg
-	def dbm = Server.getInstance().dbm
-	def dir = cfg.dir
-	def model = cfg.model
-	def vocab = cfg.vocab
-	def data = cfg.data
-	def tags = cfg.tags
-	def domain = cfg.domain
-	def images = cfg.images
-	def ns = cfg.ns
-	def ju = new JenaUtils()
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,7 +24,7 @@ class Servlet extends ServletBase {
 			throw new RuntimeException("Something went wrong")
 		}
 	}
-
+	
 	def handler(path,query,response) {
 
 		def tmpFile
@@ -55,11 +43,11 @@ class Servlet extends ServletBase {
 				break
 
 			case "/data":
-				sendModel(response, dbm.instances)
+				sendModel(response, dbm().instances)
 				break
 
 			case "/vocab":
-				sendModel(response, dbm.vocab)
+				sendModel(response, dbm().vocab)
 				break
 
 			case ~/\/d3\..*/:
@@ -95,7 +83,7 @@ class Servlet extends ServletBase {
 				if (n>=0) kind = path.substring(n+1)
 				tmpFile = tmp.getTemp("lsys",".jpg")
 				new LsysDriver().doGet(data,kind,tmpFile)
-				sendJpegFile(response,tmpFile)
+				sendJpegFile(response,new File(tmpFile))
 				break
 
 			case ~/\/dist.*/:
@@ -113,13 +101,13 @@ class Servlet extends ServletBase {
 
 				if (query) {
 					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
-					def qs = new QuerySupport(dbm.rdfs)
+					def qs = new QuerySupport(dbm().rdfs)
 					def m = qs.getOneInstanceModel("work",guid)
 
 					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
 					else sendModel(response, m, fmt.toLowerCase())
 				} else {
-					def s = jl2h.process(dbm.rdfs,domain,relPath,ns,guid,cfg.host)
+					def s = jl2h.process(dbm().rdfs,domain,relPath,ns,guid,cfg.host)
 					sendHtml(response,s)
 				}
 				break
@@ -131,19 +119,19 @@ class Servlet extends ServletBase {
 
 				if (query) {
 					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
-					def qs = new QuerySupport(dbm.rdfs)
+					def qs = new QuerySupport(dbm().rdfs)
 					def m = qs.getOneInstanceModel("work",guid)
 					
 					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
 					else sendModel(response, m, fmt.toLowerCase())
 				} else {
-					def s = jl2h.process(dbm.rdfs,domain,relPath,"the",guid,cfg.host)
+					def s = jl2h.process(dbm().rdfs,domain,relPath,"the",guid,cfg.host)
 					sendHtml(response,s)
 				}
 				break
 
 			case "/browse":
-				def s = new BrowseWorks().browse(cfg.host,dbm.rdfs)
+				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs)
 				sendHtml(response,s)
 				break
 
