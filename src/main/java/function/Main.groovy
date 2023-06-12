@@ -56,7 +56,7 @@ class Main {
 			host: "http://localhost:8082",
 			verbose: true
 			]
-		new Server(cfg).startJetty()
+		new Server(cfg).startJetty(Servlet.class)
 	}
 
 
@@ -78,7 +78,7 @@ function.Server -cfg fcnServer.rson
 		assert cfg , "no cfg"
 		
 		def cfgMap = Rson.load(cfg)
-		new Server(cfgMap).startJetty()
+		new Server(cfgMap).startJetty(Servlet.class)
 	
 	}
 }
