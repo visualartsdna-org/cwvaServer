@@ -5,6 +5,7 @@ import util.Token
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import rdf.JenaUtilities
 import groovy.json.JsonBuilder
 import util.FileUtil
 import util.Tmp
@@ -21,6 +22,7 @@ class ServletBase extends HttpServlet {
 	def domain = cfg.domain
 	def ns = cfg.ns
 	def metrics = [:]
+	def ju = new JenaUtilities()
 	
 	def dbm() {
 		Server.getInstance().dbm
@@ -56,7 +58,11 @@ class ServletBase extends HttpServlet {
 						if (!server) server = function.Server.getInstance()
 						server.dbm = new rdf.util.DBMgr(server.cfg)
 						server.dbm.print()
-
+						util.Gcp.folderCleanup(
+							"images", // gDir
+							cfg.images,	// fDir
+							/.*\.JPG|.*\.jpg/) // filter
+				
 						break;
 						
 					}

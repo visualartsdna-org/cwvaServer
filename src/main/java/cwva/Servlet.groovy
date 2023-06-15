@@ -97,7 +97,7 @@ class Servlet extends ServletBase {
 			case ~/\/work.*/:
 				def jl2h = new JsonLd2Html()
 				def relPath = jl2h.parsePath(path)
-				def guid = jl2h.parseGuid(path)
+				def guid = jl2h.q(path)
 
 				if (query) {
 					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
