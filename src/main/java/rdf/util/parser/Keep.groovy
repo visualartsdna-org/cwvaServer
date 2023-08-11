@@ -16,11 +16,14 @@ class Keep {
 		def title=false
 		def key
 		def header=true
-		def topConceptDesc = ""
+		def topConceptMap = [text:"",ann:[:]]
 		input.eachLine{
 			def s = it.trim()
 			if (header && s != "") {
-				topConceptDesc += s
+				def ma = extractAnnotations(s) // TODO: this
+				if (ma.isEmpty()) topConceptMap.text += "$s\n"
+				topConceptMap.ann+= ma
+				
 				return
 			}
 			if (s=="" && prev=="") {
@@ -56,7 +59,7 @@ class Keep {
 			if (!v.text && v.ann.isEmpty()) ld += k
 		}
 		ld.each{m.remove(it)}
-		m.topConcept= topConceptDesc
+		m.topConcept= topConceptMap
 		m
 	}
 	

@@ -4,15 +4,51 @@ import groovy.json.JsonSlurper
 import rdf.JenaUtils
 
 class TtlBuilder {
-	
-	def nsMap = [identifier:"schema",
-		definition:"skos",
-		scopeNote:"skos",
-		historyNote:"skos",
-		"annotation.publishProperties":"tko"]
-	
-	def process(m0) {
 
+	// properties reference objects:
+	// strings, e.g., [identifier:abc] becomes "abc"
+	// FQN URI, e.g., <http://visualartsdna.org/work/bdb05de5...>
+	static def nsMap = [
+		identifier:"schema",
+		altLabel            : "skos",
+		broadMatch          : "skos",
+		broader             : "skos",
+		broaderTransitive   : "skos",
+		changeNote          : "skos",
+		closeMatch          : "skos",
+		definition          : "skos",
+		editorialNote       : "skos",
+		exactMatch          : "skos",
+		example             : "skos",
+		hasTopConcept       : "skos",
+		hiddenLabel         : "skos",
+		historyNote         : "skos",
+		inScheme            : "skos",
+		mappingRelation     : "skos",
+		member              : "skos",
+		memberList          : "skos",
+		narrowMatch         : "skos",
+		narrower            : "skos",
+		narrowerTransitive  : "skos",
+		notation            : "skos",
+		note                : "skos",
+		prefLabel           : "skos",
+		related             : "skos",
+		relatedMatch        : "skos",
+		scopeNote           : "skos",
+		semanticRelation    : "skos",
+		topConceptOf        : "skos",
+		type	: "rdf",
+		"annotation.publishProperties":"tko"
+		]
+
+	def process(m0) {
+		process(m0,null)
+	}
+	
+	// 				${nsMap[k2]}:$k2 ${v2.startsWith("<")?v2:"\"$v2\""} ;
+	def process(m0,file) {
+			
 		def ju = new JenaUtils()
 		def sb = new StringBuilder()
 		sb.append  """
@@ -29,38 +65,47 @@ class TtlBuilder {
 
 """
 		m0.each{k1,v1->
-			
-			def uri = util.Text.camelCase(k1)
-			
+
+			def uri = util.Text.camelCase(k1.replaceAll(/[^A-Za-z_0-9]/,""))
+
 			//println "$k1"
-		def m =new Keep().parseKeepConcepts(v1)
+			def m =new Keep().parseKeepConcepts(v1)
 			//if (m.topConcept) println "${m.topConcept}\n"
-			
+
 			sb.append """
 			tko:$uri
 				a skos:Concept ;
 				skos:prefLabel "$k1" ;
-				skos:definition "${m.topConcept}" ;
+				skos:definition \"\"\"${m.topConcept.text}\"\"\" ;
+"""
+			m.topConcept.ann.each{k2,v2->
+				sb.append """
+				${nsMap[k2]}:$k2 ${v2=~/^<[A-Za-z_0-9\-\.]+>$|^[a-z]+:.*$/?v2:"\"$v2\""} ;
+"""
+				//println "\t$k2=$v2"
+			}
+
+			sb.append """
 				.
 """
-		
+
 			try {
 				m.each{k,v->
 					if (k=="topConcept") return
-					//println "$k\n"
-					sb.append """
+						//println "$k\n"
+						sb.append """
 			tko:${util.Text.camelCase(k)}
 				a skos:Concept ;
 """
-			
+
 					if (v.containsKey("ann"))
-					v.ann.each{k2,v2->
-						sb.append """
-				${nsMap[k2]}:$k2 \"\"\"${v2}\"\"\" ;
+						v.ann.each{k2,v2->
+							sb.append """
+				${nsMap[k2]}:$k2 ${v2.startsWith("<")?v2:"\"$v2\""} ;
 """
 
-						//println "\t$k2=$v2"
-					}
+							//println "\t$k2=$v2"
+						}
 					//println "${v.text}\n"
 					sb.append """
 				skos:definition \"\"\"${v.text}\"\"\" ;
@@ -77,17 +122,16 @@ class TtlBuilder {
 		try {
 			def model = ju.saveStringModel(""+sb, "ttl")
 			println "model size=${model.size()}"
+			if (file) ju.saveModelFile(model,"${file}.ttl", "ttl")
+	
 		} catch (Exception ex) {
 			println """
 $sb
 $ex
 """
 		}
-//			ju.saveModelFile(model,
-//				"$dest/${(file.name=~/(.*)\.json/)[0][1]}.ttl", "ttl")
-		""+sb
 
-		}
+	}
 
 
 }

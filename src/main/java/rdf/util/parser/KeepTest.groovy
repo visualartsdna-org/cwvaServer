@@ -14,8 +14,9 @@ class KeepTest {
 //		def m0= new TkoExtract().process("$base/Test Extinction.json")
 		def m0= new TkoExtract().process("$base")
 		
-		def s = new TtlBuilder().process(m0)
-		println s
+		def s = new TtlBuilder().process(m0,"$base/test")
+				
+		//println s
 	}
 	
 	static def verbose=false
@@ -23,8 +24,8 @@ class KeepTest {
 	@Test
 	void test1() {
 		
-		def base = "C:/temp/Takeout/Takeout/Keep/"
-//		def base = "C:/temp/rsart/Takeout/Keep"
+//		def base = "C:/temp/Takeout/Takeout/Keep/"
+		def base = "C:/temp/rsart/Takeout/Keep"
 		def m0= new TkoExtract().process("$base/Test Extinction.json")
 //		def m0= new TkoExtract().process("$base")
 		
@@ -78,5 +79,13 @@ class KeepTest {
 		}
 	}
 		
-
+	// support reference to list of URIs
+	@Test
+	void testUriList() {
+		[member:"tko:abc,tko:def"].each{k2,v2->
+		println """
+		${TtlBuilder.nsMap[k2]}:$k2 ${v2=~/^<[A-Za-z_0-9\-\.]+>$|^[a-z]+:.*$/?v2:"\"$v2\""} ;
+		"""
+		}
+	}
 }
