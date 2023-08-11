@@ -64,11 +64,16 @@ class Keep {
 	}
 	
 	// get any annotations in text
+	// URL references (links) on discrete lines become rdfs:seeAlso
 	def extractAnnotations(s) {
 		def ma = [:]
-		def m = (s =~ /^\[([A-Za-z0-9_.]+)[ \t]*[=:][ \t]*(.*)\]$/)
-		if (m) {
-			ma[m[0][1]] = m[0][2]
+		if (s.trim() =~ /^http[s]?:\/\/[A-Za-z_0-9\+\%\-\.\/]+$/) {
+			ma[s.trim()] = "rdfs:seeAlso"
+		} else {
+			def m = (s =~ /^\[([A-Za-z0-9_.]+)[ \t]*[=:][ \t]*(.*)\]$/)
+			if (m) {
+				ma[m[0][1]] = m[0][2]
+			}
 		}
 		ma
 	}

@@ -5,9 +5,11 @@ import rdf.JenaUtils
 
 class TtlBuilder {
 
-	// properties reference objects:
-	// strings, e.g., [identifier:abc] becomes "abc"
-	// FQN URI, e.g., <http://visualartsdna.org/work/bdb05de5...>
+	// properties reference an object:
+	// string, e.g., [annotation:abc] becomes {tko:annotation "abc"}
+	// a single FQN URI, e.g., <http://visualartsdna.org/work/bdb05de5...>
+	// one or more Qnames, e.g., [member:tko:abc, tko:def] 
+	//	becomes {skos:member tko:abc, tko:def}
 	static def nsMap = [
 		identifier:"schema",
 		altLabel            : "skos",
@@ -39,6 +41,8 @@ class TtlBuilder {
 		semanticRelation    : "skos",
 		topConceptOf        : "skos",
 		type	: "rdf",
+		seeAlso : "rdfs",
+		"annotation":"tko",
 		"annotation.publishProperties":"tko"
 		]
 
@@ -74,20 +78,33 @@ class TtlBuilder {
 
 			sb.append """
 			tko:$uri
-				a skos:Concept ;
 				skos:prefLabel "$k1" ;
 				skos:definition \"\"\"${m.topConcept.text}\"\"\" ;
 """
 			m.topConcept.ann.each{k2,v2->
-				sb.append """
-				${nsMap[k2]}:$k2 ${v2=~/^<[A-Za-z_0-9\-\.]+>$|^[a-z]+:.*$/?v2:"\"$v2\""} ;
+				if (v2 == "rdfs:seeAlso") {
+					sb.append """
+				rdfs:seeAlso <$k2> ;
 """
-				//println "\t$k2=$v2"
+				} else
+				sb.append """
+				${nsMap[k2]}:$k2 ${v2=~/^<http[s]?:\/\/[A-Za-z_0-9\-\.\/]+>$|^[a-z]+:.*$/?v2:"\"$v2\""} ;
+"""
 			}
-
-			sb.append """
+			//println "\t$k2=$v2"
+			if (!m.topConcept.ann.containsKey("type")) {
+				sb.append """
+				a skos:Concept ;
 				.
 """
+
+			} else {
+				sb.append """
+				.
+"""
+				
+			}
+
 
 			try {
 				m.each{k,v->
@@ -100,6 +117,11 @@ class TtlBuilder {
 
 					if (v.containsKey("ann"))
 						v.ann.each{k2,v2->
+				if (v2 == "rdfs:seeAlso") {
+					sb.append """
+				rdfs:seeAlso <$k2> ;
+"""
+				} else
 							sb.append """
 				${nsMap[k2]}:$k2 ${v2.startsWith("<")?v2:"\"$v2\""} ;
 """

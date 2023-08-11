@@ -82,7 +82,10 @@ class KeepTest {
 	// support reference to list of URIs
 	@Test
 	void testUriList() {
-		[member:"tko:abc,tko:def"].each{k2,v2->
+		[
+			member:"tko:abc,tko:def",
+			member2:"<abc>,<def>"
+			].each{k2,v2->
 		println """
 		${TtlBuilder.nsMap[k2]}:$k2 ${v2=~/^<[A-Za-z_0-9\-\.]+>$|^[a-z]+:.*$/?v2:"\"$v2\""} ;
 		"""
