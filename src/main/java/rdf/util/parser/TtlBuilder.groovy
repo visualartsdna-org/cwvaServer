@@ -57,19 +57,27 @@ class TtlBuilder {
 		def sb = new StringBuilder()
 		sb.append  """
 @prefix tko: <http://visualartsdna.org/takeout#> .
-@prefix vad: <http://visualartsdna.org/2021/07/16/model#> .
 @prefix work:	<http://visualartsdna.org/work/> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix schema: <https://schema.org/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+tko:KeepSchema
+  rdf:type owl:Class ;
+  rdfs:label "A KeepSchema collects concepts related to one G-Keep note" ;
+  rdfs:subClassOf skos:Schema ;
+.
 
 """
 		m0.each{k1,c->
+//				if (k1 =="Drawings collection") {
+//					println "here"
+//				}
 			def v1=c.textContent
+			def guid = UUID.randomUUID()
 			
 			def uri = util.Text.camelCase(k1.replaceAll(/[^A-Za-z_0-9]/,""))
 
@@ -96,9 +104,16 @@ class TtlBuilder {
 			if (!m.topConcept.ann.containsKey("type")) {
 				sb.append """
 				a skos:Concept ;
+				skos:inScheme tko:$guid ;
+				.
 """
 			} 
 			
+			sb.append  """
+			tko:$guid
+				a tko:KeepSchema ;
+				skos:hasTopConcept tko:$uri ;
+"""
 			if (c.annotations) c.annotations.each {
 				if (it.source == "WEBLINK" && it.title== "Google Photos") {
 				sb.append """
@@ -132,6 +147,7 @@ class TtlBuilder {
 						sb.append """
 			tko:${util.Text.camelCase(k)}
 				a skos:Concept ;
+				skos:inScheme tko:$guid ;
 """
 
 					if (v.containsKey("ann"))
@@ -150,7 +166,6 @@ class TtlBuilder {
 					//println "${v.text}\n"
 					sb.append """
 				skos:definition \"\"\"${v.text}\"\"\" ;
-				skos:broader tko:$uri;
 				.
 """
 				}

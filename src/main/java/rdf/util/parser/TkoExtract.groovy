@@ -19,7 +19,7 @@ class TkoExtract {
 				def c = Rson.load(file.absolutePath)
 				if (!hasLabel(c,"publish")) return
 				if (c.isTrashed || c.isArchived) return
-//				if (file.name =="Turtle.json") {
+//				if (file.name =="Drawings collection.json") {
 //					println "here"
 //				}
 				if (map.containsKey(c.title))

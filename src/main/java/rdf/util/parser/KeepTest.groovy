@@ -8,9 +8,8 @@ class KeepTest {
 	@Test
 	void test() {
 		
-		def base = "C:/temp/Takeout/Takeout/Keep"
-//		def base = "C:/temp/Takeout/Takeout/Keep/"
-//		def base = "C:/temp/rsart/Takeout/Keep"
+//		def base = "C:/temp/Takeout/Takeout/Keep"
+		def base = "C:/temp/rsart/Takeout/Keep"
 //		def m0= new TkoExtract().process("$base/Test Extinction.json")
 		def m0= new TkoExtract().process("$base")
 		
