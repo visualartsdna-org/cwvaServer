@@ -65,10 +65,16 @@ class TtlBuilder {
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 
-tko:KeepSchema
+tko:KeepConceptScheme
   rdf:type owl:Class ;
-  rdfs:label "A KeepSchema collects concepts related to one G-Keep note" ;
-  rdfs:subClassOf skos:Schema ;
+  rdfs:label "A KeepConceptScheme collects concepts related to one G-Keep note" ;
+  rdfs:subClassOf skos:ConceptScheme ;
+.
+
+tko:KeepCollection
+  rdf:type owl:Class ;
+  rdfs:label "A KeepCollection collects concepts related to one G-Keep label.  E.g., the drawings collection" ;
+  rdfs:subClassOf skos:Collection ;
 .
 
 """
@@ -111,7 +117,8 @@ tko:KeepSchema
 			
 			sb.append  """
 			tko:$guid
-				a tko:KeepSchema ;
+				a tko:KeepConceptScheme ;
+				skos:prefLabel "$k1 KeepConceptScheme" ;
 				skos:hasTopConcept tko:$uri ;
 """
 			if (c.annotations) c.annotations.each {
