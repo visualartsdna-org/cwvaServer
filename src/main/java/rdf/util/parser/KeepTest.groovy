@@ -1,7 +1,6 @@
 package rdf.util.parser
 
 import static org.junit.jupiter.api.Assertions.*
-
 import org.junit.jupiter.api.Test
 
 class KeepTest {
@@ -9,8 +8,9 @@ class KeepTest {
 	@Test
 	void test() {
 		
+		def base = "C:/temp/Takeout/Takeout/Keep"
 //		def base = "C:/temp/Takeout/Takeout/Keep/"
-		def base = "C:/temp/rsart/Takeout/Keep"
+//		def base = "C:/temp/rsart/Takeout/Keep"
 //		def m0= new TkoExtract().process("$base/Test Extinction.json")
 		def m0= new TkoExtract().process("$base")
 		
@@ -91,4 +91,13 @@ class KeepTest {
 		"""
 		}
 	}
+	
+	@Test
+	void testUSeconds() {
+		def i = 1656256466731000
+		def inst = Util.getInstantFromMicros(i)		
+		println inst
+		
+	}
+
 }

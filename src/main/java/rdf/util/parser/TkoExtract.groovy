@@ -18,11 +18,17 @@ class TkoExtract {
 				
 				def c = Rson.load(file.absolutePath)
 				if (!hasLabel(c,"publish")) return
-				map[c.title]=c.textContent
+				if (c.isTrashed || c.isArchived) return
+//				if (file.name =="Turtle.json") {
+//					println "here"
+//				}
+				if (map.containsKey(c.title))
+					throw new RuntimeException("title already exists")
+				map[c.title]=c
 			}
 		else {
 			def c = Rson.load(f.absolutePath)
-			map[c.title]=c.textContent
+			map[c.title]=c
 		}
 		map
 	}

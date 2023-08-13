@@ -51,7 +51,7 @@ class TtlBuilder {
 	}
 	
 	// 				${nsMap[k2]}:$k2 ${v2.startsWith("<")?v2:"\"$v2\""} ;
-	def process(m0,file) {
+	def process(m0,ttlFile) {
 			
 		def ju = new JenaUtils()
 		def sb = new StringBuilder()
@@ -68,8 +68,9 @@ class TtlBuilder {
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 """
-		m0.each{k1,v1->
-
+		m0.each{k1,c->
+			def v1=c.textContent
+			
 			def uri = util.Text.camelCase(k1.replaceAll(/[^A-Za-z_0-9]/,""))
 
 			//println "$k1"
@@ -95,15 +96,33 @@ class TtlBuilder {
 			if (!m.topConcept.ann.containsKey("type")) {
 				sb.append """
 				a skos:Concept ;
-				.
 """
-
-			} else {
+			} 
+			
+			if (c.annotations) c.annotations.each {
+				if (it.source == "WEBLINK" && it.title== "Google Photos") {
 				sb.append """
+					schema:image <${it.url}> ;
+"""
+					
+				}
+			}
+			if (c.attachments) c.attachments.each {
+				if (it.mimetype == "image/jpeg" || it.mimetype == "image/png") {
+				sb.append """
+					schema:image <http://visualartsdna.org/images/${it.filePath}> ;
+"""
+					
+				}
+			}
+			
+			sb.append """
+				schema:datePublished "${Util.now()}"^^xs:dateTime ;
+				schema:dateCreated "${Util.getInstantFromMicros(c.createdTimestampUsec)}"^^xs:dateTime ;
+				schema:dateModified "${Util.getInstantFromMicros(c.userEditedTimestampUsec)}"^^xs:dateTime ;
 				.
 """
 				
-			}
 
 
 			try {
@@ -131,7 +150,7 @@ class TtlBuilder {
 					//println "${v.text}\n"
 					sb.append """
 				skos:definition \"\"\"${v.text}\"\"\" ;
-				skos:hasTopConcept tko:$uri;
+				skos:broader tko:$uri;
 				.
 """
 				}
@@ -144,7 +163,7 @@ class TtlBuilder {
 		try {
 			def model = ju.saveStringModel(""+sb, "ttl")
 			println "model size=${model.size()}"
-			if (file) ju.saveModelFile(model,"${file}.ttl", "ttl")
+			if (ttlFile) ju.saveModelFile(model,"${ttlFile}.ttl", "ttl")
 	
 		} catch (Exception ex) {
 			println """
