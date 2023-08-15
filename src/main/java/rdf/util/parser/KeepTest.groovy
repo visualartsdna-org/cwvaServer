@@ -8,14 +8,13 @@ class KeepTest {
 	@Test
 	void test() {
 		
-//		def base = "C:/temp/Takeout/Takeout/Keep"
-		def base = "C:/temp/rsart/Takeout/Keep"
+		def base = "C:/temp/Takeout/Takeout/Keep"
+//		def base = "C:/temp/rsart/Takeout/Keep"
 //		def m0= new TkoExtract().process("$base/Test Extinction.json")
 		def m0= new TkoExtract().process("$base")
+		def labels = new TkoExtract().processLabels("$base")
 		
-		def s = new TtlBuilder().process(m0,"$base/test")
-				
-		//println s
+		def s = new TtlBuilder().process(m0,labels,"$base/test")
 	}
 	
 	static def verbose=false

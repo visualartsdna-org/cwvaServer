@@ -30,7 +30,16 @@ class TkoExtract {
 			def c = Rson.load(f.absolutePath)
 			map[c.title]=c
 		}
+		
 		map
+	}
+	
+	def processLabels(base) {
+		def labelsMap = [:]
+		new File("$base/Labels.txt").text.eachLine{
+			labelsMap[it] = []
+		}
+		labelsMap
 	}
 
 

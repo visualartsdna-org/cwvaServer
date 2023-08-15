@@ -8,7 +8,7 @@ class TtlBuilder {
 	// properties reference an object:
 	// string, e.g., [annotation:abc] becomes {tko:annotation "abc"}
 	// a single FQN URI, e.g., <http://visualartsdna.org/work/bdb05de5...>
-	// one or more Qnames, e.g., [member:tko:abc, tko:def] 
+	// one or more Qnames, e.g., [member:tko:abc, tko:def]
 	//	becomes {skos:member tko:abc, tko:def}
 	static def nsMap = [
 		identifier:"schema",
@@ -44,15 +44,15 @@ class TtlBuilder {
 		seeAlso : "rdfs",
 		"annotation":"tko",
 		"annotation.publishProperties":"tko"
-		]
+	]
 
 	def process(m0) {
-		process(m0,null)
+		process(m0,[:],null)
 	}
-	
+
 	// 				${nsMap[k2]}:$k2 ${v2.startsWith("<")?v2:"\"$v2\""} ;
-	def process(m0,ttlFile) {
-			
+	def process(m0,labelsMap,ttlFile) {
+
 		def ju = new JenaUtils()
 		def sb = new StringBuilder()
 		sb.append  """
@@ -79,122 +79,151 @@ tko:KeepCollection
 
 """
 		m0.each{k1,c->
-//				if (k1 =="Drawings collection") {
-//					println "here"
-//				}
+			def concepts = []
+			
+			// topConcept
 			def v1=c.textContent
 			def guid = UUID.randomUUID()
-			
+
 			def uri = util.Text.camelCase(k1.replaceAll(/[^A-Za-z_0-9]/,""))
 
-			//println "$k1"
+			// parse the text for annotations
 			def m =new Keep().parseKeepConcepts(v1)
-			//if (m.topConcept) println "${m.topConcept}\n"
 
 			sb.append """
 			tko:$uri
 				skos:prefLabel "$k1" ;
 				skos:definition \"\"\"${m.topConcept.text}\"\"\" ;
 """
+			concepts += "tko:$uri"
+			
+			// top concept annotations
 			m.topConcept.ann.each{k2,v2->
 				if (v2 == "rdfs:seeAlso") {
 					sb.append """
 				rdfs:seeAlso <$k2> ;
 """
 				} else
-				sb.append """
+					sb.append """
 				${nsMap[k2]}:$k2 ${v2=~/^<http[s]?:\/\/[A-Za-z_0-9\-\.\/]+>$|^[a-z]+:.*$/?v2:"\"$v2\""} ;
 """
 			}
-			//println "\t$k2=$v2"
+			// topConcept scheme
 			if (!m.topConcept.ann.containsKey("type")) {
 				sb.append """
 				a skos:Concept ;
 				skos:inScheme tko:$guid ;
 				.
 """
-			} 
+			}
 			
-			sb.append  """
+				// create KeepConceptScheme
+				sb.append  """
 			tko:$guid
 				a tko:KeepConceptScheme ;
 				skos:prefLabel "$k1 KeepConceptScheme" ;
 				skos:hasTopConcept tko:$uri ;
 """
+			// weblinks
 			if (c.annotations) c.annotations.each {
 				if (it.source == "WEBLINK" && it.title== "Google Photos") {
-				sb.append """
+					sb.append """
 					schema:image <${it.url}> ;
 """
-					
-				}
 			}
+		}
+		// attachments
 			if (c.attachments) c.attachments.each {
 				if (it.mimetype == "image/jpeg" || it.mimetype == "image/png") {
-				sb.append """
+					sb.append """
 					schema:image <http://visualartsdna.org/images/${it.filePath}> ;
 """
-					
 				}
 			}
-			
+			// timestamps
 			sb.append """
 				schema:datePublished "${Util.now()}"^^xs:dateTime ;
 				schema:dateCreated "${Util.getInstantFromMicros(c.createdTimestampUsec)}"^^xs:dateTime ;
 				schema:dateModified "${Util.getInstantFromMicros(c.userEditedTimestampUsec)}"^^xs:dateTime ;
 				.
 """
-				
 
-
-			try {
-				m.each{k,v->
-					if (k=="topConcept") return
-						//println "$k\n"
-						sb.append """
+		// subConcepts
+		try {
+			m.each{k,v->
+				if (k=="topConcept") return
+					//println "$k\n"
+					sb.append """
 			tko:${util.Text.camelCase(k)}
 				a skos:Concept ;
 				skos:inScheme tko:$guid ;
 """
-
-					if (v.containsKey("ann"))
-						v.ann.each{k2,v2->
-				if (v2 == "rdfs:seeAlso") {
-					sb.append """
+				concepts += "tko:${util.Text.camelCase(k)}"
+					
+				// internet links
+				if (v.containsKey("ann"))
+					v.ann.each{k2,v2->
+						if (v2 == "rdfs:seeAlso") {
+							sb.append """
 				rdfs:seeAlso <$k2> ;
 """
-				} else
+						} else
 							sb.append """
 				${nsMap[k2]}:$k2 ${v2.startsWith("<")?v2:"\"$v2\""} ;
 """
 
-							//println "\t$k2=$v2"
-						}
-					//println "${v.text}\n"
-					sb.append """
+				}
+				// definition
+			sb.append """
 				skos:definition \"\"\"${v.text}\"\"\" ;
 				.
 """
-				}
-			} catch (Exception e) {
-				println e
+			}
+		} catch (Exception e) {
+			println e
+		}
+		
+		labelsMap.each{k,v->
+			def ll = c.labels.findAll{it->
+				k == it.name
+			}
+			ll.each{
+				v.addAll concepts
 			}
 		}
-
-
-		try {
-			def model = ju.saveStringModel(""+sb, "ttl")
-			println "model size=${model.size()}"
-			if (ttlFile) ju.saveModelFile(model,"${ttlFile}.ttl", "ttl")
 	
-		} catch (Exception ex) {
-			println """
-$sb
-$ex
+	}
+			
+	labelsMap.each{k,v->
+		if (!v.isEmpty())
+		sb.append """
+		tko:${UUID.randomUUID()}
+			a tko:KeepCollection ;
+			skos:prefLabel "$k" ;
+"""
+		v.each{
+			sb.append """
+			skos:member $it ;
 """
 		}
-
+		if (!v.isEmpty()) sb.append """
+			.
+"""
 	}
+	
+	try {
+		def model = ju.saveStringModel(""+sb, "ttl")
+		println "model size=${model.size()}"
+		if (ttlFile) ju.saveModelFile(model,"${ttlFile}.ttl", "ttl")
+	
+	} catch (Exception ex) {
+		println """
+	$sb
+	$ex
+	"""
+	}
+
+}
 
 
 }
