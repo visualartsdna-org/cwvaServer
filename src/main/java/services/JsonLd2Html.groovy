@@ -91,7 +91,10 @@ class JsonLd2Html {
 		mmdl.remove("label")
 		mmdl.each{k,m->
 			desc += k
-			label
+			
+//			println "\n$k"
+//			println new JenaUtils().saveModelString(m,"ttl")
+			//label
 			def baos = new ByteArrayOutputStream()
 			m.write(baos,"JSON-LD")
 			ljld += new JsonSlurper().parseText(""+baos)
@@ -205,9 +208,11 @@ About:
 	
 	def buildTables(cm) {
 		cm.each{k,v->
+			//println "$k = $v"
 			def m = [:]
 			if (v instanceof Map) {
 				v.each{k1,v1->
+					//println "\t$k1 = $v1"
 					m[k1] = v1
 				}
 				defs["$k"] = m
