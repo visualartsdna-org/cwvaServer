@@ -13,8 +13,31 @@ import java.awt.Font
 
 class ImageMgtTest {
 	
+	/**
+	 * Use this test to
+	 * stamp image files to replace
+	 * existing image files in the archive
+	 */
 	@Test
 	void testStamp() {
+		
+		def ifile = "IMG_5534.JPG"
+		def title = "Nutty"
+		def guid="519353e0-1c18-40ce-9574-d46a3267dabb"
+		def dir = "C:/stage/data"
+		def signature="left"
+		def factor=0.64
+		int size=125 // default 125
+		def ns = "http://visualartsdna.org/work"
+		def sigfile = util.FileUtil.loadImage(
+			"/temp/images",
+			"rsart.jpg")
+
+		println ImageMgt.makeStampedFile(guid,ifile,title,dir,ns,sigfile,factor,size,signature)
+	}
+	
+	@Test
+	void testStamp1() {
 		
 		def ifile = "C:/temp/images/deckview.jpg"
 		def title = "decview with stamp"
@@ -92,11 +115,11 @@ class ImageMgtTest {
 	public void testQRC() {
 		int size=125 // default 125
 		def ns = "http://visualartsdna.org/work"
-		def dir = "C:/temp/git/nals3d"
+		def dir = "C:/stage/rspates/select"
 		def guids=[
- "5351f503-c8fe-45e2-8758-5db5b7778160",
+ "da2fe60f-d299-4e87-9f7e-c07d8882165f",
 		  ].each{guid->
-			qrcode(guid,dir,ns,size)
+			ImageMgt.qrcode(guid,dir,ns,size)
 		}
 	}
 	
@@ -104,7 +127,7 @@ class ImageMgtTest {
 	public void testQRCSig() {
 		int size=125 // default 125
 		def dir = "C:/temp/git/nals3d"
-		qrcodeSig("rickspates.art",dir,size)
+		ImageMgt.qrcodeSig("rickspates.art",dir,size)
 	}
 
 }

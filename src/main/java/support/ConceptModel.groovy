@@ -141,7 +141,7 @@ WHERE
 			broader = "the:visualArtTerm"
 			inScheme = "the:digitalArtTerms"
 			instance="""
-$term  a            the:Concept ;
+$term  a            skos:Concept ;
         skos:broader     the:visualArtTerm ;
         skos:definition  "Definition." ;
         skos:inScheme    the:digitalArtTerms ;
@@ -190,7 +190,7 @@ $term  a            the:Concept ;
 		def ls = ""
 		def l = ju.queryListMap4(m, prefixes, """
 select distinct ?s {
-		?s a the:Concept 
+		?s a skos:Concept 
 } order by ?s
 """)
 		l.each{

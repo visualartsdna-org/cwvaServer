@@ -49,7 +49,7 @@ prefix the:   <http://visualartsdna.org/thesaurus/>
 
 	@Test
 	void test2() {
-		def spec = "C:/test/cwva/ttl"
+		def spec = "C:/stage/data"
 		def m = new JenaUtilities().loadFiles(spec)
 		println m.size()
 		

@@ -108,7 +108,7 @@ SELECT ?s ?l ?d ?r {
 		def list0 = ju.queryListMap1(model,"","""
 ${rdf.Prefixes.forQuery}
 SELECT ?s ?sc ?l ?c {
-  { ?s a the:Concept } 
+  { ?s a skos:Concept } 
 #  { ?s a skos:Concept } UNION
 #  { ?s skos:broader+ ?o . ?o a skos:Concept . }
  optional { ?s skos:broader ?sc }
@@ -199,7 +199,7 @@ SELECT ?s ?l ?d ?r ?t {
 		def list0 = ju.queryListMap1(model,"","""
 ${rdf.Prefixes.forQuery}
 SELECT ?s ?sc ?l ?c ?pl {
-  { ?s a the:Concept } 
+  { ?s a skos:Concept } 
 #  { ?s a skos:Concept } UNION
 #  { ?s skos:broader+ ?o . ?o a skos:Concept . }
  optional { ?s skos:broader ?sc }

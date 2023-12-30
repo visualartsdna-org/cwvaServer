@@ -121,7 +121,7 @@ work:${UUID.randomUUID()}
 		schema:image <${filename}> ;
 		${work?"the:work work:$work ;":""
 				}
-		the:member"""
+		skos:member"""
 		if (m["_via_img_metadata"][k].regions.size()==0) {
 			sb.append "[]"
 		} else {

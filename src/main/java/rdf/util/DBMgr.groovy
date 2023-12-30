@@ -66,6 +66,7 @@ class DBMgr {
 
 		schema = ju.loadFiles(cfg.model);
 		rdfs = ModelFactory.createRDFSModel(schema, data);
+		Policy.exec(rdfs)
 	}
 
 	// TODO: under construction

@@ -39,13 +39,13 @@ construct {
 		bind (${ns}:${guid} as ?s)
 		{
 		?s the:tag ?c .
-		?c a the:Concept ;
+		?c a skos:Concept ;
         		rdfs:label ?l ;
 			skos:definition ?d
 		} union {
-		?col the:member ?s .
+		?col skos:member ?s .
 		?col the:tag ?c .
-		?c a the:Concept ;
+		?c a skos:Concept ;
         		rdfs:label ?l ;
 			skos:definition ?d
 		}

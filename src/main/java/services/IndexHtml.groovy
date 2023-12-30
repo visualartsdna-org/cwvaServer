@@ -91,8 +91,8 @@ and in an
 <a href="${cfg.host}/model">RDF file (TTL/text)</a>.
 <p>
 The current instance data can be browsed by selecting "Browse" at the top of this page.
-The current instance data is also available in an 
-<a href="${cfg.host}/data">RDF file (TTL/text)</a>.  
+<!--The current instance data is also available in an 
+<a href="${cfg.host}/data">RDF file (TTL/text)</a>.  -->
 <br/>
 <br/>A vocabulary of visual arts terms is available as a 
 <a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a>

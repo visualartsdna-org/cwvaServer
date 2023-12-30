@@ -51,7 +51,7 @@ table, th, td {
 			optional {
 				?d the:work ?work 
 			}
-			?d the:member ?m .
+			?d skos:member ?m .
 			?m rdfs:label ?label .
 			?m vad:height ?height .
 			?m vad:width ?width .
@@ -70,7 +70,7 @@ table, th, td {
 			?s a vad:Project .
 			?s the:design ?d .
 			?d schema:image ?file .
-			?d the:member ?m .
+			?d skos:member ?m .
 			?m rdfs:label ?label .
 			optional {
 				?m the:tag ?t .

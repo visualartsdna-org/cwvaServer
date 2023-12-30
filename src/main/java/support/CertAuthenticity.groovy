@@ -10,7 +10,7 @@ import rdf.JenaUtils
 import rdf.QuerySupport
 import org.junit.Test
 
-class CertAuth {
+class CertAuthenticity {
 
 	def ns = [:]
 	def defs = [:]
@@ -18,20 +18,49 @@ class CertAuth {
 	// certificate of authenticity for a work
 	@Test
 	public void testWork() {
-		def guid = "58d34da1-0201-46d2-9675-e10eda536893"
-		//def guid = "d8554014-f473-40ac-9a4e-363ac733ab06"
+		def guid = "1f6e094a-7244-4890-b0ca-0143ffd7fe13"
 		
+		def content = "/temp/git/cwvaContent"
 		def host = "test"
 		def src = "C:/test/cwva/ttl/data"
 		def mdl = "C:/test/cwva/ttl/model/model.ttl"
 		def domain="http://visualartsdna.org"
 		def ns="work"
 		def base="/work/$guid"
+		def port = 80
 		//def base="/work/ce9dfb4a-afdf-497a-a12f-c22f736df3f6"
 		def path=parsePath(base)
 		//def guid=parseGuid(base)
-		def rdfs = new Server().dbm.rdfs
-		def s = new CertAuth().process(rdfs,domain,path,ns,guid,host)
+		def rdfs = new cwva.Server(
+				port: port,
+				dir:"/temp/git/cwva",
+				cloud:[src:"ttl",tgt:content],
+				data: "$content/ttl/data",
+				vocab: "$content/ttl/vocab",
+				tags: "$content/ttl/tags",
+				model: "$content/ttl/model",
+				images: "$content/../../images",
+				domain: "http://visualartsdna.org" ,
+				ns: "work",
+				host: "http://192.168.1.71:$port",
+				verbose: true
+			).dbm.rdfs
+	
+//			new Server([ // default test cfg
+//				port: port,
+//				dir:"/temp/git/cwva",
+//				cloud:[src:"ttl",tgt:content],
+//				data: "$content/ttl/data",
+//				vocab: "$content/ttl/vocab",
+//				tags: "$content/ttl/tags",
+//				model: "$content/ttl/model",
+//				images: "$content/../../images",
+//				domain: "http://visualartsdna.org" ,
+//				ns: "work",
+//				host: "http://192.168.1.71:$port",
+//				verbose: true
+//			])
+		def s = new CertAuthenticity().process(rdfs,domain,path,ns,guid,host)
 		new File("/temp/html/ca.html").text = s
 	}
 

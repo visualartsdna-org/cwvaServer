@@ -149,8 +149,13 @@ About:
 					return
 				}
 				def m2=defs[k]
-				if (k=="@id") 
-					sb.append """<tr height="50"><td>ID</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
+				if (k=="@id") {
+					if (v =~ /_:b[0-9]+/) {
+//						sb.append """<tr height="50"><td>ID</td><td>$v</td></tr>\n"""
+						sb.append """<tr height="50"></tr>\n"""
+					} else sb.append """<tr height="50"><td>ID</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
+
+				}
 				else 
 					if (k=="@type") {
 					def vc = v instanceof List ? v : [v]
@@ -183,7 +188,11 @@ About:
 						def id=m2["@id"]
 						def vc = v instanceof List ? v : [v]
 						vc.each{ 
-							sb.append """<tr height="50"><td>$k</td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
+							if (v =~ /_:b[0-9]+/) {
+//								sb.append """<tr height="50"><td>$k</td><td>$it</td></tr>\n"""
+//								sb.append """<tr height="50"></tr>\n"""
+							} else 
+								sb.append """<tr height="50"><td>$k</td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
 						}
 					}
 					else {

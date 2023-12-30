@@ -50,7 +50,7 @@ work:${m.guid}
 	void testDigBase() {
 		def dir = "C:/test/nalsGallery/tratsiBase"
 		def file = "digitalBase.ttl"
-		def outdir = "C:/stage/temp"
+		def outdir = "C:/stage/data"
 		printTtl(dir,outdir,file)
 		moveFiles(dir,outdir)
 	}
@@ -59,7 +59,7 @@ work:${m.guid}
 	void testDig() {
 		def dir = "C:/test/nalsGallery/tratsi"
 		def file = "digital.ttl"
-		def outdir = "C:/stage/temp"
+		def outdir = "C:/stage/data"
 		printTtl(dir,outdir,file)
 		moveFiles(dir,outdir)
 	}	

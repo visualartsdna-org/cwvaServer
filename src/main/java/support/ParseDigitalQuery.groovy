@@ -9,7 +9,7 @@ import rdf.JenaUtils
 
 class ParseDigitalQuery {
 
-	static def dir="/stage/temp"
+	static def dir="/stage/data"
 		
 	@Test
 	void test() {
