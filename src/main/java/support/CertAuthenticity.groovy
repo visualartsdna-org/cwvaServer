@@ -18,7 +18,7 @@ class CertAuthenticity {
 	// certificate of authenticity for a work
 	@Test
 	public void testWork() {
-		def guid = "1f6e094a-7244-4890-b0ca-0143ffd7fe13"
+		def guid = "394056a2-d79a-4395-a01f-79377241aacc"
 		
 		def content = "/temp/git/cwvaContent"
 		def host = "test"

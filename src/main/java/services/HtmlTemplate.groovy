@@ -6,6 +6,15 @@ class HtmlTemplate {
 		"""
 <html>
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0GRY55G849"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0GRY55G849');
+</script>
 <link rel="icon" href="$host/images/dblHelix.png">
 <!-- <title>About: http://visualartsdna.org/work/6360c068-de32-4917-80a3-0dfd8b0175c9</title> -->
 <title>VisualArtsDNA</title>
