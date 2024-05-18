@@ -90,6 +90,10 @@ in
 and in an 
 <a href="${cfg.host}/model">RDF file (TTL/text)</a>.
 <p>
+<p/>
+See this ontology titled "Information Model for the Visual Arts" on  
+<a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/2021/07/16/model#">Archivo</a>.
+
 The current instance data can be browsed by selecting "Browse" at the top of this page.
 <!--The current instance data is also available in an 
 <a href="${cfg.host}/data">RDF file (TTL/text)</a>.  -->
@@ -115,11 +119,7 @@ Development of the VisualArtsDNA ontology is motivated by:
 (3) collaborating artists may need a common information model over the visual arts creative-process domain.
 <p/>
 <p/>
-<p/>
-The ontology is developed using TopBraid Composer available from 
-<a href="https://www.topquadrant.com/">TopQuadrant</a>.
-<p/>
-<p/>
+<<p/>
 This ontology is not definitive or complete.  It is intended as a conversation starter. 
 """
 //	The SVG graph is generated following this <a href="http://visualartsdna.org/graphInstructions.html">process</a>.
