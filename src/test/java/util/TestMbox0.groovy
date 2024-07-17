@@ -6,38 +6,24 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.junit.jupiter.api.Test
 import java.nio.charset.*
-import java.util.zip.ZipFile
-import org.apache.commons.io.FileUtils
-import java.nio.file.Files
-import java.nio.file.Paths
 import org.apache.james.mime4j.mboxiterator.*
 import groovy.io.FileType
 
+// auto extract zip to folder and cleanup
 // backup
 
-class TestMbox {
+class TestMbox0 {
 	def printMessage
-	def tgt = "C:/temp/Takeout/Larry"
-	def dataPath = "C:/art/photographers/Larry Minerich/mbox"
+	def dataPath = "C:/temp/Takeout/Larry"
 	def mboxPath = "C:/temp/Takeout/Larry/Takeout/Mail/Larry.mbox"
-	def downloads = "C:/Users/ricks/Downloads"
 
 	@Test
 	void test() {
-
-		FileUtils.deleteDirectory(new File("$tgt/Takeout"))
-		
-		def file = getLatestFileType(downloads,".zip")
-		if (!file) {
-			println "no zip file"
-			return
-		}
-		unzipFile(file,tgt)
-
 		def ids = loadPastIds()
 		CharsetEncoder ENCODER = Charset.forName("UTF-8").newEncoder();
+		final File mbox = new File(mboxPath);
 		def msg=0
-		for (CharBufferWrapper message : MboxIterator.fromFile(new File(mboxPath)).charset(ENCODER.charset()).build()) {
+		for (CharBufferWrapper message : MboxIterator.fromFile(mbox).charset(ENCODER.charset()).build()) {
 			def m = getTokens(message,ids)
 			if (!m.isEmpty()) {
 			println "\nMessage ${msg++}\t${m["part0"]["Date"]}"
@@ -50,9 +36,7 @@ class TestMbox {
 					else println "${k}--${k1}:${v1}"
 				}
 
-				if (m[k].containsKey("Content-Type")
-					//&& m[k]["Content-Type"]
-						&& m[k]["Content-Type"] instanceof Map
+				if (m[k]["Content-Type"]
 						&& m[k]["Content-Type"]["Content-Type"] == "image/jpeg") {
 					println "saving ${m[k]["Content-Type"]["name"]}"
 					def jpg = removeQuotes(m[k]["Content-Type"]["name"])
@@ -67,7 +51,6 @@ class TestMbox {
 					}
 				}
 				if (m[k]["Content-Type"]
-						&& m[k]["Content-Type"] instanceof Map
 						&& m[k]["Content-Type"]["Content-Type"] == "video/quicktime") {
 					println "saving ${m[k]["Content-Type"]["name"]}"
 					def jpg = removeQuotes(m[k]["Content-Type"]["name"])
@@ -89,7 +72,6 @@ class TestMbox {
 				v.each{k1,v1->
 					if (k1 == "content"
 							&& (v["Content-Type"]
-							&& m[k]["Content-Type"] instanceof Map
 							&& (v["Content-Type"]["Content-Type"] =="image/jpeg"
 							|| v["Content-Type"]["Content-Type"] =="video/quicktime")
 							)
@@ -99,22 +81,13 @@ class TestMbox {
 					else m2[k][k1] = v1
 				}
 			}
-			
-			def id = ""
-			if (m["part0"]["Message-Id"] instanceof String) {
-				id = m["part0"]["Message-Id"]
-			} else {
-				id = m["part0"]["Message-Id"]["Message-Id"]
-			}
+			def id = m["part0"]["Message-Id"]["Message-Id"]
 			id = id.replaceAll(/[<>]/,"")
 			new File("$dataPath/${id}.json").text = JsonOutput.prettyPrint(
 					new JsonOutput().toJson(m2)
 					)
 			}
 		}
-		
-		file.delete() // rm the zip
-		
 	}
 	
 	@Test
@@ -207,37 +180,6 @@ class TestMbox {
 				m[f] = it.trim()
 		}
 		m
-	}
-
-	def unzipFile(File file,tgt) {
-		//cleanupFolder()
-		def zipFile = new ZipFile(file)
-		zipFile.entries().each { it ->
-			def path = Paths.get("$tgt/${it.name}")
-			if(it.directory){
-				Files.createDirectories(path)
-			}
-			else {
-				def parentDir = path.getParent()
-				if (!Files.exists(parentDir)) {
-					Files.createDirectories(parentDir)
-				}
-				Files.copy(zipFile.getInputStream(it), path)
-			}
-		}
-	}
-	
-	def getLatestFileType(folder, ext) {
-		def dir = new File(folder)
-		def list = []
-		dir.eachFileRecurse (FileType.FILES) { file ->
-			if ((""+file).endsWith(ext))
-		  list << file
-		}
-		list.sort{a,b->
-			b.lastModified() <=> a.lastModified()
-		}
-		list.first()
 	}
 
 	def removeEmojis(s) {
@@ -352,17 +294,8 @@ image/jpeg;	name=IMG_0114.jpg;	x-apple-part-url=9EA403B9-F3BC-41EB-823A-A7A85891
 		}
 		list.each{
 			def m = new JsonSlurper().parse(it)
-			def id = ""
-			def dt = ""
-			if (m["part0"]["Message-Id"] instanceof String)
-				id = m["part0"]["Message-Id"]
-			else 
-				m["part0"]["Message-Id"]["Message-Id"]
-				
-			if (m["part0"]["Date"] instanceof String)
-				dt = m["part0"]["Date"]
-			else
-				dt = m["part0"]["Date"]["Date"]
+			def id = m["part0"]["Message-Id"]["Message-Id"]
+			def dt = m["part0"]["Date"]["Date"]
 			ids[id] = dt
 		}
 		ids
