@@ -21,8 +21,8 @@ class Takeout2Ttl {
 	@Test
 	void test() {
 		def base = "C:/temp/generatedFiles/Takeout/Keep"
-		setup(base)
-		process(base)
+		setup(base,jsonDir,ttlDir)
+		process(base,jsonDir)
 		
 		def src = "$base/$jsonDir"
 		def dest = "$base/$ttlDir"
@@ -32,7 +32,7 @@ class Takeout2Ttl {
 
 	}
 
-	def setup(base) {
+	def setup(base,jsonDir,ttlDir) {
 		def dir = new File("$base/$jsonDir")
 		if (!dir.isDirectory()) {
 			dir.mkdirs()
@@ -43,7 +43,7 @@ class Takeout2Ttl {
 		}
 	}
 
-	def process(base) {
+	def process(base,jsonDir) {
 		new File(base).eachFile {fn->
 
 			if (!fn.name.endsWith(".json")) return

@@ -10,6 +10,11 @@ import java.text.SimpleDateFormat
 import org.junit.jupiter.api.Test
 import rdf.JenaUtils
 import util.Rson
+import org.apache.commons.io.FileUtils
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.zip.ZipFile
+import groovy.io.FileType
 
 class TakeoutTtl2Notes {
 	def prefixes = """
@@ -25,18 +30,41 @@ prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
 prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
 prefix foaf:  <http://xmlns.com/foaf/0.1/> 
 """
+	def tkoTmp = "C:/temp/Takeout/rickspatesart"
+	def downloads = "C:/Users/ricks/Downloads"
+	def tgt = "C:/stage/tags"
 
+	def jsonDir = "json"
 	def ttlDir = "ttl"
-	def ttlDir2 = "ttl2"
 	
 	@Test
-	void test() {
-		def base = "C:/temp/generatedFiles/Takeout/Keep"
-		def dest = "C:/temp/git/cwvaContent/ttl/tags"
+	void testDriver() {
 		
-		def src = "$base/$ttlDir"
-		process(src,dest)
+		FileUtils.deleteDirectory(new File("$tkoTmp/Takeout"))
+		
+		def file = getLatestFileType(downloads,".zip")
+		if (!file) {
+			println "no zip file"
+			return
+		}
+		unzipFile(file,tkoTmp)
+		
+		
+		// json to anon ttl
+		def t2t = new Takeout2Ttl()
+		def base = "$tkoTmp/Takeout/Keep"
+		t2t.setup(base,jsonDir,ttlDir)
+		t2t.process(base,jsonDir)
+		
+		def src = "$base/$jsonDir"
+		def ttlTmp = "$base/$ttlDir"
+		def type = "vad:NotaBene" 	// Google Keep notes
+		def prefix = "tko"			// via Takeout
+		t2t.process(src,ttlTmp,type,prefix)
 
+		
+		// anon ttl to notes ttl
+		process(ttlTmp,tgt)
 	}
 
 	def process(src,dest) {
@@ -61,6 +89,7 @@ select ?id ?created ?edited ?text ?title {
 			
 }
 """)
+			if (c.id==null) return
 			//println c
 			try {
 				def ts = new Date(((c.created as long) / 1000) as long)
@@ -91,7 +120,7 @@ select ?id ?created ?edited ?text ?title {
 				def m2 = ju.saveStringModel(ttl, "TTL")
 				model.add m2
 			} catch (Exception ex) {
-				println "ERROR in data selection"
+				println "ERROR in data selection: $file, $ex"
 			}
 
 		}
@@ -107,4 +136,46 @@ select ?id ?created ?edited ?text ?title {
 			def ts2 = new Date(((ts as long) / 1000) as long)
 			new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(ts2)
 	}
+	
+	def getLatestFileType(folder, ext) {
+		def dir = new File(folder)
+		def list = []
+		dir.eachFileRecurse (FileType.FILES) { file ->
+			if ((""+file).endsWith(ext))
+		  list << file
+		}
+		list.sort{a,b->
+			b.lastModified() <=> a.lastModified()
+		}
+		list.first()
+	}
+
+	def unzipFile(File file,tgt) {
+		//cleanupFolder()
+		def zipFile = new ZipFile(file)
+		zipFile.entries().each { it ->
+			def path = Paths.get("$tgt/${it.name}")
+			if(it.directory){
+				Files.createDirectories(path)
+			}
+			else {
+				def parentDir = path.getParent()
+				if (!Files.exists(parentDir)) {
+					Files.createDirectories(parentDir)
+				}
+				Files.copy(zipFile.getInputStream(it), path)
+			}
+		}
+	}
+	
+	@Test
+	void test() {
+		def base = "C:/temp/generatedFiles/Takeout/Keep"
+		def dest = "C:/temp/git/cwvaContent/ttl/tags"
+		
+		def src = "$base/$ttlDir"
+		process(src,dest)
+	}
+
+
 }
