@@ -22,7 +22,7 @@ class JsonRdfUtilTest {
 		def dest = "C:/test/via/ttl"
 		def type = "vad:Via" // in this case
 		def prefix = "via"
-		new RewriteJson().process(src,dest,type,prefix)
+		new Takeout2Ttl().process(src,dest,type,prefix)
 	}
 	
 	// json to ttl

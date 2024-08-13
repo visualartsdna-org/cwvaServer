@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import rdf.JenaUtils
 import util.Rson
 
-class RewriteJson {
+class Takeout2Ttl {
 
 	def jsonDir = "json"
 	def ttlDir = "ttl"
@@ -20,7 +20,7 @@ class RewriteJson {
 	// collect "published" ttl in the base/ttl folder
 	@Test
 	void test() {
-		def base = "C:/temp/generatedFiles"
+		def base = "C:/temp/generatedFiles/Takeout/Keep"
 		setup(base)
 		process(base)
 		

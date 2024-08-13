@@ -197,7 +197,8 @@ About:
 					}
 					else {
 						sb.append """<tr height="50"><td>$k</td>"""
-						printHtml(v,sb)
+						//printHtml(v,sb)
+						printHtml(v.replaceAll("\n","<br>"),sb)
 					}
 				}
 			}
