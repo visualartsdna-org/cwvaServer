@@ -133,15 +133,19 @@ class TestMbox {
 			def m = new JsonSlurper().parse(it)
 
 			m.each{k,v->
-				//println "$k"
-				if (v["Subject"])
+				if (v instanceof String ) println "$v"
+				else if (v["Subject"]
+					&& v["Subject"] instanceof Map
+					)
 					println "${removeEmojis(v["Subject"]["Subject"])}"
 				if (v["content"]
+					&& v["Content-Type"] instanceof Map
 					&& v["Content-Type"]["Content-Type"] == "text/plain"
 					&& v["content"] != "Larry")
 					println "${removeEmojis(v["content"])}"
 				if (v["Content-Type"]
-						&& v["Content-Type"]["name"])
+					&& v["Content-Type"] instanceof Map
+					&& v["Content-Type"]["name"])
 					println "\t${removeEmojis(removeQuotes(v["Content-Type"]["name"]))}"
 			}
 		}
@@ -241,6 +245,7 @@ class TestMbox {
 	}
 
 	def removeEmojis(s) {
+		if (!s) return ""
 		def s1 = s.replaceAll(/=\?utf-8\?Q\?/,"")
 		def s2 = s1.replaceAll(/=[A-Z0-9][A-Z0-9]/,"")
 		def s3 = s2.replaceAll(/_\?=/,"")
