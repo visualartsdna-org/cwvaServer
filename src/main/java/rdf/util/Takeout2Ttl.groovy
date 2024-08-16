@@ -140,10 +140,11 @@ $ex
 							col += jc
 						}
 					}
-					else if (!fs[0].contains(":")){
+					else if (!fs[0].contains(":")
+						&& fs.size() == 2) {
 						col["schema:${fs[0]}"]=fs[1]
 					}
-					else col[fs[0]]=fs[1]
+					else if (fs.size() == 2) col[fs[0]]=fs[1]
 				}
 				else if (!it.startsWith("@"))
 					text += "$it\n"
