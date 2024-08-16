@@ -49,82 +49,7 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 		}
 		unzipFile(file,tkoTmp)
 		
-		
-		// json to anon ttl
-		def t2t = new Takeout2Ttl()
-		def base = "$tkoTmp/Takeout/Keep"
-		t2t.setup(base,jsonDir,ttlDir)
-		t2t.process(base,jsonDir)
-		
-		def src = "$base/$jsonDir"
-		def ttlTmp = "$base/$ttlDir"
-		def type = "vad:NotaBene" 	// Google Keep notes
-		def prefix = "tko"			// via Takeout
-		t2t.process(src,ttlTmp,type,prefix)
-
-		
-		// anon ttl to notes ttl
-		process(ttlTmp,tgt)
-	}
-
-	def process(src,dest) {
-
-		def ju = new JenaUtils()
-		def model = ju.newModel()
-		new File(src).eachFile {file->
-			
-			if (!(file.name.endsWith(".ttl"))) return
-			println "$file"
-			def m = ju.loadFileModelFilespec("$file")
-			
-			println "${m.size()}"
-			
-			def c = ju.queryListMap2(m,prefixes, """
-select ?id ?created ?edited ?text ?title {
-			?s schema:identifier ?id .
-			?s tko:createdTimestampUsec ?created .
-			?s tko:userEditedTimestampUsec ?edited .
-			?s tko:filteredText ?text .
-			?s tko:title ?title 
-			
-}
-""")
-			if (c.id==null) return
-			//println c
-			try {
-				def ts = new Date(((c.created as long) / 1000) as long)
-				def time = new SimpleDateFormat("yyyyMMdd").format(ts)
-				def cpt = "${util.Text.camelCase(c.title)}_$time"
-				def created = makeDate(c.created)
-				def edited = makeDateTime(c.edited)
-				def ttl= """
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix schema: <https://schema.org/> .
-@prefix work:  <http://visualartsdna.org/work/> .
-@prefix tko:   <http://visualartsdna.org/takeout#> .
-@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
-@prefix the:   <http://visualartsdna.org/thesaurus/> .
-@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
-			the:$cpt
-				a tko:KeepNote ;
-				tko:created "$created"^^xsd:date ;
-				tko:edited "$edited"^^xsd:dateTime ;
-				rdfs:label "${c.title}" ;
-				skos:inScheme      the:paintingTerms ;
-				skos:definition \"\"\"${(c.text).trim()}\"\"\" ;
-				the:id work:${c.id} ;
-				.
-			work:${c.id} the:tag the:$cpt .
-"""
-				println ttl
-				def m2 = ju.saveStringModel(ttl, "TTL")
-				model.add m2
-			} catch (Exception ex) {
-				println "ERROR in data selection: $file, $ex"
-			}
-
-		}
-		ju.saveModelFile(model, "$dest/notes.ttl", "TTL")
+		processJson("$tkoTmp/Takeout/Keep",tgt)
 	}
 
 	
@@ -169,13 +94,179 @@ select ?id ?created ?edited ?text ?title {
 	}
 	
 	@Test
-	void test() {
+	void test0() {
 		def base = "C:/temp/generatedFiles/Takeout/Keep"
 		def dest = "C:/temp/git/cwvaContent/ttl/tags"
 		
 		def src = "$base/$ttlDir"
 		process(src,dest)
 	}
+	
+	@Test
+	void test() {
+		def base = "C:/temp/generatedFiles/Takeout/Keep"
+		def dest = "C:/temp/git/cwvaContent/ttl/tags"
+		
+		def src = "$base/$jsonDir"
+		def m = processJson(src,dest)
+		println m
+	}
+	
+	def processJson(src,dest) {
+		def ju = new JenaUtils()
+		def model = ju.newModel()
+		new File(src).eachFile {file->
+		def m2 = [:]
 
+		//new File(base).eachFile {fn->
+		//def fn = new File("C:/temp/Takeout/rickspatesart/Takeout/Keep/Morning Glory.json")
+			if (!file.name.endsWith(".json")) return
+			//def json = "$fn" 
 
+			def m = Rson.load("$file")
+			def col = getCol(m)
+
+			// check for publish label
+			def publish = col.tags.find{
+				it == "publish"
+			}
+			if (publish) {
+				col.each{k,v->
+					if (k == "tags") return
+					if (k in 
+						["title",
+						"userEditedTimestampUsec",
+						"createdTimestampUsec",
+						"filteredText"
+						])
+						m2["${k}"]=v
+					else if (k.contains(":"))
+						m2["${k}"]=v
+					else if (k in [
+						"hasTopConcept",
+						"topConceptOf",
+						"altLabel",
+						"hiddenLabel",
+						"prefLabel",
+						"notation",
+						"changeNote",
+						"definition",
+						"editorialNote",
+						"example",
+						"historyNote",
+						"note",
+						"scopeNote",
+						"broader",
+						"broaderTransitive",
+						"narrower",
+						"narrowerTransitive",
+						"related",
+						"semanticRelation",
+						"Collection",
+						"OrderedCollection",
+						"member",
+						"memberList",
+						"broadMatch",
+						"closeMatch",
+						"exactMatch",
+						"mappingRelation",
+						"narrowMatch",
+						"relatedMatch"
+						])
+						m2["skos:${k}"]=v
+	
+				}
+				
+			try {
+				def ts = new Date(((m2.createdTimestampUsec as long) / 1000) as long)
+				def time = new SimpleDateFormat("yyyyMMdd").format(ts)
+				def cpt = "${util.Text.camelCase(m2.title)}_$time"
+				def created = makeDate(m2.createdTimestampUsec)
+				def edited = makeDateTime(m2.userEditedTimestampUsec)
+				def ttl= """
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix work:  <http://visualartsdna.org/work/> .
+@prefix tko:   <http://visualartsdna.org/takeout/> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix the:   <http://visualartsdna.org/thesaurus/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+			the:$cpt
+				a the:KeepNote ;
+				skos:inScheme      the:paintingNotes ;
+				tko:created "$created"^^xsd:date ;
+				tko:edited "$edited"^^xsd:dateTime ;
+				rdfs:label "${m2.title}" ;
+				the:tag ${m2["skos:related"]} ;
+				skos:definition \"\"\"${(m2.filteredText).trim()}\"\"\" ;
+
+"""
+				m2.findAll{k,v->
+					k.startsWith("skos:") && k != "skos:related"
+				}.each{k,v->
+					if (isUri(v))
+					ttl += """
+					$k $v ;
+"""
+				}
+				ttl += """ .
+			${m2["skos:related"]} the:tag the:$cpt .
+"""
+				//println ttl
+				model.add ju.saveStringModel(ttl, "TTL")
+			} catch (Exception ex) {
+				println "ERROR in data selection: $file, $ex"
+			}
+			}
+			
+	}
+			ju.saveModelFile(model, "$dest/notes.ttl", "TTL")
+			
+	}
+	
+	
+	def getCol(m) {
+		def col = [:]
+
+		def text = ""
+		m.textContent.eachLine{
+
+				if (it.trim().startsWith("[")) {
+					def ann = (it.trim() =~ /^\[(.*)\]/)[0][1]
+					def fs = ann.split("=")
+					if (fs.size() == 2)
+						col[fs[0]] = fs[1]
+
+				} else if (!it.startsWith("@")) {
+					text += "$it\n"
+				}
+			}
+		col.title = m.title
+		col.userEditedTimestampUsec = m.userEditedTimestampUsec
+		col.createdTimestampUsec = m.createdTimestampUsec
+		// text
+		col.filteredText = text
+
+		// labels
+		col.tags = []
+		m.labels.each{
+			col.tags += it.name
+		}
+		col
+	}
+	
+	@Test
+	void testIsUri() {
+		println "${isUri("the:WebAfterRain")}"
+		println "${isUri("work:da79b4be-3442-4b6b-bdb4-107b2682c560")}"
+		println "${isUri("http://visualartsdna.org/work/da79b4be-3442-4b6b-bdb4-107b2682c560")}"
+		println "${isUri("hi there")}"
+		println "${isUri("molly")}"
+	}
+
+	def isUri(s) {
+		if (s.contains(" ")) return false
+		if (!s.contains(":")) return false
+		true
+	}
 }
