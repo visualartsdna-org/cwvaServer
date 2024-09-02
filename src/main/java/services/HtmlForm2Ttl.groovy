@@ -34,6 +34,8 @@ class HtmlForm2Ttl {
 <head>
 </head>
 <body style="margin:100;padding:0">
+<a href="${cwva.Server.getInstance().cfg.host}">Home</a>
+<br>
 <h2>
 VADNA RDF Entry
 </h2>

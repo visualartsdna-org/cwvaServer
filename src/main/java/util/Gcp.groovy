@@ -171,8 +171,10 @@ class Gcp {
 				}
 				.each{
 					def l2 = it.split(/[ ]+/)
-					def name = (l2[3] =~ /.*\/([A-Za-z0-9_\-\.',!]+)$/)[0][1]
-					m[name] = [size:l2[1], date:l2[2], path:l2[3]]
+					if (!(l2[3].endsWith("/"))) { // exclude folder entries
+						def name = (l2[3] =~ /.*\/([A-Za-z0-9_\-\.',!]+)$/)[0][1]
+						m[name] = [size:l2[1], date:l2[2], path:l2[3]]
+					}
 				}
 		m
 	}

@@ -32,7 +32,7 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 """
 	def tkoTmp = "C:/temp/Takeout/rickspatesart"
 	def downloads = "C:/Users/ricks/Downloads"
-	def tgt = "C:/stage/tags"
+	def tgt = "C:/stage/metadata/tags"
 
 	def jsonDir = "json"
 	def ttlDir = "ttl"
@@ -117,11 +117,10 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 		def model = ju.newModel()
 		new File(src).eachFile {file->
 		def m2 = [:]
-
-		//new File(base).eachFile {fn->
-		//def fn = new File("C:/temp/Takeout/rickspatesart/Takeout/Keep/Morning Glory.json")
+		println file
+//		if (file.name.contains("Lily"))
+//			println "here"
 			if (!file.name.endsWith(".json")) return
-			//def json = "$fn" 
 
 			def m = Rson.load("$file")
 			def col = getCol(m)
@@ -137,10 +136,11 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 						["title",
 						"userEditedTimestampUsec",
 						"createdTimestampUsec",
-						"filteredText"
+						"filteredText",
+						"tag"
 						])
 						m2["${k}"]=v
-					else if (k.contains(":"))
+					else if (k.contains(":"))  // a namespace
 						m2["${k}"]=v
 					else if (k in [
 						"hasTopConcept",
@@ -197,20 +197,20 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 				tko:created "$created"^^xsd:date ;
 				tko:edited "$edited"^^xsd:dateTime ;
 				rdfs:label "${m2.title}" ;
-				the:tag ${m2["skos:related"]} ;
+				the:tag ${m2.tag} ;
 				skos:definition \"\"\"${(m2.filteredText).trim()}\"\"\" ;
 
 """
 				m2.findAll{k,v->
-					k.startsWith("skos:") && k != "skos:related"
+					k.startsWith("skos:")// && k != "skos:related"
 				}.each{k,v->
-					if (isUri(v))
+					//if (isUri(v))
 					ttl += """
 					$k $v ;
 """
 				}
 				ttl += """ .
-			${m2["skos:related"]} the:tag the:$cpt .
+			${m2.tag} the:tag the:$cpt .
 """
 				//println ttl
 				model.add ju.saveStringModel(ttl, "TTL")

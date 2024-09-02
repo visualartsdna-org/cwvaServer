@@ -25,6 +25,7 @@ class DBMgr {
 
 	DBMgr(Map cfg) {
 		this.cfg = cfg
+		cleanUp()
 		def m = load()
 		//		new Thread().start{
 		//			new SparqlConsole().show(m)
@@ -48,10 +49,16 @@ class DBMgr {
 
 	def load() {
 
+		def clobber = System.getProperty("clobber")?:false
 		// restore ttl from gcp
 		println "gcpCpDirRecurse: ${cfg.cloud.src}, ${cfg.cloud.tgt}"
-		util.Gcp.gcpCpDirRecurse(cfg.cloud.src,cfg.cloud.tgt)
-
+		if (clobber) {
+			util.Gcp.gcpCpDirRecurseClobber(cfg.cloud.src,cfg.cloud.tgt)
+		}
+		else {
+			util.Gcp.gcpCpDirRecurse(cfg.cloud.src,cfg.cloud.tgt)
+		}
+		
 		def ju = new JenaUtilities()
 
 		instances = ju.loadFiles(cfg.data)
@@ -73,6 +80,21 @@ class DBMgr {
 	def reload() {
 		rdfs.close()
 		load()
+	}
+	
+	def cleanUp() {
+		[
+			"ttl/data":cfg.data,
+			"ttl/model":cfg.model,
+			"ttl/tags":cfg.tags,
+			"ttl/vocab":cfg.vocab,
+			].each{k,v->
+		util.Gcp.folderCleanup(
+			k, // gDir
+			v,	// fDir
+			/.*\.ttl/) // filter
+		}
+
 	}
 
 	def getSizes() {

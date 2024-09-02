@@ -167,19 +167,19 @@ About:
 						if (i++>0)	s += ", "
 						s += """<a href="${nsLookup(it)}">$it</a>"""
 					}
-					sb.append """<tr height="50"><td>$k</td><td>$s</td></tr>\n"""
+					sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
 //					vc.each{ 
-//						sb.append """<tr height="50"><td>$k</td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
+//						sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
 //					}
 				}
 				else if (k=="image") {
-					sb.append """<tr height="50"><td>$k</td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="500"></a></td></tr>\n"""
+					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="500"></a></td></tr>\n"""
 				}
 				else if (k=="qrcode") {
-					sb.append """<tr height="50"><td>$k</td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="100"></a></td></tr>\n"""
+					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="100"></a></td></tr>\n"""
 				}
 				else if (isUri(nsLookup(v))) { 
-					sb.append """<tr height="50"><td>$k</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
+					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
 				}
 				else {
 					def type=m2["@type"]
@@ -189,14 +189,14 @@ About:
 						def vc = v instanceof List ? v : [v]
 						vc.each{ 
 							if (v =~ /_:b[0-9]+/) {
-//								sb.append """<tr height="50"><td>$k</td><td>$it</td></tr>\n"""
+//								sb.append """<tr height="50"><td><i>$k</i></td><td>$it</td></tr>\n"""
 //								sb.append """<tr height="50"></tr>\n"""
 							} else 
-								sb.append """<tr height="50"><td>$k</td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
+								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
 						}
 					}
 					else {
-						sb.append """<tr height="50"><td>$k</td>"""
+						sb.append """<tr height="50"><td><i>$k</i></td>"""
 						//printHtml(v,sb)
 						printHtml(v.replaceAll("\n","<br>"),sb)
 					}

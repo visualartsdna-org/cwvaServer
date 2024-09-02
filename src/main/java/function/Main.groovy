@@ -15,8 +15,8 @@ class Main {
 			port:port,
 			dir:"/temp/git/cwva",
 			data: "$content/ttl/data",
-			vocab: "$content/ttl/vocab/vocabulary.ttl",
-			tags: "$content/ttl/tags/tags.ttl",
+			vocab: "$content/ttl/vocab",
+			tags: "$content/ttl/tags", // was ../tags.ttl
 			studies: "$content/ttl/studies",
 			model: "$content/ttl/model",
 			images: "$content/../../images",

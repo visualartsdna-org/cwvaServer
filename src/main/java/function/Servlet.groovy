@@ -15,8 +15,9 @@ import util.Tmp
 class Servlet extends ServletBase {
 
 	def vm = new ConceptModel(vocab)
-	def tm = new TagModel(data,vocab,tags,cfg.host)
-	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
+	def rm = new RelatedConcepts(vocab)
+//	def tm = new TagModel(data,vocab,tags,cfg.host)
+//	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
 	def artist = [:]
 
 	Servlet(){
@@ -67,8 +68,14 @@ class Servlet extends ServletBase {
 			
 		switch (path) {
 
-			case ~/\/study.*/:
-				def s = sm.process(path,query)
+			case ~/\/related/:
+				def s = rm.process()
+				sendHtml(response, "$s")
+				break
+
+			case "/related.entry":
+				def m = rm.parse(query)
+				def s = rm.handleQueryParams(m)
 				sendHtml(response, "$s")
 				break
 
@@ -78,23 +85,6 @@ class Servlet extends ServletBase {
 
 			case "/":
 				sendHtmlFile(response,"$dir/html/function.html")
-				break
-
-			case "/studies":
-				def s = sm.directory(path,query,cfg.host)
-				sendHtml(response, "$s")
-				break
-
-			case "/tag":
-				def s = tm.process("the:visualArtTerm","vad:Watercolor")
-				sendHtml(response, "$s")
-				break
-
-			case "/tag.entry":
-				def m = vm.parse(query)
-				m.each { println it }
-				def s = tm.handleQueryParams(m)
-				sendHtml(response, "$s")
 				break
 
 			case "/vocab":
@@ -136,20 +126,6 @@ class Servlet extends ServletBase {
 				} catch (java.io.FileNotFoundException fne) {
 					sendText(response, "File not found")
 				}
-				break
-
-			case "/fxai/state":
-				sendTextFile(response,"./fxaiState.txt")
-				break
-
-			case "/fxai/stop":
-				new File("./fxaiState.txt").text = "0"
-				sendTextFile(response,"./fxaiState.txt")
-				break
-
-			case "/fxai/start":
-				new File("./fxaiState.txt").text = "1"
-				sendTextFile(response,"./fxaiState.txt")
 				break
 
 			case "/rdf/entry":

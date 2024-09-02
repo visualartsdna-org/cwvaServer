@@ -119,7 +119,7 @@ Development of the VisualArtsDNA ontology is motivated by:
 (3) collaborating artists may need a common information model over the visual arts creative-process domain.
 <p/>
 <p/>
-<<p/>
+<p/>
 This ontology is not definitive or complete.  It is intended as a conversation starter. 
 """
 //	The SVG graph is generated following this <a href="http://visualartsdna.org/graphInstructions.html">process</a>.

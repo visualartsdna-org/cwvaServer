@@ -34,6 +34,8 @@ class HtmlForm2DigitalTtl {
 <head>
 </head>
 <body style="margin:100;padding:0">
+<a href="${cwva.Server.getInstance().cfg.host}">Home</a>
+<br>
 <h2>
 VADNA RDF Digital Entry
 </h2>

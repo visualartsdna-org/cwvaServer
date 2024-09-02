@@ -1,5 +1,7 @@
 package support
 
+import java.text.SimpleDateFormat
+
 class CertAuthTemplate {
 	// http://clipart-library.com/clipart/dna-cliparts_4.htm
 	static def head(host) {
@@ -115,6 +117,13 @@ About:
 //</tr>
 	}
 	
+	static def getYear() {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy");
+		df.format(new Date());
+	}
+	
+
+	
 	// <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 	// Copyright &copy; 2020 visualartsdna.com. All Rights Reserved.
 	static def tableTail = """</tbody></table></div>
@@ -124,7 +133,7 @@ About:
 <center><font size="2" color="#666666">
 <br/><hr/><br/>
 <a href="mailto:inquiry@visualartsdna.org"/>inquiry@visualartsdna.org</a><br/>
-Copyright &copy; 2022 visualartsdna.org. All Rights Reserved.
+Copyright &copy; ${getYear()} visualartsdna.org. All Rights Reserved.
 <br/>
 v 2.0.4
 </font></center>

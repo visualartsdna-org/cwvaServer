@@ -20,8 +20,8 @@ class ConceptModel {
 	
 	ConceptModel(concepts){
 		this.concepts = concepts
-		conceptModel = ju.loadFiles(concepts)
-		tx = new Transaction(conceptModel,concepts)
+		conceptModel = ju.loadFiles("$concepts/vocabulary.ttl")
+		tx = new Transaction(conceptModel,"$concepts/vocabulary.ttl")
 	}
 	
 	def initial(term) {
@@ -443,6 +443,8 @@ body {font-family: Arial, Helvetica, sans-serif;}
 </style>
 </head>
 <body style="margin:100;padding:0">
+<a href="${cwva.Server.getInstance().cfg.host}">Home</a>
+<br>
 <h2>
 VisualArtsDNA Concept Entry
 </h2>

@@ -148,25 +148,6 @@ class Servlet extends ServletBase {
 				sendHtmlFile(response,"$dir/html/copyright.html")
 				break
 
-//			case "/fxai/state":
-//				sendTextFile(response,"./fxaiState.txt")
-//				break
-//
-//			case "/fxai/stop":
-//				new File("./fxaiState.txt").text = "0"
-//				sendTextFile(response,"./fxaiState.txt")
-//				break
-//
-//			case "/fxai/start":
-//				new File("./fxaiState.txt").text = "1"
-//				sendTextFile(response,"./fxaiState.txt")
-//				break
-//
-//			case "/fxai/invert":
-//				new File("./fxaiState.txt").text = "-1"
-//				sendTextFile(response,"./fxaiState.txt")
-//				break
-
 			default:
 				serve(cfg,path,query,response)
 				break
