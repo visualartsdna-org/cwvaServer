@@ -72,6 +72,13 @@ class JsonLd2Html {
 		rehost(r)
 	}
 	def rehost(r) {
+		if (r instanceof List) {
+			def r2 = []
+			r.each{
+				r2 += it.replaceAll("http://visualartsdna.org",host)
+			}
+			return r2
+		} else
 		r.replaceAll("http://visualartsdna.org",host)
 	}
 	
@@ -98,7 +105,12 @@ class JsonLd2Html {
 			def baos = new ByteArrayOutputStream()
 			m.write(baos,"JSON-LD")
 			ljld += new JsonSlurper().parseText(""+baos)
+				
 
+		}
+		ljld.each{
+			if (it.containsKey("@graph"))
+			it["@graph"].sort{a,b-> b["@id"]<=>a["@id"]}
 		}
 		def s = printHtml(ljld, desc, domain,path, ns, guid, label)
 	}
@@ -133,14 +145,11 @@ About:
 		sb.append HtmlTemplate.tail
 		return ""+sb
 	}
+	
 	def printHtml(m, sb) {
 		if (m instanceof Map) {
 			m.each{k,v->
 				
-//				if (k=="contentUrl") {
-//					println "here"
-//				}
-
 				if (k=="@context") return
 				if (k=="@graph") {
 					v.each{
@@ -151,9 +160,10 @@ About:
 				def m2=defs[k]
 				if (k=="@id") {
 					if (v =~ /_:b[0-9]+/) {
-//						sb.append """<tr height="50"><td>ID</td><td>$v</td></tr>\n"""
 						sb.append """<tr height="50"></tr>\n"""
-					} else sb.append """<tr height="50"><td>ID</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
+					} else {
+						sb.append """<tr height="50"><td>ID</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
+					}
 
 				}
 				else 
@@ -162,18 +172,18 @@ About:
 					def s=""
 					int i=0
 					vc.each{ 
-//						if (it.contains("Thing")
-//							|| it.contains("Resource")) return
 						if (i++>0)	s += ", "
 						s += """<a href="${nsLookup(it)}">$it</a>"""
 					}
 					sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
-//					vc.each{ 
-//						sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
-//					}
 				}
 				else if (k=="image") {
-					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="500"></a></td></tr>\n"""
+					if (v instanceof List) {
+						v.each{
+								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(it)}"><img src="${rehost(it)}" width="500"></a></td></tr>\n"""
+							}
+					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="500"></a></td></tr>\n"""
+
 				}
 				else if (k=="qrcode") {
 					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="100"></a></td></tr>\n"""
@@ -189,16 +199,23 @@ About:
 						def vc = v instanceof List ? v : [v]
 						vc.each{ 
 							if (v =~ /_:b[0-9]+/) {
-//								sb.append """<tr height="50"><td><i>$k</i></td><td>$it</td></tr>\n"""
-//								sb.append """<tr height="50"></tr>\n"""
 							} else 
 								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
 						}
 					}
 					else {
+//						if (k=="definition")
+//							println "here"
 						sb.append """<tr height="50"><td><i>$k</i></td>"""
-						//printHtml(v,sb)
-						printHtml(v.replaceAll("\n","<br>"),sb)
+						if (v instanceof List) {
+							def v2=[]
+							v.each{
+								v2+= it.replaceAll("\n","<br>")
+							}
+							printHtml(v2,sb)
+						} else 
+							v = v.replaceAll("\n","<br>")
+						printHtml(v,sb)
 					}
 				}
 			}

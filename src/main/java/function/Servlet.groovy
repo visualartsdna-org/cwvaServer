@@ -68,6 +68,20 @@ class Servlet extends ServletBase {
 			
 		switch (path) {
 
+			case ~/\/distributeData/: // distribute data
+				def s = new util.Exec().exec("C:/stage/bin/distributeData.bat")
+				sendText(response,"$s")
+				break
+
+			case ~/\/distributeMetadata/:	// distribute metadata
+				def s = new util.Exec().exec("C:/stage/bin/distributeMetadata.bat")
+				sendText(response,"$s")
+				break
+
+			case ~/\/loadKeepData/:	// load g keep notes data
+				new rdf.util.TakeoutTtl2Notes().testDriver()
+				break
+
 			case ~/\/related/:
 				def s = rm.process()
 				sendHtml(response, "$s")
