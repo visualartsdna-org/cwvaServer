@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat
 import rdf.util.ViaToTtl
 import services.*
 import support.*
+import support.util.ImageGraphMgtTest
 import util.Tmp
 
 class Servlet extends ServletBase {
@@ -67,6 +68,11 @@ class Servlet extends ServletBase {
 			println "$path ${query?:""}"
 			
 		switch (path) {
+
+			case "/fileScale":
+				def status = new ImageGraphMgtTest().handleUpload(query)
+				sendText(response,"$status")
+				break
 
 			case ~/\/distributeData/: // distribute data
 				def s = new util.Exec().exec("C:/stage/bin/distributeData.bat")
