@@ -242,8 +242,9 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 					}
 
 					ttl += """ .
-			${m2.tag} the:tag the:$cpt .
 """
+					//${m2.tag} the:tag the:$cpt .
+					
 
 					//println ttl
 					model.add ju.saveStringModel(ttl, "TTL")
