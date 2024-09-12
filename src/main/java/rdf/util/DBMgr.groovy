@@ -1,6 +1,7 @@
 package rdf.util
 
 import org.apache.jena.rdf.model.*
+import org.apache.jena.reasoner.*
 import rdf.JenaUtilities
 import rdf.tools.SparqlConsole
 
@@ -11,7 +12,7 @@ class DBMgr {
 	def vocab
 	def instances
 	def schema
-	def rdfs
+	def rdfs // TODO: change rdfs to infModel globally
 	def cfg
 
 	// needs work and direction!
@@ -27,9 +28,9 @@ class DBMgr {
 		this.cfg = cfg
 		cleanUp()
 		def m = load()
-		//		new Thread().start{
-		//			new SparqlConsole().show(m)
-		//		}
+//				new Thread().start{
+//					new SparqlConsole().show(m as Model)
+//				}
 	}
 
 	def load(model,l) {
@@ -71,14 +72,61 @@ class DBMgr {
 		data.add( tags )
 		data.add( vocab )
 
-		schema = ju.loadFiles(cfg.model);
-		rdfs = ModelFactory.createRDFSModel(schema, data);
+		schema = ju.loadFiles(cfg.model)
+		//rdfs = ModelFactory.createRDFSModel(schema, data)
+		rdfs = getReasoner("owlmicro", schema, data)
+		//rdfs = ModelFactory.createRDFSModel(schema, data)
 		Policy.exec(rdfs)
+		validate(rdfs)
+	}
+	
+	def validate(inf) {
+		ValidityReport validity = (inf as InfModel).validate();
+		if (!validity.isValid()) {
+			println "Model validity conflicts"
+			for (Iterator i = validity.getReports(); i.hasNext(); ) {
+				ValidityReport.Report report = (ValidityReport.Report)i.next();
+				println " - " + report
+			}
+		} else println "Model valid"
+		inf
+	}
+	
+	def getReasoner(name, schema, data) {
+		def inf
+		def ctms = System.currentTimeMillis()
+		switch (name){
+			
+			case "owl":
+			def reasoner = ReasonerRegistry.getOWLReasoner()
+			reasoner = reasoner.bindSchema(schema)
+			inf = ModelFactory.createInfModel(reasoner, data)
+			break
+			
+			case "owlmini":
+			def reasoner = ReasonerRegistry.getOWLMiniReasoner()
+			reasoner = reasoner.bindSchema(schema)
+			inf = ModelFactory.createInfModel(reasoner, data)
+			break
+			
+			case "owlmicro":
+			def reasoner = ReasonerRegistry.getOWLMicroReasoner()
+			reasoner = reasoner.bindSchema(schema)
+			inf = ModelFactory.createInfModel(reasoner, data)
+			break
+			
+			case "rdfs":
+			default:
+			inf = ModelFactory.createRDFSModel(schema, data);
+			break
+		}
+		println "reasoner: $name, size=${inf.size()}, elapsed=${System.currentTimeMillis()-ctms}"
+		inf
 	}
 
 	// TODO: under construction
 	def reload() {
-		rdfs.close()
+		inf.close()
 		load()
 	}
 	

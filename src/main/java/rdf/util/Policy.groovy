@@ -45,5 +45,6 @@ class Policy {
 			println "$ex"
 		}
 		println "Policy update complete.  $n updates executed."
+		model
 	}
 }
