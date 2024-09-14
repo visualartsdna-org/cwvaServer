@@ -4,6 +4,7 @@ import static org.junit.Assert.*
 
 import cwva.Server
 import org.apache.jena.rdf.model.Model
+import java.nio.charset.StandardCharsets
 
 import groovy.json.JsonSlurper
 import rdf.JenaUtils
@@ -14,39 +15,47 @@ class CertAuthenticity {
 
 	def ns = [:]
 	def defs = [:]
+	def target = "/temp/html/ca.html"
 	
 	// certificate of authenticity for a work
 	@Test
 	public void testWork() {
-		def guid = "394056a2-d79a-4395-a01f-79377241aacc"
-		
+		makeCert("394056a2-d79a-4395-a01f-79377241aacc")
+	}
+	
+	// TODO: is there a more generic way to do this
+	def handleUpload(query) {
+		def dir = "/temp/html"
+		def al = query.split(/&/)
+		def m=[:]
+		al.each {
+			def av = it.split(/=/)
+			if (av.size()==2)
+				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
+			 }
+//		m.each {k,v->
+//			println "$k = $v"
+//		}
+		assert m.guid, "No GUID found"
+		//def guid = m.guid // guid only!!
+		def guid = (m.guid =~ /([a-f0-9\-]+)$/)[0][1]
+		makeCert(guid)
+		"file://$target"
+	}
+
+
+
+	def makeCert(guid) {
 		def content = "/temp/git/cwvaContent"
 		def host = "test"
-		def src = "C:/test/cwva/ttl/data"
-		def mdl = "C:/test/cwva/ttl/model/model.ttl"
 		def domain="http://visualartsdna.org"
 		def ns="work"
 		def base="/work/$guid"
 		def port = 80
-		//def base="/work/ce9dfb4a-afdf-497a-a12f-c22f736df3f6"
 		def path=parsePath(base)
-		//def guid=parseGuid(base)
-		def rdfs = new cwva.Server(
-				port: port,
-				dir:"/temp/git/cwva",
-				cloud:[src:"ttl",tgt:content],
-				data: "$content/ttl/data",
-				vocab: "$content/ttl/vocab",
-				tags: "$content/ttl/tags",
-				model: "$content/ttl/model",
-				images: "$content/../../images",
-				domain: "http://visualartsdna.org" ,
-				ns: "work",
-				host: "http://192.168.1.71:$port",
-				verbose: true
-			).dbm.rdfs
-	
-//			new Server([ // default test cfg
+		def rdfs = cwva.Server.getInstance().dbm.rdfs
+		// for debugging
+//		def rdfs = new cwva.Server(
 //				port: port,
 //				dir:"/temp/git/cwva",
 //				cloud:[src:"ttl",tgt:content],
@@ -59,9 +68,10 @@ class CertAuthenticity {
 //				ns: "work",
 //				host: "http://192.168.1.71:$port",
 //				verbose: true
-//			])
+//			).dbm.rdfs
+	
 		def s = new CertAuthenticity().process(rdfs,domain,path,ns,guid,host)
-		new File("/temp/html/ca.html").text = s
+		new File(target).text = s
 	}
 
 	def parsePath(path) {
@@ -123,22 +133,21 @@ class CertAuthenticity {
 		def sb = new StringBuilder()
 		//sb.append CertAuthTemplate.head(host)
 		sb.append """
-<h2 id="title">
+<h4 id="title">
 <center>Certificate of Authenticity</center>
 <br/>
-<br/>
 <a href="${domain}/${path}">$label</a> 
-</h2>
+</h4>
 """
 			
 			int i=0
 			ljld.each{map->
 				ns = [:]
 				defs = [:]
-				sb.append("""
-<br/>
-<h3>${desc[i++]}</h3>
-""")
+//				sb.append("""
+//<br/>
+//<h4>${desc[i++]}</h4>
+//""")
 				buildTables(map["@context"])
 				//println map
 				sb.append CertAuthTemplate.tableHead("Property","Value")
@@ -149,13 +158,10 @@ class CertAuthenticity {
 		sb.append """
 <br/>
 <br/>
-<br/>
 Signed: _________________________________
 <br/>
 <br/>
-<br/>
 Date: _______________________
-<br/>
 <br/>
 """
 		
@@ -183,22 +189,24 @@ Date: _______________________
 				else 
 					if (k=="@type") {
 					def vc = v instanceof List ? v : [v]
+					if (vc.contains("vad:CreativeWork")) // simplify type
+						vc = ["vad:CreativeWork"]
 					def s=""
 					int i=0
 					vc.each{ 
 						if (i++>0)	s += ", "
 						s += """<a href="${nsLookup(it)}">$it</a>"""
 					}
-					sb.append """<tr height="${ht}"><td>$k</td><td>$s</td></tr>\n"""
+					sb.append """<tr height="${ht}"><td><i>$k</i></td><td>$s</td></tr>\n"""
 				}
-//				else if (k=="image") {
-//					sb.append """<tr height="${ht}"><td>$k</td><td><a href="${v}"><img src="${v}" width="400"></a></td></tr>\n"""
-//				}
+				else if (k=="image") {
+					sb.append """<tr height="${ht}"><td><i>$k</i></td><td><a href="${v}"><img src="${v}" width="50"></a></td></tr>\n"""
+				}
 				else if (k=="qrcode") {
-					sb.append """<tr height="${ht}"><td>$k</td><td><a href="${v}"><img src="${v}" width="100"></a></td></tr>\n"""
+					sb.append """<tr height="${ht}"><td><i>$k</i></td><td><a href="${v}"><img src="${v}" width="100"></a></td></tr>\n"""
 				}
 				else if (isUri(nsLookup(v))) { 
-					sb.append """<tr height="${ht}"><td>$k</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
+					sb.append """<tr height="${ht}"><td><i>$k</i></td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
 				}
 				else {
 					def type=m2["@type"]
@@ -208,11 +216,11 @@ Date: _______________________
 						def vc = v instanceof List ? v : [v]
 						vc.each{ 
 							if (!it.startsWith("_:b"))
-							sb.append """<tr height="${ht}"><td>$k</td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
+							sb.append """<tr height="${ht}"><td><i>$k</i></td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
 						}
 					}
 					else {
-						sb.append """<tr height="${ht}"><td>$k</td>"""
+						sb.append """<tr height="${ht}"><td><i>$k</i></td>"""
 						printHtml(v,sb)
 					}
 				}

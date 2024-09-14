@@ -89,10 +89,10 @@ div {
 	
 	static def title(uriLong,uriShort) {
 	def aboutTitle = """
-<h3 id="title">
+<h4 id="title">
 About:
 <a href="$uriLong">$uriShort</a> 
-</h3>
+</h4>
 """
 	}
 		
@@ -135,11 +135,10 @@ About:
 <a href="mailto:inquiry@visualartsdna.org"/>inquiry@visualartsdna.org</a><br/>
 Copyright &copy; ${getYear()} visualartsdna.org. All Rights Reserved.
 <br/>
-v 2.0.4
+v ${cwva.Server.version}
 </font></center>
 </body></html>
 """
-	//Copyright © 2020 visualartsdna.org. All Rights Reserved.
 
 
 }

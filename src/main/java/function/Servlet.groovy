@@ -69,6 +69,18 @@ class Servlet extends ServletBase {
 			
 		switch (path) {
 
+			case "/certificate":
+				def status = new CertAuthenticity().handleUpload(query)
+				sendHtmlFile(response,"/temp/html/ca.html")
+				//sendText(response,"$status")
+				break
+
+			case "/registry":
+				def status = new CollectionReport().handleUpload(query)
+				sendHtmlFile(response,"/temp/html/register.html")
+				//sendText(response,"$status")
+				break
+
 			case "/fileScale":
 				def status = new ImageGraphMgtTest().handleUpload(query)
 				sendText(response,"$status")

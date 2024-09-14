@@ -55,7 +55,52 @@ construct {
 		mm
 	}
 	
+	def queryRegistry() {
+		
+		ju.queryListMap1(mdl, prefixes, """
+select ?label ?image ?qrcode ?year ?desc
+			{ ?s rdfs:label ?label ;
+				schema:image ?image ;
+				vad:qrcode ?qrcode ;
+				vad:media	'Watercolor' ;
+				vad:hasArtistProfile work:ebab5e0c-cc32-4928-b326-1ddb4dd62c22 ;
+				schema:description ?desc ;
+				schema:dateCreated ?date
+				bind (year(?date) as ?year)
+				} order by ?label #Limit 3
+""")
+	}
+	
 	def queryCertAuth(ns,guid) {
+		def mm = [:]
+		
+		mm ["$ns:$guid"] = ju.queryDescribe(mdl, prefixes, """
+describe ${ns}:${guid}
+""")
+		mm ["label"] = ju.queryListMap1(mdl, prefixes, """
+select ?label { ${ns}:${guid} rdfs:label ?label }
+""")[0]["label"]
+//		mm ["Profile"] =
+//		ju.queryDescribe(mdl, prefixes, """
+//# print the profile
+//describe ?c {
+//		bind (${ns}:${guid} as ?s)
+//		?s vad:hasArtistProfile ?c .
+//}
+//""")
+//		mm ["Artist"] =
+//		ju.queryDescribe(mdl, prefixes, """
+//# print the profile
+//describe ?a {
+//		bind (${ns}:${guid} as ?s)
+//		?s vad:hasArtistProfile ?c .
+//		?c vad:artist ?a .
+//}
+//""")
+		mm
+	}
+	
+	def queryCertAuth0(ns,guid) {
 		def mm = [:]
 		
 		mm ["$ns:$guid"] = ju.queryDescribe(mdl, prefixes, """
