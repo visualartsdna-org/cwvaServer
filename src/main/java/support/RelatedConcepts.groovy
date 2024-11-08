@@ -13,11 +13,11 @@ class RelatedConcepts {
 	def prefixes = Prefixes.forQuery
 
 	def ju = new JenaUtilities()
-	def concepts
+	def data
 	def conceptModel
 	
 	RelatedConcepts(concepts){
-		this.concepts = concepts
+		this.data = concepts
 		conceptModel = ju.loadFiles("${concepts}")
 	}
 
@@ -162,30 +162,4 @@ function myFunction2() {
 	
 	
 		
-	def parse(query) {
-		
-		//println "$path\n$query"
-		def al = query.split(/&/)
-		def m=[:]
-		al.each {
-			def av = it.split(/=/)
-			av[0] = av[0].replaceAll("%3A",":")
-			if (av.size()==2)
-				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
-			 }
-//		m.each {k,v->
-//			println "$k = $v"
-//		}
-		
-		m
-
-	}
-	
-
-
-	@Test
-	void test() {
-		fail("Not yet implemented")
-	}
-
 }

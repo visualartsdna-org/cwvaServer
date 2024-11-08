@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat
 import org.junit.jupiter.api.Test
 import rdf.JenaUtils
 
-class ParseQuery {
+class ParseRDF {
 
 	static def dir="/stage/data"
 		
@@ -16,19 +16,8 @@ class ParseQuery {
 		fail("Not yet implemented")
 	}
 	
-	def parse(query) {
+	def parse(m) {
 		
-		//println "$path\n$query"
-		def al = query.split(/&/)
-		def m=[:]
-		al.each {
-			def av = it.split(/=/)
-			if (av.size()==2)
-				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
-			 }
-		m.each {k,v->
-			println "$k = $v"
-		}
 		verify(m)
 		def filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
 		m.fileupload = filename

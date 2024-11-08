@@ -23,15 +23,7 @@ class CollectionReport {
 	}
 	
 	// TODO: is there a more generic way to do this
-	def handleUpload(query) {
-		def dir = "/temp/html"
-		def al = query.split(/&/)
-		def m=[:]
-		al.each {
-			def av = it.split(/=/)
-			if (av.size()==2)
-				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
-			 }
+	def handleUpload(m) {
 		collect()
 		"file://$target"
 	}

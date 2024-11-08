@@ -1,4 +1,4 @@
-package services
+package support
 
 import static org.junit.Assert.*
 
@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Model
 import groovy.json.JsonSlurper
 import java.text.SimpleDateFormat
 import rdf.JenaUtils
-import support.*
+
 import org.junit.Test
 
 class HtmlForm2Ttl {
@@ -92,8 +92,8 @@ VADNA RDF Entry
 </td></tr><tr><td>
   <br><label for="hasPaper">hasPaper:</label><br>
   <select id="hasPaper" name="hasPaper"> 
-<option value="Canson Mix Media" >Canson Mix Media</option>
 <option value="Fabriano Artistico Grana Fina" >Fabriano Artistico Grana Fina</option>
+<option value="Canson Mix Media" >Canson Mix Media</option>
 <option value="Strathmore Mixed Media" >Strathmore Mixed Media</option>
 <option value="Strathmore Toned Gray" >Strathmore Toned Gray</option>
 <option value="Strathmore Watercolor cold press, block" >Strathmore Watercolor cold press, block</option>
@@ -116,8 +116,8 @@ VADNA RDF Entry
 </td><td>
   <br><label for="hasPaperWeight">hasPaperWeight:</label><br>
   <select id="hasPaperWeight" name="hasPaperWeight"> 
-<option value="140" >140</option>
 <option value="300" >300</option>
+<option value="140" >140</option>
 <option value="350" >350</option>
 <option value="80" >80</option>
 <option value="90" >90</option>
@@ -153,7 +153,7 @@ VADNA RDF Entry
 <br><br>
   Configuration:<br>
   <br><label for="dir">TTL & QRC temp dir:</label>
-  <input type="text" id="dir" name="dir" size="$inSize" value="${ParseQuery.dir}"> 
+  <input type="text" id="dir" name="dir" size="$inSize" value="${ParseRDF.dir}"> 
 <!--
 <table><tr><td>
 	 <input type = "hidden" name = "pagename" value = "10" />
@@ -161,7 +161,7 @@ VADNA RDF Entry
 	<input type="button" onclick="myFunction()" value="Reset form">
 </td><td style="text-align:right">Configuration parameters</td><td>
   <br><label for="dir">TTL & QRC temp dir:</label><br>
-  <input type="text" id="dir" name="dir" size="$inSize" value="${ParseQuery.dir}"> 
+  <input type="text" id="dir" name="dir" size="$inSize" value="${ParseRDF.dir}"> 
 </td></tr></table>-->
 </form>
 

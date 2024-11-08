@@ -310,24 +310,6 @@ select distinct ?s {
 		ls
 	}
 	
-	def parse(query) {
-		
-		//println "$path\n$query"
-		def al = query.split(/&/)
-		def m=[:]
-		al.each {
-			def av = it.split(/=/)
-			if (av.size()==2)
-				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
-			 }
-//		m.each {k,v->
-//			println "$k = $v"
-//		}
-		
-		m
-
-	}
-	
 	def getHtml(concept,broader,inScheme,narrower,related,member,term,instance,textMap) {
 		"""
 

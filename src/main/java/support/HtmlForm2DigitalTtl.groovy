@@ -1,4 +1,4 @@
-package services
+package support
 
 import static org.junit.Assert.*
 
@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Model
 import groovy.json.JsonSlurper
 import java.text.SimpleDateFormat
 import rdf.JenaUtils
-import support.*
+
 import org.junit.Test
 
 class HtmlForm2DigitalTtl {
@@ -119,7 +119,7 @@ VADNA RDF Digital Entry
 <br><br>
   Configuration:<br>
   <br><label for="dir">TTL & QRC temp dir:</label>
-  <input type="text" id="dir" name="dir" size="$inSize" value="${ParseQuery.dir}"> 
+  <input type="text" id="dir" name="dir" size="$inSize" value="${ParseRDF.dir}"> 
 <!--
 <table><tr><td>
 	 <input type = "hidden" name = "pagename" value = "10" />
@@ -127,7 +127,7 @@ VADNA RDF Digital Entry
 	<input type="button" onclick="myFunction()" value="Reset form">
 </td><td style="text-align:right">Configuration parameters</td><td>
   <br><label for="dir">TTL & QRC temp dir:</label><br>
-  <input type="text" id="dir" name="dir" size="$inSize" value="${ParseQuery.dir}"> 
+  <input type="text" id="dir" name="dir" size="$inSize" value="${ParseRDF.dir}"> 
 </td></tr></table>-->
 </form>
 

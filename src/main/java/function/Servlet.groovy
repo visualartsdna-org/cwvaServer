@@ -8,15 +8,16 @@ import cwva.ServletBase
 import groovy.json.JsonBuilder
 import java.text.SimpleDateFormat
 import rdf.util.ViaToTtl
-import services.*
 import support.*
-import support.util.ImageGraphMgtTest
+import support.util.*
 import util.Tmp
 
 class Servlet extends ServletBase {
 
 	def vm = new ConceptModel(vocab)
 	def rm = new RelatedConcepts(vocab)
+	def im = new Interpretation(data)
+	def ib = new ImageBrand(data)
 //	def tm = new TagModel(data,vocab,tags,cfg.host)
 //	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
 	def artist = [:]
@@ -57,6 +58,7 @@ class Servlet extends ServletBase {
 		
 	def handler(path,query,response,request) {
 			
+		def mq=parse(query)
 		def tmp
 		setState(path)
 		def lowLevelRequest = 
@@ -70,19 +72,24 @@ class Servlet extends ServletBase {
 		switch (path) {
 
 			case "/certificate":
-				def status = new CertAuthenticity().handleUpload(query)
+				def status = new CertAuthenticity().handleUpload(mq)
 				sendHtmlFile(response,"/temp/html/ca.html")
 				//sendText(response,"$status")
 				break
 
 			case "/registry":
-				def status = new CollectionReport().handleUpload(query)
+				def status = new CollectionReport().handleUpload(mq)
 				sendHtmlFile(response,"/temp/html/register.html")
 				//sendText(response,"$status")
 				break
 
 			case "/fileScale":
-				def status = new ImageGraphMgtTest().handleUpload(query)
+				def status = new ImageGraphMgtTest().handleUpload(mq)
+				sendText(response,"$status")
+				break
+
+			case "/fileConvert":
+				def status = new ImageTypeMgt().handleUpload(mq)
 				sendText(response,"$status")
 				break
 
@@ -106,8 +113,7 @@ class Servlet extends ServletBase {
 				break
 
 			case "/related.entry":
-				def m = rm.parse(query)
-				def s = rm.handleQueryParams(m)
+				def s = rm.handleQueryParams(mq)
 				sendHtml(response, "$s")
 				break
 
@@ -125,16 +131,14 @@ class Servlet extends ServletBase {
 				break
 
 			case "/vocab.entry":
-				def m = vm.parse(query)
-				def s = vm.handleQueryParams(m)
+				def s = vm.handleQueryParams(mq)
 				sendHtml(response, "$s")
 				break
 
 			case "/vocab.entry.text":
-				def m = vm.parse(query)
 				def inst = URLDecoder.decode(m.instance, "UTF-8")
-				m.instance = inst
-				def s = vm.handleQueryParamsText(m)
+				mq.instance = inst
+				def s = vm.handleQueryParamsText(mq)
 				sendHtml(response, "$s")
 				break
 
@@ -160,6 +164,26 @@ class Servlet extends ServletBase {
 				}
 				break
 
+			case "/imageBrand":
+				def s = ib.printHtml()
+				sendHtml(response,s)
+				break
+
+			case "/imageBrand.entry":
+				def tpls = ib.handleQueryParams(mq)
+				sendText(response,"$tpls")
+				break
+
+			case "/interpretation":
+				def s = im.printHtml()
+				sendHtml(response,s)
+				break
+
+			case "/interpretation.entry":
+				def tpls = im.handleQueryParams(mq)
+				sendText(response,"$tpls")
+				break
+
 			case "/rdf/entry":
 				def jl2h = new HtmlForm2Ttl()
 				def guid = new Guid().get()
@@ -178,14 +202,14 @@ class Servlet extends ServletBase {
 
 			case "/rdf_page.entry":
 
-				def tpls = new ParseQuery().parse(query)
+				def tpls = new ParseRDF().parse(mq)
 				sendText(response,"$tpls")
 
 				break
 
 			case "/rdf_digital.entry":
 
-				def tpls = new ParseDigitalQuery().parse(query)
+				def tpls = new ParseDigitalRDF().parse(mq)
 				sendText(response,"$tpls")
 
 				break
@@ -215,9 +239,5 @@ class Servlet extends ServletBase {
 		response.setStatus(HttpServletResponse.SC_OK);
 		if (tmp) Tmp.delTemp(tmp)
 	}
-	
-	def logOut(s) {
-		Server.getInstance().logOut(s)
-	}
-	
+		
 }

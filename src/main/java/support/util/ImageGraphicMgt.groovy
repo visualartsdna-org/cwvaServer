@@ -138,6 +138,10 @@ class ImageGraphicMgt {
 		toImageType(before,BufferedImage.TYPE_INT_ARGB)
 	}
 
+	/*
+	 * search
+	 * java affinetransform unexpectedly rotates image 90 degrees on scale
+	 */
 	/**
 	 * transform to scale
 	 * @param before
@@ -145,6 +149,30 @@ class ImageGraphicMgt {
 	 * @return
 	 */
 	static def transform(before,scale) {
+		int w = before.getWidth()
+		int h = before.getHeight()
+		BufferedImage after = new BufferedImage((w*scale) as int , (h*scale) as int,
+			BufferedImage.TYPE_INT_ARGB)
+		AffineTransform at = new AffineTransform()
+		at.scale(scale, scale)
+		AffineTransformOp scaleOp =new AffineTransformOp(at,
+			AffineTransformOp.TYPE_BILINEAR)
+		def bi = scaleOp.filter(before, after)
+		def w2 = bi.getWidth()
+		def h2 = bi.getHeight()
+		if (w > h &&  w2 > h2) return bi
+		if (w < h && w2 < h2) return bi
+		println "needs rotation"
+		bi
+	}
+
+	/**
+	 * transform to scale
+	 * @param before
+	 * @param scale
+	 * @return
+	 */
+	static def transform0(before,scale) {
 		int w = before.getWidth()
 		int h = before.getHeight()
 		BufferedImage after = new BufferedImage((w*scale) as int , (h*scale) as int,
@@ -166,8 +194,8 @@ class ImageGraphicMgt {
 	 */
 	static def transform(before,deg,anchorx,anchory) {
 		def scale = 1.0
-		int w = before.getWidth()
-		int h = before.getHeight()
+		int h = before.getWidth()
+		int w = before.getHeight()
 		BufferedImage after = new BufferedImage((w*scale) as int , (h*scale) as int,
 			BufferedImage.TYPE_INT_ARGB)
 		AffineTransform at = new AffineTransform()

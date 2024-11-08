@@ -6,9 +6,11 @@ import org.junit.jupiter.api.Test
 import rdf.JenaUtils
 import groovy.io.FileType
 import groovy.json.JsonSlurper
-import services.HtmlForm2Ttl
+
 import java.nio.*
 import java.nio.file.*
+
+import support.HtmlForm2Ttl
 import support.ImageMgt
 
 class LsysToTtl {

@@ -20,20 +20,43 @@ class BrowseWorks {
 		println s
 	}
 	
-	def browse(host,m) {
+	def browse(host,m,qm) {
+		def order = ""
+		if (qm.order == "Title") {
+			order = "order by ?artist ?label"
+		} else if (qm.order == "Date") {
+			order = "order by ?artist desc(?date) ?label"
+		}
 
 		def l = new JenaUtils().queryListMap1(m, 
 			rdf.Prefixes.forQuery, """
 select ?s ?label ?a ?artist {
  ?s rdfs:label ?label .
+ ?s schema:dateCreated ?date .
  ?s vad:hasArtistProfile/vad:artist  ?a .
  ?a foaf:name ?artist .
  ?s a vad:CreativeWork .
-} order by ?artist ?lab
+} $order
 """
 )
 	def sb = new StringBuilder()
 	sb.append HtmlTemplate.head(host)
+	sb.append """
+<script>
+function myFunction() {
+  document.getElementById("myForm").submit();
+}
+</script>
+<h6>
+<form id="myForm" action="/browseSort" method="get">
+Order:
+<input type="radio" id="title" name="order" onclick="myFunction()" value="Title" ${qm.order=="Title" ? "checked" : ""}>
+<label for="title">Title</label>
+<input type="radio" id="date" name="order" onclick="myFunction()" value="Date" ${qm.order=="Date" ? "checked" : ""}>
+<label for="date">Date</label>
+</form>
+</h6>
+"""
 	sb.append HtmlTemplate.tableHead("Works")
 	
 	l.each { 

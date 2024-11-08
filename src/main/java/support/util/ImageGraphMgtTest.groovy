@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage
 import org.junit.jupiter.api.Test
 import javax.imageio.ImageIO
 import java.nio.charset.StandardCharsets
+import java.nio.file.*
 
 /*
 0.25 is a good scale for takeout useage
@@ -49,31 +50,23 @@ class ImageGraphMgtTest {
 		}
 	}
 	
-	def handleUpload(query) {
-		def dir = "/temp/scale"
-		def al = query.split(/&/)
-		def m=[:]
-		al.each {
-			def av = it.split(/=/)
-			if (av.size()==2)
-				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
-			 }
-//		m.each {k,v->
-//			println "$k = $v"
-//		}
+	def handleUpload(m) {
 		def iname = m.fileupload
 		if (!iname) 
 			return "No file selected, scaling not performed."
+		def dir = m.directory
 		def n = iname.lastIndexOf(".")
 		def ext = iname.substring(n)
 		def name = iname.substring(0,n)
-		if (ext != ".jpg") throw new RuntimeException("only supports .jpg files")
+		if (ext.toLowerCase() != ".jpg") throw new RuntimeException("only supports .jpg files")
 		if (!m.scale) 
 			return "No scale selected, scaling not performed."
 		def overwrite = (m.overwrite) as boolean
 		def scale = m.scale as double
 		def oname = overwrite ? iname : "${name}_sc${scale}$ext" 
+			
 		def ls = scaleDriver(dir,dir,iname,oname,scale,overwrite)
+		
 		def s = ""
 		ls.each{
 			s += "$it\n"
@@ -84,7 +77,29 @@ class ImageGraphMgtTest {
 
 	// Scale a file down
 	// returns list of status strings
+	// https://usage.imagemagick.org/resize/#scale
 	def scaleDriver(src,tgt,iname,oname,scale,overwrite) {
+		def ls = []
+		def initSize=0
+		ls += "from $src/$iname"
+		ls += "to $tgt/$oname"
+		initSize = new File("$src/$iname").length()
+		def cmd = "magick $src/$iname -resize ${scale * 100}% $tgt/$oname"
+		def s = new util.Exec().exec cmd
+		ls += "init = ${initSize}"
+		def opath = Paths.get("$tgt/$oname")
+		def lastSize = Files.size(opath)
+		ls += "last = ${lastSize}"
+		ls += "scale = ${(initSize/lastSize) as int} : 1"
+		ls += "overwrite = $overwrite"
+		ls
+	}
+
+	// Scale a file down
+	// returns list of status strings
+	// graphics2d scaling is problematic
+	// sometimes scaled images are also rotated!
+	def scaleDriver0(src,tgt,iname,oname,scale,overwrite) {
 		def ls = []
 		def initSize=0
 			ls += "from $src/$iname"
@@ -92,12 +107,14 @@ class ImageGraphMgtTest {
 			initSize = new File("$src/$iname").length()
 			BufferedImage bi = ImageIO.read(new File("$src/$iname"))
 			Graphics2D ig = bi.createGraphics()
-			bi = ImageGraphicMgt.transform(bi,scale)
+			bi = ImageGraphicMgt.transform(bi,scale as float)
 			//bi = ImageMgt.toARGB(bi)
 			ls +="write=" +  ImageIO.write(ImageGraphicMgt.toRGB(bi), "JPEG", new File("$tgt/$oname"))
-			def lastSize=0
+			sleep(100)  // write should be blocking but doesn't seem to
 			ls += "init = ${initSize}"
-			ls += "last = ${lastSize = new File("$tgt/$oname").length()}"
+			def opath = Paths.get("$tgt/$oname")
+			def lastSize = Files.size(opath)
+			ls += "last = ${lastSize}"
 			ls += "scale = ${(initSize/lastSize) as int} : 1"
 			ls += "overwrite = $overwrite"
 			ls
@@ -144,6 +161,23 @@ class ImageGraphMgtTest {
 			def lastSize=0
 			println "last = ${lastSize = new File("$tgt/$k").length()}"
 			println "scale = ${initSize/lastSize} : 1"
+			
+	}
+
+	@Test
+	void testRotate() {
+		def dir = "G:/My Drive/art/projects/waterLily"
+		def k = "IMG_7231Ink.jpg"
+		def deg = 90
+		def anchorx = 756
+		def anchory = 1008
+		def tgt = "/temp/test"
+			println k
+			BufferedImage bi = ImageIO.read(new File("$dir/$k"))
+			Graphics2D ig = bi.createGraphics()
+			bi = ImageGraphicMgt.transform(bi,deg,anchorx,anchory)
+			//bi = ImageMgt.toARGB(bi)
+			println ImageIO.write(ImageGraphicMgt.toRGB(bi), "JPEG", new File("$tgt/$k"))
 			
 	}
 

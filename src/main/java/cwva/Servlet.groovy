@@ -9,6 +9,7 @@ import rdf.JenaUtils
 import rdf.QuerySupport
 import services.*
 import util.Tmp
+import java.nio.charset.StandardCharsets
 
 class Servlet extends ServletBase {
 
@@ -27,6 +28,7 @@ class Servlet extends ServletBase {
 	
 	def handler(path,query,response) {
 
+		def mq=parse(query)
 		def tmpFile
 		def status = HttpServletResponse.SC_OK
 		setState(path)
@@ -131,7 +133,12 @@ class Servlet extends ServletBase {
 				break
 
 			case "/browse":
-				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs)
+				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs, [order:"Title"])
+				sendHtml(response,s)
+				break
+				
+			case "/browseSort":
+				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs, mq)
 				sendHtml(response,s)
 				break
 
@@ -154,10 +161,6 @@ class Servlet extends ServletBase {
 		}
 		response.setStatus(status);
 		tmp.rmTemps()
-	}
+	}	
 
-	def logOut(s) {
-		Server.getInstance().logOut(s)
-	}
-	
 }

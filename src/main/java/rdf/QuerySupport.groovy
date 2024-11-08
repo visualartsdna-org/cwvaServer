@@ -31,7 +31,8 @@ select ?label { ${ns}:${guid} rdfs:label ?label }
 construct {
 [
  rdfs:label ?l ;
- skos:description ?d
+ skos:description ?d ;
+ the:tag ?c
 ]
 } {
 	select distinct ?c ?l ?d

@@ -24,18 +24,7 @@ class CertAuthenticity {
 	}
 	
 	// TODO: is there a more generic way to do this
-	def handleUpload(query) {
-		def dir = "/temp/html"
-		def al = query.split(/&/)
-		def m=[:]
-		al.each {
-			def av = it.split(/=/)
-			if (av.size()==2)
-				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
-			 }
-//		m.each {k,v->
-//			println "$k = $v"
-//		}
+	def handleUpload(m) {
 		assert m.guid, "No GUID found"
 		//def guid = m.guid // guid only!!
 		def guid = (m.guid =~ /([a-f0-9\-]+)$/)[0][1]

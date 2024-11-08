@@ -9,6 +9,7 @@ import rdf.JenaUtilities
 import groovy.json.JsonBuilder
 import util.FileUtil
 import util.Tmp
+import java.nio.charset.StandardCharsets
 
 class ServletBase extends HttpServlet {
 
@@ -44,7 +45,7 @@ class ServletBase extends HttpServlet {
 				break
 
 			case "/cmd":
-				def qm = queryToMap(query)
+				def qm = parse(query)
 				def token = qm.token
 				def cmd = qm.cmd
 				def parm = qm.parm
@@ -93,6 +94,7 @@ class ServletBase extends HttpServlet {
 
 			default:
 				logOut "unrecognized command $path, ${query?:""}"
+				//throw new RuntimeException("unrecognized command $path, ${query?:""}")
 				break
 		}
 	}
@@ -179,15 +181,22 @@ class ServletBase extends HttpServlet {
 		metrics[k]++
 	}
 	
-	// token=123&cmd=abc
-	def queryToMap(query) {
+	static def parse(query) {
 		def m=[:]
-		def l = query.split("&")
-		l.each{
-			def l2 = it.split("=")
-			m[l2[0]]=l2[1]
-		}
+		if (!query) return m
+		def al = query.split(/&/)
+		al.each {
+			def av = it.split(/=/)
+			av[0] = av[0].replaceAll("%3A",":")
+			if (av.size()==2)
+				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
+			 }
 		m
+
+	}
+
+	def logOut(s) {
+		Server.getInstance().logOut(s)
 	}
 
 }

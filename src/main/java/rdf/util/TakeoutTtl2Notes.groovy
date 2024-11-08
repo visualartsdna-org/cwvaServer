@@ -202,7 +202,7 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 				skos:inScheme      the:paintingNotes ;
 				tko:created "$created"^^xsd:date ;
 				tko:edited "$edited"^^xsd:dateTime ;
-				rdfs:label "${m2.title}" ;
+				rdfs:label "${m2.title} Notes" ;
 				the:tag ${m2.tag} ;
 				skos:definition \"\"\"${(m2.filteredText).trim()}\"\"\" ;
 
