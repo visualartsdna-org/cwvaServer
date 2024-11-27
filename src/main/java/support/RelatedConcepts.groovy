@@ -97,7 +97,7 @@ copy and paste in keep notes, e.g,
 <a href="${cwva.Server.getInstance().cfg.host}">Home</a>
 <br>
 <h3>Watercolor Concepts</h3>
-Select paints to include as related to the note.
+Select paints and techniques to include related to the note for the work.
 <br>
 <form id="myForm" action="/related.entry" method="get">
 <textarea id="related" name="relateds"  rows="4" cols="60">

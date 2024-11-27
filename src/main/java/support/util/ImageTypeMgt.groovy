@@ -39,7 +39,7 @@ class ImageTypeMgt {
 	def handleUpload(m) {
 		def iname = m.fileupload
 		if (!iname) 
-			return "No file selected, scaling not performed."
+			return "No file selected, type change not performed."
 		def dir = m.directory
 		def n = iname.lastIndexOf(".")
 		def ext = iname.substring(n)
@@ -56,7 +56,7 @@ class ImageTypeMgt {
 		s
 	}
 
-	// Scale a file down
+	// change file type
 	// returns list of status strings
 	// https://usage.imagemagick.org/resize/#scale
 	def convertDriver(src,tgt,iname,oname) {

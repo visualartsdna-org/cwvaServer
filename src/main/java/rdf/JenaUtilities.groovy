@@ -3,6 +3,7 @@ import groovy.io.FileType
 import groovy.json.JsonSlurper
 import org.apache.jena.rdf.model.*
 import rdf.util.JsonRdfUtil
+import org.apache.jena.query.*
 
 /**
  * The following section handles RDF list retrieval and creation
@@ -161,6 +162,19 @@ class JenaUtilities extends JenaUtils {
 			model = loadFileModelFilespec(spec)
 		}
 		model
+	}
+
+	/**
+	 * Print a formatted result of the query on the model
+	 * @param model
+	 * @param prefixes
+	 * @param queryString
+	 * @return string
+	 */
+	def queryResultSet(Model model, prefixes, queryString){
+		Query query = QueryFactory.create(prefixes + queryString) ;
+		QueryExecution qexec = QueryExecutionFactory.create(query, model)
+		qexec.execSelect() // returns ResultSet
 	}
 
 

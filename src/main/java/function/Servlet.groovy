@@ -14,10 +14,11 @@ import util.Tmp
 
 class Servlet extends ServletBase {
 
-	def vm = new ConceptModel(vocab)
+	def vm = new ConceptModel(vocab)  // causes model reload
 	def rm = new RelatedConcepts(vocab)
 	def im = new Interpretation(data)
 	def ib = new ImageBrand(data)
+	def qm = new QueryMgr(dir)
 //	def tm = new TagModel(data,vocab,tags,cfg.host)
 //	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
 	def artist = [:]
@@ -58,7 +59,7 @@ class Servlet extends ServletBase {
 		
 	def handler(path,query,response,request) {
 			
-		def mq=parse(query)
+		def mq = parse(query)
 		def tmp
 		setState(path)
 		def lowLevelRequest = 
@@ -105,6 +106,11 @@ class Servlet extends ServletBase {
 
 			case ~/\/loadKeepData/:	// load g keep notes data
 				new rdf.util.TakeoutTtl2Notes().testDriver()
+				break
+
+			case ~/\/sparql/:
+				def s = qm.handleQueryParams(mq)
+				sendHtml(response, "$s")
 				break
 
 			case ~/\/related/:

@@ -52,12 +52,14 @@ class DBMgr {
 
 		def clobber = System.getProperty("clobber")?:false
 		// restore ttl from gcp
-		println "gcpCpDirRecurse: ${cfg.cloud.src}, ${cfg.cloud.tgt}"
-		if (clobber) {
-			util.Gcp.gcpCpDirRecurseClobber(cfg.cloud.src,cfg.cloud.tgt)
-		}
-		else {
-			util.Gcp.gcpCpDirRecurse(cfg.cloud.src,cfg.cloud.tgt)
+		if (cfg.cloud) {
+			println "gcpCpDirRecurse: ${cfg.cloud.src}, ${cfg.cloud.tgt}"
+			if (clobber) {
+				util.Gcp.gcpCpDirRecurseClobber(cfg.cloud.src,cfg.cloud.tgt)
+			}
+			else {
+				util.Gcp.gcpCpDirRecurse(cfg.cloud.src,cfg.cloud.tgt)
+			}
 		}
 		
 		def ju = new JenaUtilities()

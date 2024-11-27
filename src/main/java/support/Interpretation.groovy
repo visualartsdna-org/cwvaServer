@@ -40,7 +40,7 @@ $m.quid
         tko:created      "$date"^^xsd:date ;
         tko:edited       "$dt"^^xsd:dateTime ;
         the:tag          ${m.tag} ;
-		skos:related	the:${m.kind} ;
+		skos:related	the:${util.Text.camelCase(m.kind)} ;
 		skos:related 	the:${util.Text.camelCase(m.source)} ;
         rdfs:label       "${m.kind.trim()} of ${m.label}" ;
         skos:definition  \"\"\"${m.definition}\"\"\" ;
@@ -144,19 +144,12 @@ select ?l {
 	
 
 	
-	def makeGuid(tag,kind,label) {
+	static def makeGuid(tag,kind,label) {
+		kind = util.Text.camelCase(kind)
 		label = util.Text.camelCase(label)
 		def date = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
 		
 		"the:${label}${kind.trim()}$date"
-	}
-
-	@Test
-	void test() {
-		def tag = "work:da4bccc6-dfd3-4062-ae5b-3756e4eed354"
-		def kind = "Criticism"
-		def s = makeGuid(tag,kind)
-		println s
 	}
 
 }
