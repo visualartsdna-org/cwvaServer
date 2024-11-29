@@ -155,6 +155,13 @@ class Servlet extends ServletBase {
 				sendHtmlFile(response,"$dir/html/copyright.html")
 				break
 
+			case ~/\/sparql/:
+				def url = "http://192.168.1.71:8082$path"
+				if (query) url = "$url?$query"
+				def s = new URL(url).getText()
+				sendHtml(response, "$s")
+				break
+
 			default:
 				serve(cfg,path,query,response)
 				break

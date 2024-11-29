@@ -111,6 +111,7 @@ class Servlet extends ServletBase {
 			case ~/\/sparql/:
 				def s = qm.handleQueryParams(mq)
 				sendHtml(response, "$s")
+		
 				break
 
 			case ~/\/related/:

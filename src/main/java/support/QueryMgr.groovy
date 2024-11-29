@@ -39,7 +39,7 @@ class QueryMgr {
 	def process(m) {
 		def format = m.format ?: "CSV"
 		def q = m.query ?: ""
-		def r = query(q,format) ?: ""
+		def resultMap = query(q,format) ?: ""
 		def html = """
 <html>
 <head/>
@@ -81,8 +81,9 @@ $q
 </td></tr>
 <tr><td>
 <textarea rows="20" cols="60" spellcheck="false">
-$r
+${resultMap.result}
 </textarea>
+${resultMap.time} ms | ${resultMap.resultSetSize} | ${resultMap.status}
 </td></tr>
 </table>
 </td><td>
@@ -138,7 +139,7 @@ xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt;  <br>
 <h4>
 Notes
 </h4>
-Format applies only to Select statements.<br>
+Format applies only to Select statement results.<br>
 Construct and Describe statements result in Turtle (ttl) RDF.<br>
 <a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1 Query Language</a><br>
 
@@ -151,15 +152,15 @@ Construct and Describe statements result in Turtle (ttl) RDF.<br>
 	}
 	
 	def query(sparql,format) {
-		def result = ""
+		def result = [time:0,status:"ok",resultSetSize:0,result:""]
 		
 		if (sparql.trim())
 		if (isUpdate(sparql)) {
 			try {
 				ju.queryExecUpdate(model,prefixes,sparql)
-				result = "completed"
+				result.status = "completed"
 			} catch (Exception ex) {
-				result="""${numLines(prefixes + sparql)}
+				result.result = """${numLines(prefixes + sparql)}
 ---
 $ex"""
 			}
@@ -173,7 +174,6 @@ $ex"""
 					
 					case Query.QueryTypeSelect:
 						ResultSet resultSet = ju.queryResultSet(model,prefixes,sparql)
-						
 						ByteArrayOutputStream baos = new ByteArrayOutputStream()
 						switch (format) {
 							case "Text":
@@ -196,46 +196,40 @@ $ex"""
 							ResultSetFormatter.outputAsXML(baos,resultSet) // ok
 							break
 						}
-						result = "" + baos
-						
-//						result = ResultSetFormatter.asText(resultSet, new Prologue(model)) // ok
-//						result = ResultSetFormatter.asText(resultSet) // same as text
-						
-//						ByteArrayOutputStream baos = new ByteArrayOutputStream()
-//						ResultSetFormatter.outputAsSSE(baos,resultSet) // not implemented
-//						ResultSetFormatter.outputAsXML(baos,resultSet) // ok
-//						ResultSetFormatter.outputAsTSV(baos,resultSet) // ok
-//						ResultSetFormatter.outputAsCSV(baos,resultSet) // nice format! real CR NL
-//						result = "" + baos
-						
-//						result = ResultSetFormatter.out(baos, resultSet) // same as text
-						
-//						ResultSetFormatter.outputAsJSON(baos,resultSet) // ok
-						result = "" + baos
-						
+
+						result.result = new String( baos.toByteArray() )		
+						result.resultSetSize = resultSet.getRowNumber()
 						break;
 
 					case Query.QueryTypeDescribe:
 						mdl=ju.queryDescribe(model,prefixes,sparql)
-						result = ju.saveModelString(mdl,"ttl")
+						result.result = ju.saveModelString(mdl,"ttl")
+						result.resultSetSize = mdl.size()
 						break;
 
 					case Query.QueryTypeConstruct:
 						mdl=ju.queryExecConstruct(model,prefixes,sparql)
-						result = ju.saveModelString(mdl,"ttl")
+						result.result = ju.saveModelString(mdl,"ttl")
+						result.resultSetSize = mdl.size()
 						break;
 				}
 			} catch (Exception ex) {
-				result="""${numLines(prefixes + sparql)}
+				result.result ="""${numLines(prefixes + sparql)}
 ---
 $ex"""
+			} catch (OutOfMemoryError me) {
+				result.status="Out of Memory Error"
+				println "Out of Memory Error: $me"
+				println "$sparql\n$format"
 			}
-			//println "TIME ${System.currentTimeMillis() - ctms} ms"
+			println "query: ${System.currentTimeMillis() - ctms} ms"
+			result.time = System.currentTimeMillis() - ctms
+			result.size = result.size()
 		}
-		if (result.size() > MAXRESULTSIZE)
-			result = "Result set (${result.size()}) > max size ($MAXRESULTSIZE)"
-//		else
-//			println "RESULT SIZE ${result.size()}"
+		if (result.size() > MAXRESULTSIZE) {
+			result.result = "Result size (${result.size()}) > max size ($MAXRESULTSIZE)"
+			result.status = "result string size > max"
+		}
 		result
 	}
 	
