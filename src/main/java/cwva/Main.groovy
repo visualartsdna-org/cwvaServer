@@ -24,7 +24,9 @@ class Main {
 			domain: "http://visualartsdna.org" ,
 			ns: "work",
 			host: "http://192.168.1.71:$port",
-			verbose: true
+			functionHost: "http://192.168.1.71:8082",
+			verbose: true,
+			sparql: true
 		]).startJetty()
 		
 	}

@@ -17,12 +17,16 @@ class QueryMgr {
 	def ju = new JenaUtilities()
 	Model model = cwva.Server.getInstance().dbm.rdfs
 	def qm
+	def updateEnabled = false
 	
 	QueryMgr(dir){
 		this.dir = dir
 		qm = loadQueries()
 	}
 
+	/*
+	 * Load Clear Drop Add Move Copy Create Delete Modify Insert
+	 */
 	def isUpdate(qs) {
 		qs =~ /(?i)delete[ \t\n]*\{|delete[ \t\n]+data[ \t\n]*\{|insert[ \t\n]*\{|insert[ \t\n]+data[ \t\n]*\{/
 	}
@@ -42,35 +46,44 @@ class QueryMgr {
 		def resultMap = query(q,format) ?: ""
 		def html = """
 <html>
+<head>
 <head/>
 <body>
 <a href="${cwva.Server.getInstance().cfg.host}">Home</a>
 <br>
-
-<br/>
-<h2>SPARQL</h2>
-<br/>
+<!-header->
+<style>
+body {background-color: WhiteSmoke;}
+h1   {color: blue;}
+#queries{
+ width:400px;   
+}
+</style>
+<h3>SPARQL</h3>
 <form id="myForm" action="/sparql" method="get">
 <table>
 <tr><td>
 <table>
 <tr><td>
 <table>
-   <col width="400px" />
-<tr><td>
-  Format:
+   <col width="290px" />
+<tr><td style="border:1px solid black;">
+<!--  Format: -->
   <input type="radio" id="format" name="format" value="CSV" ${format=="CSV" ? "checked" : ""}>
-  <label for="type1">CSV</label>
+  <label for="type1">csv</label>
   <input type="radio" id="format" name="format" value="Text" ${format=="Text" ? "checked" : ""}>
-  <label for="type2">Text</label>
+  <label for="type2">text</label>
   <input type="radio" id="format" name="format" value="TSV" ${format=="TSV" ? "checked" : ""}>
-  <label for="type2">TSV</label>
+  <label for="type2">tsv</label>
   <input type="radio" id="format" name="format" value="JSON" ${format=="JSON" ? "checked" : ""}>
-  <label for="type2">JSON</label>
+  <label for="type2">json</label>
   <input type="radio" id="format" name="format" value="XML" ${format=="XML" ? "checked" : ""}>
-  <label for="type2">XML</label>
+  <label for="type2">xml</label>
 </td><td>
-<input type = "submit" name = "submit" value = "Run" />
+  <label for="sparqlUpdate">Update</label>
+<input type="checkbox" id="sparqlUpdate" name="sparqlUpdate" value="Update" disabled>
+</td><td>
+<input type = "submit" name = "submit" value = "Execute" />
 </td></tr>
 </table>
 </td></tr>
@@ -83,6 +96,8 @@ $q
 <textarea rows="20" cols="60" spellcheck="false">
 ${resultMap.result}
 </textarea>
+</td></tr>
+<tr><td>
 ${resultMap.time} ms | ${resultMap.resultSetSize} | ${resultMap.status}
 </td></tr>
 </table>
@@ -139,12 +154,18 @@ xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt;  <br>
 <h4>
 Notes
 </h4>
-Format applies only to Select statement results.<br>
+Format (csv, ...) applies only to Select statement results.<br>
 Construct and Describe statements result in Turtle (ttl) RDF.<br>
+Enable Update for SPARQL Update statement processing.<br>
 <a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1 Query Language</a><br>
 
 </td></tr>
 </table>
+<script>
+function myFunction() {
+  document.getElementById("sparqlUpdate").disabled = true;
+}
+</script>
 </body>
 </html>
 """
@@ -156,6 +177,9 @@ Construct and Describe statements result in Turtle (ttl) RDF.<br>
 		
 		if (sparql.trim())
 		if (isUpdate(sparql)) {
+			if (!updateEnabled) {
+				result.status = "update disabled"
+			} else 
 			try {
 				ju.queryExecUpdate(model,prefixes,sparql)
 				result.status = "completed"
@@ -222,8 +246,8 @@ $ex"""
 				println "Out of Memory Error: $me"
 				println "$sparql\n$format"
 			}
-			println "query: ${System.currentTimeMillis() - ctms} ms"
 			result.time = System.currentTimeMillis() - ctms
+			println "query: ${result.time} ms"
 			result.size = result.size()
 		}
 		if (result.size() > MAXRESULTSIZE) {

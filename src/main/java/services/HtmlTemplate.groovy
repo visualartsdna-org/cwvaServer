@@ -89,11 +89,16 @@ div {
 <small><ul>
   <li><a class="active" href="$host">VisualArtsDNA</a></li>
   <li><a href="$host/browse">Browse</a></li>
+  ${getSparql(host)}
 </ul></small>
 """
 //	<!--  <li><a href="#contact">Contact</a></li>
 //	<li><a href="#about">About</a></li>
 //	-->
+	}
+	
+	static def getSparql(host) {
+		cwva.Server.getInstance().cfg.sparql ? "<li><a href=\"$host/sparql\">SPARQL</a></li>" : ""
 	}
 	
 	static def title(uriLong,uriShort) {

@@ -156,10 +156,13 @@ class Servlet extends ServletBase {
 				break
 
 			case ~/\/sparql/:
-				def url = "http://192.168.1.71:8082$path"
+				def url = "${cfg.functionHost}$path"
 				if (query) url = "$url?$query"
 				def s = new URL(url).getText()
-				sendHtml(response, "$s")
+				
+				def i = s.indexOf("<!-header->")
+				def s2 = HtmlTemplate.head(cfg.host) + s.substring(i) + HtmlTemplate.tail
+				sendHtml(response, "$s2")
 				break
 
 			default:
