@@ -9,6 +9,7 @@ import rdf.JenaUtilities
 import rdf.Prefixes
 import org.apache.jena.query.*
 import org.apache.jena.sparql.core.Prologue
+import rdf.parser.*
 
 class QueryMgr {
 	def MAXRESULTSIZE = 1000000
@@ -183,7 +184,13 @@ function myFunction() {
 			try {
 				ju.queryExecUpdate(model,prefixes,sparql)
 				result.status = "completed"
+			} catch (QueryParseException qpex) {
+				result.status = "Parse exception encountered"
+				result.result ="""${numLines(prefixes + sparql)}
+---
+${(""+qpex).substring((""+qpex).indexOf(":")+2)}"""
 			} catch (Exception ex) {
+				result.status = "Exception encountered"
 				result.result = """${numLines(prefixes + sparql)}
 ---
 $ex"""
@@ -236,8 +243,17 @@ $ex"""
 						result.result = ju.saveModelString(mdl,"ttl")
 						result.resultSetSize = mdl.size()
 						break;
+						
+					default: 
+						result.status="Command not supported"
 				}
+			} catch (QueryParseException qpex) {
+				result.status = "Parse exception encountered"
+				result.result ="""${numLines(prefixes + sparql)}
+---
+${(""+qpex).substring((""+qpex).indexOf(":")+2)}"""
 			} catch (Exception ex) {
+				result.status = "Exception encountered"
 				result.result ="""${numLines(prefixes + sparql)}
 ---
 $ex"""
