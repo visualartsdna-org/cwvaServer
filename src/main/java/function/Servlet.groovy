@@ -15,10 +15,11 @@ import util.Tmp
 class Servlet extends ServletBase {
 
 	def vm = new ConceptModel(vocab)  // causes model reload
-	def rm = new RelatedConcepts(vocab)
-	def im = new Interpretation(data)
-	def ib = new ImageBrand(data)
+	def rm = new RelatedConcepts()
+	def im = new Interpretation()
+	def ib = new ImageBrand()
 	def qm = new QueryMgr(dir)
+	def em = new EntityEntry()
 //	def tm = new TagModel(data,vocab,tags,cfg.host)
 //	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
 	def artist = [:]
@@ -218,6 +219,20 @@ class Servlet extends ServletBase {
 				def tpls = new ParseDigitalRDF().parse(mq)
 				sendText(response,"$tpls")
 
+				break
+
+			case "/entity_page":
+
+				def s = em.handleQueryParams([:])
+				sendHtml(response,s)
+
+				break
+
+			case "/entity_page.entry":
+
+				def s = em.handleQueryParams(mq)
+				sendText(response,"$s")
+				
 				break
 
 			case "/translate":

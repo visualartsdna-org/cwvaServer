@@ -83,44 +83,54 @@ a type of
 This ontology is inspired by the 
 <a href="https://mc.movielabs.com">Creative Works Ontology for the Film &amp; TV Industry</a>.
 <br/>
-<br/>The ontology is available as a 
-<a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a>
-in
-<a href="${cfg.host}/model.graph">graphical form</a>
+<br/>The ontology is available in
+<a href="${cfg.host}/model.graph">graphical form&#42;</a>
 and in an 
 <a href="${cfg.host}/model">RDF file (TTL/text)</a>.
 <p>
 <p/>
 See this ontology titled "Information Model for the Visual Arts" on  
 <a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/2021/07/16/model#">Archivo</a>.
-
-The current instance data can be browsed by selecting "Browse" at the top of this page.
-<!--The current instance data is also available in an 
-<a href="${cfg.host}/data">RDF file (TTL/text)</a>.  -->
-<br/>
-<br/>A vocabulary of visual arts terms is available as a 
-<a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a>
+This ontology is not definitive or complete.
+<p>
+<p/>
+A vocabulary of visual arts terms is available 
 in
-<a href="${cfg.host}/vocab.graph">graphical form</a>
+<a href="${cfg.host}/vocab.graph">graphical form&#42;</a>
 and in an 
 <a href="${cfg.host}/vocab">RDF file (TTL/text)</a>.
-<!--A list of <a href="${cfg.host}/html/vocab.html">vocabulary concepts</a> is also available.
+<!--(See  
+<a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a> for more information.)
 -->
 <p>
 <p/>
-<p/>
-The data in the instance model can be viewed with:
+The current instance data can be browsed by selecting "Browse" at the top of the page.  
+Query the model, vocabulary and instance data by selecting "SPARQL" at the top of the page.
+<!--The current instance data is also available in an 
+<a href="${cfg.host}/data">RDF file (TTL/text)</a>.  -->
+<!--A list of <a href="${cfg.host}/html/vocab.html">vocabulary concepts</a> is also available.
+-->
 <p>
-$graphTables
-<p/>
-Development of the VisualArtsDNA ontology is motivated by:
-(1) a need to organize the <a href="http://rickspates.art">author's art stuff</a>,
-(2) other artists may benefit from using the model for their own art stuff, and
+<p>
+
+""" +
+//<p/>
+//<p/>
+//The data in the instance model can be viewed with:
+//<p>
+//$graphTables
+//<p/>
+"""Development of the VisualArtsDNA ontology is motivated by:
+(1) a need to organize the <a href="http://rickspates.art">author's art information</a>,
+(2) other artists may benefit from using the model for their own art information, and
 (3) collaborating artists may need a common information model over the visual arts creative-process domain.
 <p/>
 <p/>
 <p/>
-This ontology is not definitive or complete.  It is intended as a conversation starter. 
+<font size="3">
+&#42;See  
+<a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a> for more information.
+</font>
 """
 //	The SVG graph is generated following this <a href="http://visualartsdna.org/graphInstructions.html">process</a>.
 //	<p/>

@@ -64,10 +64,29 @@ class ServletBase extends HttpServlet {
 							cfg.images,	// fDir
 							/.*\.JPG|.*\.jpg/) // filter
 				
+						// pass cmd to any remoteHost
+						if (cfg.functionHost) {
+							def url = "${cfg.functionHost}$path"
+							if (query) url = "$url?$query"
+							def s = new URL(url).getText()
+						}
+		
+						sendJson(response,new JsonBuilder([status:"ok"]))
+						break;
+						
+						case "stats":
+							def os = System.getProperty("os.name")
+							def c = ""
+							def s = ""
+							if (os.contains("nix")) 
+								c = "top -b -n1 | head -5 ; top -b -n1 | grep java; df | grep \"sda1 \""
+							else if (os.contains("Windows")) 
+								c = "C:\\stage\\bin\\stats.bat"
+							s = new util.Exec().exec(c)
+							sendJson(response,new JsonBuilder([stats:"$s"]))
 						break;
 						
 					}
-					sendJson(response,new JsonBuilder([status:"ok"]))
 				}
 				break
 

@@ -24,6 +24,7 @@ class Main {
 //			domain: "http://visualartsdna.org" ,
 //			ns: "work",
 			host: "http://192.168.1.71:$port",
+			functionHost: "http://192.168.1.71:80",
 			verbose: true,
 			verboseAll: false,
 			artist: [

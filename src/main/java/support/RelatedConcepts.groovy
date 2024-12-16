@@ -16,13 +16,15 @@ class RelatedConcepts {
 	def data
 	def conceptModel
 	
-	RelatedConcepts(concepts){
-		this.data = concepts
-		conceptModel = ju.loadFiles("${concepts}")
+	RelatedConcepts(){
 	}
 
-	def qConcept() {
-		def m = conceptModel
+	Model getConceptModel() {
+		cwva.Server.getInstance().dbm.vocab
+	}
+
+def qConcept() {
+		def m = getConceptModel() 
 		def ls = []
 		def l = ju.queryListMap4(m, prefixes, """
 select distinct ?s {

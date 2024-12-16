@@ -15,10 +15,8 @@ class ImageBrand {
 	def prefixes = Prefixes.forQuery
 
 	def ju = new JenaUtilities()
-	def dataModel
 	
-	ImageBrand(data){
-		dataModel = ju.loadFiles(data)
+	ImageBrand(){
 	}
 	
 

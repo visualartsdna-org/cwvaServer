@@ -15,12 +15,13 @@ class Interpretation {
 	def prefixes = Prefixes.forQuery
 
 	def ju = new JenaUtilities()
-	def dataModel
 	
-	Interpretation(data){
-		dataModel = ju.loadFiles(data)
+	Interpretation(){
 	}
 	
+	Model getModel() {
+		cwva.Server.getInstance().dbm.data
+	}
 
 	def handleQueryParams(m) {
 		m.label = qLabel(m.tag)
@@ -134,7 +135,7 @@ type
 	
 	
 	def qLabel(tag) {
-		def m = ju.queryListMap2(dataModel, prefixes, """
+		def m = ju.queryListMap2(getModel(), prefixes, """
 select ?l {
 		${tag} rdfs:label ?l .
 }

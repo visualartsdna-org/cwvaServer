@@ -213,9 +213,10 @@ About:
 								v2+= it.replaceAll("\n","<br>")
 							}
 							printHtml(v2,sb)
-						} else 
+						} else {
 							v = v.replaceAll("\n","<br>")
-						printHtml(v,sb)
+							printHtml(v,sb)
+						}
 					}
 				}
 			}

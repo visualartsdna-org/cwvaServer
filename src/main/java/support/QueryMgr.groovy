@@ -16,13 +16,16 @@ class QueryMgr {
 	def prefixes = Prefixes.forQuery
 	def dir
 	def ju = new JenaUtilities()
-	Model model = cwva.Server.getInstance().dbm.rdfs
 	def qm
 	def updateEnabled = false
 	
 	QueryMgr(dir){
 		this.dir = dir
 		qm = loadQueries()
+	}
+	
+	Model getModel() {
+		cwva.Server.getInstance().dbm.rdfs
 	}
 
 	/*
@@ -42,9 +45,10 @@ class QueryMgr {
 	}
 		
 	def process(m) {
-		def format = m.format ?: "CSV"
-		def q = m.query ?: ""
-		def resultMap = query(q,format) ?: ""
+		//m.format = "HTML" // test
+		def format = m.format ?: "HTML"
+		def q = m.query ? m.query.trim() : ""
+		def resultMap = query(q.trim(),format) ?: ""
 		def html = """
 <html>
 <head>
@@ -70,10 +74,14 @@ h1   {color: blue;}
    <col width="290px" />
 <tr><td style="border:1px solid black;">
 <!--  Format: -->
+  <input type="radio" id="format" name="format" value="HTML" ${format=="HTML" ? "checked" : ""}>
+  <label for="type1">html</label>
   <input type="radio" id="format" name="format" value="CSV" ${format=="CSV" ? "checked" : ""}>
   <label for="type1">csv</label>
+<!--
   <input type="radio" id="format" name="format" value="Text" ${format=="Text" ? "checked" : ""}>
   <label for="type2">text</label>
+-->
   <input type="radio" id="format" name="format" value="TSV" ${format=="TSV" ? "checked" : ""}>
   <label for="type2">tsv</label>
   <input type="radio" id="format" name="format" value="JSON" ${format=="JSON" ? "checked" : ""}>
@@ -94,9 +102,7 @@ $q
 </textarea>
 </td></tr>
 <tr><td>
-<textarea rows="20" cols="60" spellcheck="false">
 ${resultMap.result}
-</textarea>
 </td></tr>
 <tr><td>
 ${resultMap.time} ms | ${resultMap.resultSetSize} | ${resultMap.status}
@@ -158,6 +164,7 @@ Notes
 Format (csv, ...) applies only to Select statement results.<br>
 Construct and Describe statements result in Turtle (ttl) RDF.<br>
 Enable Update for SPARQL Update statement processing.<br>
+Only use single quotes around strings in queries, no double quotes.<br>
 <a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1 Query Language</a><br>
 
 </td></tr>
@@ -182,7 +189,7 @@ function myFunction() {
 				result.status = "update disabled"
 			} else 
 			try {
-				ju.queryExecUpdate(model,prefixes,sparql)
+				ju.queryExecUpdate(getModel(),prefixes,sparql)
 				result.status = "completed"
 			} catch (QueryParseException qpex) {
 				result.status = "Parse exception encountered"
@@ -201,14 +208,15 @@ $ex"""
 			try {
 				def mdl = ju.newModel()
 				Query query = QueryFactory.create(prefixes + sparql) ;
+				int rowcnt = 0
+				
 				switch (query.queryType) {
-					
 					case Query.QueryTypeSelect:
-						ResultSet resultSet = ju.queryResultSet(model,prefixes,sparql)
+						ResultSet resultSet = ju.queryResultSet(getModel(),prefixes,sparql)
 						ByteArrayOutputStream baos = new ByteArrayOutputStream()
 						switch (format) {
 							case "Text":
-							ResultSetFormatter.out(baos, resultSet, new Prologue(model)) // same as text
+							ResultSetFormatter.out(baos, resultSet, new Prologue(getModel())) // same as text
 							break
 							
 							case "CSV":
@@ -226,21 +234,34 @@ $ex"""
 							case "XML":
 							ResultSetFormatter.outputAsXML(baos,resultSet) // ok
 							break
+
+							case "HTML":
+							def m = ju.queryListMap1(getModel(),prefixes,sparql)
+							rowcnt = m.size();
+							htmlFormat(baos, m)
+							break
 						}
 
-						result.result = new String( baos.toByteArray() )		
-						result.resultSetSize = resultSet.getRowNumber()
+						def res = new String( baos.toByteArray())
+						if (format != "HTML") {
+							result.result = fmtTextArea(res)
+							result.resultSetSize = resultSet.getRowNumber()
+						}
+						else {
+							result.result = res
+							result.resultSetSize = rowcnt
+						}
 						break;
 
 					case Query.QueryTypeDescribe:
-						mdl=ju.queryDescribe(model,prefixes,sparql)
-						result.result = ju.saveModelString(mdl,"ttl")
+						mdl=ju.queryDescribe(getModel(),prefixes,sparql)
+						result.result = fmtTextArea(ju.saveModelString(mdl,"ttl"))
 						result.resultSetSize = mdl.size()
 						break;
 
 					case Query.QueryTypeConstruct:
-						mdl=ju.queryExecConstruct(model,prefixes,sparql)
-						result.result = ju.saveModelString(mdl,"ttl")
+						mdl=ju.queryExecConstruct(getModel(),prefixes,sparql)
+						result.result = fmtTextArea(ju.saveModelString(mdl,"ttl"))
 						result.resultSetSize = mdl.size()
 						break;
 						
@@ -249,14 +270,14 @@ $ex"""
 				}
 			} catch (QueryParseException qpex) {
 				result.status = "Parse exception encountered"
-				result.result ="""${numLines(prefixes + sparql)}
+				result.result = fmtTextArea("""${numLines(prefixes + sparql)}
 ---
-${(""+qpex).substring((""+qpex).indexOf(":")+2)}"""
+${(""+qpex).substring((""+qpex).indexOf(":")+2)}""")
 			} catch (Exception ex) {
 				result.status = "Exception encountered"
-				result.result ="""${numLines(prefixes + sparql)}
+				result.result = fmtTextArea("""${numLines(prefixes + sparql)}
 ---
-$ex"""
+$ex""" )
 			} catch (OutOfMemoryError me) {
 				result.status="Out of Memory Error"
 				println "Out of Memory Error: $me"
@@ -267,10 +288,15 @@ $ex"""
 			result.size = result.size()
 		}
 		if (result.size() > MAXRESULTSIZE) {
-			result.result = "Result size (${result.size()}) > max size ($MAXRESULTSIZE)"
+			result.result = fmtTextArea("Result size (${result.size()}) > max size ($MAXRESULTSIZE)")
 			result.status = "result string size > max"
 		}
 		result
+	}
+	
+	def fmtTextArea(s) {
+		"""<textarea readonly rows="20" cols="60" spellcheck="false">$s</textarea>"""
+		
 	}
 	
 	def numLines(s) {
@@ -288,7 +314,7 @@ $ex"""
 		int i=0
 		def s=""
 		ql.eachLine{
-			if (it.startsWith("#")) return
+			if (it.startsWith("##")) return
 			if (it.trim() == "" && s != "") {
 				qm["s${i++}"] = s
 				s = ""
@@ -303,5 +329,60 @@ $ex"""
 		qm
 	}
 
-		
+	// [{s=<http://visualartsdna.org/work/95eb37e3-5a82-4fa0-82f3-87001c9872d2>}, {s=<http
+	def htmlFormat(baos, map) {
+		int i=0
+		def sb = new StringBuilder()
+		sb.append """
+<style>
+.table-wrapper1
+{
+    border: 1px solid black;
+    width: 500px;
+    height: 500px;
+    overflow: auto;
+    resize: both;
+		margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+}}
+.data-table
+{
+background-color:#FFFFFF;
+tr:nth-child(even) {background-color: #f8f8f8;}
+}
+</style>
+<div class="table-wrapper1">
+<table class="data-table">
+"""
+		map.each{
+			sb.append "<tr>"
+			
+			if (!i++) { // column headers
+				it.each{k,v->
+					sb.append "<th>$k</th>"
+				}
+				sb.append "</tr><tr>"
+			}
+			it.each{k,v->
+				if (v.startsWith("http://") || v.startsWith("https://")) {
+					def pm = ju.getPrefix(getModel(),v)
+					def url = pm[0] != "null:" ? "${pm[0]}${pm[1]}" : "$v"
+					sb.append """<td>
+<a href=${v.replaceAll("http://visualartsdna.org",cwva.Server.getInstance().cfg.functionHost)} target="_blank" rel="noopener noreferrer">$url</a>
+</td>"""
+				} else sb.append "<td>$v</td>"
+			}
+		sb.append "</tr>"
+		}
+		sb.append """
+</table>
+</div>"""
+		baos.write(sb.toString().getBytes())
+	}
+	
+	def extractUrl(s) {
+		s.substring(1,s.length()-1)
+	}
 }
