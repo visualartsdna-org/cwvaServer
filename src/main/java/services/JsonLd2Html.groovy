@@ -99,19 +99,14 @@ class JsonLd2Html {
 		mmdl.each{k,m->
 			desc += k
 			
-//			println "\n$k"
-//			println new JenaUtils().saveModelString(m,"ttl")
-			//label
 			def baos = new ByteArrayOutputStream()
 			m.write(baos,"JSON-LD")
 			ljld += new JsonSlurper().parseText(""+baos)
 				
 
 		}
-		ljld.each{
-			if (it.containsKey("@graph"))
-			it["@graph"].sort{a,b-> b["@id"]<=>a["@id"]}
-		}
+		def tm = new TreeMap<>(ljld[0])
+		ljld[0] = new LinkedHashMap(tm)
 		def s = printHtml(ljld, desc, domain,path, ns, guid, label)
 	}
 
@@ -131,9 +126,7 @@ About:
 				ns = [:]
 				defs = [:]
 				sb.append("""
-<br/>
 <h5>${desc[i++]}</h5>
-<br/>
 """)
 				buildTables(map["@context"])
 				//println map
@@ -167,7 +160,9 @@ About:
 
 				}
 				else 
-					if (k=="@type") {
+					if (k=="@type"
+						|| k=="broader"
+						|| k=="narrower") {
 					def vc = v instanceof List ? v : [v]
 					def s=""
 					int i=0

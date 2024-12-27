@@ -28,9 +28,10 @@ class TestJunk {
 
 	@Test
 	void test0() {
-		def s = "abcdefg\n123456"
-		s = s.replaceAll("\n","<br>")
-		println s
+		def userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/133.0  Mobile/15E148 Safari/605.1.15"
+		def isMobile = userAgent ==~ /.*(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*/
+		//def isMobile = userAgent ==~ /.*(webOS|iPhone).*/
+		println isMobile
 	}
 
 }

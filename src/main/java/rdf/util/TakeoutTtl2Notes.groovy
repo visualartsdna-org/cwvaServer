@@ -38,18 +38,26 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 	def ttlDir = "ttl"
 
 	@Test
-	void testDriver() {
-
+	void test() {
+		driver()
+	}
+	
+	def driver() {
+		def stat = ""
 		FileUtils.deleteDirectory(new File("$tkoTmp/Takeout"))
-
+		stat += "directory deleted $tkoTmp/Takeout"
+		
 		def file = getLatestFileType(downloads,".zip")
 		if (!file) {
 			println "no zip file"
-			return
+			return "no zip file"
 		}
 		unzipFile(file,tkoTmp)
-
+		stat += "$tkoTmp unzipped"
+		
 		processJson("$tkoTmp/Takeout/Keep",tgt)
+		stat += "$tkoTmp/Takeout/Keep processed to $tgt"
+		stat
 	}
 
 
@@ -103,7 +111,7 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 	}
 
 	@Test
-	void test() {
+	void test1() {
 		def base = "C:/temp/generatedFiles/Takeout/Keep"
 		def dest = "C:/temp/git/cwvaContent/ttl/tags"
 

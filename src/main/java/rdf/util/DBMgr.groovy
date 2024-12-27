@@ -1,9 +1,19 @@
 package rdf.util
 
 import org.apache.jena.rdf.model.*
+import org.apache.jena.shacl.*
 import org.apache.jena.reasoner.*
+import org.junit.jupiter.api.Test
+import groovy.io.FileType
 import rdf.JenaUtilities
 import rdf.tools.SparqlConsole
+import org.apache.jena.util.*
+import org.apache.jena.vocabulary.ReasonerVocabulary
+import org.apache.jena.reasoner.rulesys.GenericRuleReasonerFactory
+import org.apache.jena.shacl.Shapes
+import org.apache.jena.shacl.ValidationReport
+import org.apache.jena.shacl.validation.*
+import org.apache.jena.shacl.lib.ShLib
 
 class DBMgr {
 
@@ -14,6 +24,8 @@ class DBMgr {
 	def schema
 	def rdfs // TODO: change rdfs to infModel globally
 	def cfg
+	def ju = new JenaUtilities()
+
 
 	// needs work and direction!
 	DBMgr(List loads) {
@@ -35,7 +47,6 @@ class DBMgr {
 
 	def load(model,l) {
 
-		def ju = new JenaUtilities()
 
 		def data = ju.newModel()
 		l.each{
@@ -62,7 +73,6 @@ class DBMgr {
 			}
 		}
 		
-		def ju = new JenaUtilities()
 
 		instances = ju.loadFiles(cfg.data)
 		tags = ju.loadFiles(cfg.tags)
@@ -77,6 +87,7 @@ class DBMgr {
 		schema = ju.loadFiles(cfg.model)
 		//rdfs = ModelFactory.createRDFSModel(schema, data)
 		rdfs = getReasoner("owlmicro", schema, data)
+		rdfs = skosInfer(rdfs,"${cwva.Server.getInstance().cfg.dir}/res/skos.rules")
 		//rdfs = ModelFactory.createRDFSModel(schema, data)
 		Policy.exec(rdfs)
 		validate(rdfs)
@@ -90,7 +101,17 @@ class DBMgr {
 				ValidityReport.Report report = (ValidityReport.Report)i.next();
 				println " - " + report
 			}
-		} else println "Model valid"
+		} else println "Inference model valid"
+		
+		// shacl validation
+		def dir = new File("${cwva.Server.getInstance().cfg.dir}/res")
+		dir.eachFileRecurse (FileType.FILES) { file ->
+			if(file.name.endsWith('.shacl')) {
+				println "$file"
+				shacl(inf, "$file")
+			}
+		}
+		
 		inf
 	}
 	
@@ -162,6 +183,51 @@ class DBMgr {
 		getSizes().each{k,v->
 			println ("$k = $v")
 		}
+	}
+	
+	def skosInfer(df,rules) {
+		
+		Model data = ju.loadFiles(df)
+		skosInfer( data, rules)
+		
+	}
+	
+	def skosInfer(Model data,rules) {
+		//def ju = new JenaUtilities()
+		
+		String demoURI = "http://www.w3.org/2004/02/skos/core#";
+		PrintUtil.registerPrefix("skos", demoURI);
+		
+//		println "${data.size()}"
+		Model m = ju.newModel()
+		
+		Resource configuration =  m.createResource();
+		configuration.addProperty(ReasonerVocabulary.PROPruleMode, "hybrid");
+		configuration.addProperty(ReasonerVocabulary.PROPruleSet,  rules);
+		
+		// Create an instance of such a reasoner
+		Reasoner reasoner = GenericRuleReasonerFactory.theInstance().create(configuration);
+		
+		// Load data
+		InfModel infmodel = ModelFactory.createInfModel(reasoner, data);
+		
+//		def ms = ju.saveModelString(infmodel)
+//		println ms
+//		ms.eachLine {
+//			if (it.contains("skos:broader"))
+//			println it
+//		}
+	}
+
+	def shacl(Model dataGraph, shacl) {
+		
+		Model shapesGraph = ju.loadFiles(shacl)
+		
+		Shapes shapes = Shapes.parse(shapesGraph);
+	
+		ValidationReport report = ShaclValidator.get().validate(shapes.getGraph(), dataGraph.getGraph());
+
+		ShLib.printReport(report)
 	}
 
 }

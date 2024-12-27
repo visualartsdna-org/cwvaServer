@@ -47,18 +47,18 @@ class Servlet extends ServletBase {
 	throws ServletException, IOException {
 
 		try {
-			handler(request._uri._path,request._uri._query,response)
+			handler(request._uri._path,request._uri._query,response,request)
 		} catch (Exception e) {
 			logOut e.printStackTrace()
 			throw new RuntimeException("Something went wrong")
 		}
 	}
 
-	def handler(path,query,response) {
-		handler(path,query,response,null)
-	}
+//	def handler(path,query,response) {
+//		handler(path,query,response,null)
+//	}
 		
-	def handler(path,query,response,request) {
+	def handler(path,query,response,HttpServletRequest request) {
 			
 		def mq = parse(query)
 		def tmp
@@ -106,10 +106,15 @@ class Servlet extends ServletBase {
 				break
 
 			case ~/\/loadKeepData/:	// load g keep notes data
-				new rdf.util.TakeoutTtl2Notes().testDriver()
+				def s = new rdf.util.TakeoutTtl2Notes().driver()
+				sendText(response,"$s")
 				break
 
 			case ~/\/sparql/:
+				def userAgent = request.getHeader("User-Agent")
+				def isMobile = userAgent ==~ /.*(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*/
+				if (!mq.containsKey("isMobile"))  // maybe redirected from other server
+					mq["isMobile"] = ""+isMobile
 				def s = qm.handleQueryParams(mq)
 				sendHtml(response, "$s")
 				break

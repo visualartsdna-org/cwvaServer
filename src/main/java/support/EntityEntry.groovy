@@ -55,17 +55,17 @@ class EntityEntry {
 		def ttl = """
 ${rdf.Prefixes.forFile}
 work:${m.guid}
-		a skos:Concept ;
+		a the:${m.type} ;
 		rdfs:label "${m.label}" ;
-		skos:broader the:${m.type} ;
-		vad:media	${m.media} ;
+		the:media	${m.media} ;
 		skos:definition  \"\"\"${m.definition}\"\"\" ;
 ${m.keywords?"":"#"}		schema:keywords "${m.keywords}" ;
-${m.document?"":"#"}		vad:document <${m.document}> ;
+${m.document?"":"#"}		the:document <${m.document}> ;
 ${m.primarySite?"":"#"}		schema:sameAs <${m.primarySite}> ;
-${m.wikipedia?"":"#"}		vad:wikipedia	<${m.wikipedia}> ;
-${m.dbpedia?"":"#"}		vad:dbpedia	<${m.dbpedia}> ;
+${m.wikipedia?"":"#"}		the:wikipedia	<${m.wikipedia}> ;
+${m.dbpedia?"":"#"}		the:dbpedia	<${m.dbpedia}> ;
 		schema:datePublished "${m.recordedDateTime}"^^xs:date ;
+		skos:inScheme	the:entities ;
 		.
 """
 		new File("${m.dir}/${m.guid}.ttl").text = ttl
@@ -101,6 +101,8 @@ Type:
   <label for="type2">Collection</label>
   <input type="radio" id="type2" name="type" value="Organization">
   <label for="type2">Organization</label>
+  <input type="radio" id="type2" name="type" value="Concept">
+  <label for="type2">Concept</label>
   <input type="radio" id="type2" name="type" value="Entity">
   <label for="type2">Entity</label>
 </td></tr><tr><td><br>

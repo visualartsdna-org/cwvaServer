@@ -19,14 +19,14 @@ class Servlet extends ServletBase {
 	throws ServletException, IOException {
 
 		try {
-			handler(request._uri._path,request._uri._query,response)
+			handler(request._uri._path,request._uri._query,response,request)
 		} catch (Exception e) {
 			logOut e.printStackTrace()
 			throw new RuntimeException("Something went wrong")
 		}
 	}
 	
-	def handler(path,query,response) {
+	def handler(path,query,response,request) {
 
 		def mq=parse(query)
 		def tmpFile
@@ -156,6 +156,12 @@ class Servlet extends ServletBase {
 				break
 
 			case ~/\/sparql/:
+				def userAgent = request.getHeader("User-Agent")
+				def isMobile = userAgent ==~ /.*(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*/
+				if (query)
+					query += "&isMobile=$isMobile"
+				else query = "isMobile=$isMobile"
+					
 				def url = "${cfg.functionHost}$path"
 				if (query) url = "$url?$query"
 				def s = new URL(url).getText()

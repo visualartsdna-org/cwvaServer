@@ -49,6 +49,141 @@ class QueryMgr {
 		def format = m.format ?: "HTML"
 		def q = m.query ? m.query.trim() : ""
 		def resultMap = query(q.trim(),format) ?: ""
+		// for mobile format
+		def htmlMobile = """
+<html>
+<head>
+<head/>
+<body>
+<a href="${cwva.Server.getInstance().cfg.host}">Home</a>
+<br>
+<!-header->
+<style>
+body {background-color: WhiteSmoke;}
+h1   {color: blue;}
+#queries{
+ width:400px;   
+}
+</style>
+<h3>SPARQL</h3>
+<form id="myForm" action="/sparql" method="get">
+<table>
+<tr><td>
+<table>
+<tr><td>
+<table>
+   <col width="290px" />
+<tr><td style="border:1px solid black;">
+<!--  Format: -->
+  <input type="radio" id="format" name="format" value="HTML" ${format=="HTML" ? "checked" : ""}>
+  <label for="type1">html</label>
+  <input type="radio" id="format" name="format" value="CSV" ${format=="CSV" ? "checked" : ""}>
+  <label for="type1">csv</label>
+<!--
+  <input type="radio" id="format" name="format" value="Text" ${format=="Text" ? "checked" : ""}>
+  <label for="type2">text</label>
+-->
+  <input type="radio" id="format" name="format" value="TSV" ${format=="TSV" ? "checked" : ""}>
+  <label for="type2">tsv</label>
+  <input type="radio" id="format" name="format" value="JSON" ${format=="JSON" ? "checked" : ""}>
+  <label for="type2">json</label>
+  <input type="radio" id="format" name="format" value="XML" ${format=="XML" ? "checked" : ""}>
+  <label for="type2">xml</label>
+</td></tr><tr><td>
+  <label for="sparqlUpdate">Update</label>
+<input type="checkbox" id="sparqlUpdate" name="sparqlUpdate" value="Update" disabled>
+</td><td>
+<input type = "submit" name = "submit" value = "Execute" />
+</td></tr>
+</table>
+</td></tr>
+<tr><td>
+<textarea id="query" name="query" rows="10" cols="40" spellcheck="false">
+$q
+</textarea>
+</td></tr>
+<tr><td>
+<h4>
+Query Set
+</h4>
+<select name="queries" id="queries" size="${qm.size()}">
+"""
+					qm.each{k,v->
+						htmlMobile += """
+			<option value="$v">$v
+			   </option>
+"""
+						   
+					}
+				htmlMobile +=
+			"""
+</select>
+
+</td></tr>
+<tr><td>
+<h4>Results</h4>
+${resultMap.result}
+</td></tr>
+<tr><td>
+${resultMap.time} ms | ${resultMap.resultSetSize} | ${resultMap.status}
+</td></tr>
+</table>
+
+</td></tr>
+</table>
+</form>
+<script>
+var mytextbox = document.getElementById('query');
+var mydropdown = document.getElementById('queries');
+
+mydropdown.onchange = function() {
+  var mydropdownValue = mydropdown.options[mydropdown.selectedIndex].value;
+  mytextbox.value =  mydropdownValue;
+}
+</script>
+<hr>
+<table>
+<tr><td>
+<h4>
+Prefixes
+</h4>
+dct:  &lt;http://purl.org/dc/terms/&gt;  <br>
+foaf:  &lt;http://xmlns.com/foaf/0.1/&gt;  <br>
+owl:  &lt;http://www.w3.org/2002/07/owl#&gt; <br>
+rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;  <br>
+rdfs:  &lt;http://www.w3.org/2000/01/rdf-schema#&gt;  <br>
+schema:  &lt;https://schema.org/&gt;  <br>
+skos:  &lt;http://www.w3.org/2004/02/skos/core#&gt;  <br>
+the:  &lt;http://visualartsdna.org/thesaurus/&gt;  <br>
+tko:  &lt;http://visualartsdna.org/takeout/&gt; <br>
+vad:  &lt;http://visualartsdna.org/2021/07/16/model#&gt; <br>
+work:  &lt;http://visualartsdna.org/work/&gt;  <br>
+xs:  &lt;http://www.w3.org/2001/XMLSchema#&gt;  <br>
+xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt;  <br>
+</td><td>
+</td></tr><tr><td>
+<!--</td><td valign="top">-->
+<br>
+<h4>
+Notes
+</h4>
+Format (csv, ...) applies only to Select statement results.<br>
+Construct and Describe statements result in Turtle (ttl) RDF.<br>
+Enable Update for SPARQL Update statement processing.<br>
+Only use single quotes around strings in queries, no double quotes.<br>
+<a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1 Query Language</a><br>
+
+</td></tr>
+</table>
+<script>
+function myFunction() {
+  document.getElementById("sparqlUpdate").disabled = true;
+}
+</script>
+</body>
+</html>
+"""
+			
 		def html = """
 <html>
 <head>
@@ -177,7 +312,9 @@ function myFunction() {
 </body>
 </html>
 """
-		html 
+		if (m.isMobile == "true")
+			return htmlMobile
+		else return html
 	}
 	
 	def query(sparql,format) {

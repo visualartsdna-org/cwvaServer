@@ -120,10 +120,10 @@ Query the model, vocabulary and instance data by selecting "SPARQL" at the top o
 //<p>
 //$graphTables
 //<p/>
-"""Development of the VisualArtsDNA ontology is motivated by:
-(1) a need to organize the <a href="http://rickspates.art">author's art information</a>,
-(2) other artists may benefit from using the model for their own art information, and
-(3) collaborating artists may need a common information model over the visual arts creative-process domain.
+"""Development of the VisualArtsDNA ontology is motivated by
+a need to organize the <a href="http://rickspates.art">author's art information</a>,
+other artists may benefit from using the model for their own art information, and
+collaborating artists may need a common information model over the visual arts creative-process domain.
 <p/>
 <p/>
 <p/>
