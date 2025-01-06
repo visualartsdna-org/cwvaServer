@@ -19,7 +19,7 @@ class Server {
 		instance = this
 		cfg.each { println it }
 		dbm = new DBMgr(cfg)
-		dbm.print()
+		println "${dbm.print()}"
 		util.Gcp.folderCleanup(
 			"images", // gDir
 			cfg.images,	// fDir

@@ -159,8 +159,10 @@ About:
 					}
 
 				}
-				else 
-					if (k=="@type"
+				else if (k=="@type"
+						|| k=="tag"
+						|| k=="contains"
+						|| k=="related"
 						|| k=="broader"
 						|| k=="narrower") {
 					def vc = v instanceof List ? v : [v]
@@ -169,6 +171,17 @@ About:
 					vc.each{ 
 						if (i++>0)	s += ", "
 						s += """<a href="${nsLookup(it)}">$it</a>"""
+					}
+					sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
+				}
+				else if (k=="media"
+						|| k=="keywords") {
+					def vc = v instanceof List ? v : [v]
+					def s=""
+					int i=0
+					vc.each{ 
+						if (i++>0)	s += ", "
+						s += """$it"""
 					}
 					sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
 				}

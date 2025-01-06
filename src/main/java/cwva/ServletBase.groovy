@@ -77,12 +77,12 @@ class ServletBase extends HttpServlet {
 						case "stats":
 							def os = System.getProperty("os.name")
 							def c = ""
-							def s = ""
 							if (os.contains("nix")) 
-								c = "top -b -n1 | head -5 ; top -b -n1 | grep java; df | grep \"sda1 \""
+								c = "top -b -n1 | head -5 ; top -b -n1 | grep java; df | grep 'sda1' ;ls -l *.log;echo errors; grep Exception *err.log | wc"
 							else if (os.contains("Windows")) 
 								c = "C:\\stage\\bin\\stats.bat"
-							s = new util.Exec().exec(c)
+							def s = new util.Exec().exec(c)
+							s += cwva.Server.getInstance().dbm.print()
 							sendJson(response,new JsonBuilder([stats:"$s"]))
 						break;
 						
@@ -102,6 +102,8 @@ class ServletBase extends HttpServlet {
 
 			case "/cestfini":
 				def payload = new JsonBuilder(metrics).toPrettyString()
+				sendJson(response,""+[status:"ok"])
+				sleep(1000) // time to let the response clear
 				logOut(payload)
 				logOut "fini"
 				System.exit(0)
@@ -216,6 +218,13 @@ class ServletBase extends HttpServlet {
 
 	def logOut(s) {
 		Server.getInstance().logOut(s)
+	}
+
+	def policy
+	def policyAccept(name,s) {
+		if (!policy)
+			policy = util.Rson.load("${cwva.Server.getInstance().cfg.dir}/res/servletPolicy.rson")
+		policy[name].path.any { it != "" && s =~ /$it/}
 	}
 
 }

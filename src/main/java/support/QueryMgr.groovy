@@ -447,7 +447,7 @@ $ex""" )
 
 	def loadQueries() {
 		def qm = [:]
-		def ql = new File("$dir/res/queries.txt").text
+		def ql = new File("$dir/res/cached.sparql").text
 		int i=0
 		def s=""
 		ql.eachLine{

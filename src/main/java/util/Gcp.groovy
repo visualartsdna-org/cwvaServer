@@ -40,10 +40,10 @@ class Gcp {
 	// tgt dir is folder containing folder name
 	// corresponding to (leaf) folder name under bucket
 	// e.g., cp $bucket/ttl to /tmp copies to /tmp/ttl
-	static def gcpCpDirRecurse(src,tgt,clobber) {
+	static def gcpCpDirRecurse(src,tgt,clobber,multithreaded) {
 		def bucket = System.getProperty("gcp_bucket")
 		assert bucket, "no gcp bucket"
-		def cmd = """$gsutil cp ${!clobber?"-n":""} -r "gs://$bucket/$src" $tgt"""
+		def cmd = """$gsutil ${multithreaded?"-m":""}  cp ${!clobber?"-n":""} -r "gs://$bucket/$src" $tgt"""
 		def oa = new Exec().execQuiet(cmd)
 		if (oa[1].contains("Exception"))
 			throw new RuntimeException("${oa[1]}")
@@ -51,11 +51,11 @@ class Gcp {
 	}
 	// no clobber
 	static def gcpCpDirRecurse(src,tgt) {
-		gcpCpDirRecurse(src,tgt,false)
+		gcpCpDirRecurse(src,tgt,false,false)
 	}
 	// overwrite existing files at tgt
 	static def gcpCpDirRecurseClobber(src,tgt) {
-		gcpCpDirRecurse(src,tgt,true)
+		gcpCpDirRecurse(src,tgt,true,false)
 	}
 	static def gcpLs(src,String file) {
 

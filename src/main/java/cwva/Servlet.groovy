@@ -34,6 +34,8 @@ class Servlet extends ServletBase {
 		setState(path)
 		if (cfg.verbose) println "$path ${query?:""}"
 		//dbm.reload()	// optional: useful for dev
+		
+		if (policyAccept("main",path))
 		switch (path) {
 
 			case "/model":

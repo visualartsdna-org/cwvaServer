@@ -26,6 +26,8 @@ class Main {
 			host: "http://192.168.1.71:$port",
 			functionHost: "http://192.168.1.71:8082",
 			verbose: true,
+			clobber: false,
+			multithreaded: false,
 			sparql: true
 		]).startJetty()
 		

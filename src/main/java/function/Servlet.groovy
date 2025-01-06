@@ -71,6 +71,7 @@ class Servlet extends ServletBase {
 		else if (cfg.verboseAll && lowLevelRequest) 
 			println "$path ${query?:""}"
 			
+		if (policyAccept("function",path))
 		switch (path) {
 
 			case "/certificate":
@@ -93,6 +94,21 @@ class Servlet extends ServletBase {
 			case "/fileConvert":
 				def status = new ImageTypeMgt().handleUpload(mq)
 				sendText(response,"$status")
+				break
+
+			case ~/\/status/:
+				def s = new util.Exec().exec("C:/stage/bin/getStats.bat ${mq.target}")
+				sendText(response,"$s")
+				break
+
+			case ~/\/reload/:
+				def s = new util.Exec().exec("C:/stage/bin/reload.bat ${mq.target}")
+				sendText(response,"$s")
+				break
+
+			case ~/\/stop/:
+				def s = new util.Exec().exec("wget -t 1 ${mq.target}/cestfini")
+				sendText(response,"Done $s")
 				break
 
 			case ~/\/distributeData/: // distribute data

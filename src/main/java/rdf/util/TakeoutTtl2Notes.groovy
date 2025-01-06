@@ -16,6 +16,9 @@ import java.nio.file.Paths
 import java.util.zip.ZipFile
 import groovy.io.FileType
 
+// rule for matching on annotated properties
+// ns must be one of skos:|the:|vad:
+//
 class TakeoutTtl2Notes {
 	def prefixes = """
 prefix schema: <https://schema.org/> 
@@ -45,7 +48,7 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 	def driver() {
 		def stat = ""
 		FileUtils.deleteDirectory(new File("$tkoTmp/Takeout"))
-		stat += "directory deleted $tkoTmp/Takeout"
+		stat += "directory deleted $tkoTmp/Takeout\n"
 		
 		def file = getLatestFileType(downloads,".zip")
 		if (!file) {
@@ -53,10 +56,10 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 			return "no zip file"
 		}
 		unzipFile(file,tkoTmp)
-		stat += "$tkoTmp unzipped"
+		stat += "$tkoTmp unzipped\n"
 		
 		processJson("$tkoTmp/Takeout/Keep",tgt)
-		stat += "$tkoTmp/Takeout/Keep processed to $tgt"
+		stat += "$tkoTmp/Takeout/Keep processed to $tgt\n"
 		stat
 	}
 
@@ -151,7 +154,7 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 									"attachments"
 								])
 							m2["${k}"]=v
-						else if (k.contains(":"))  // a namespace
+						else if (k==~ /(skos:|the:|vad:).*/)  // namespaces
 							m2["${k}"]=v
 						else if (k in [
 									"hasTopConcept",
@@ -198,13 +201,7 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 					def created = makeDate(m2.createdTimestampUsec)
 					def edited = makeDateTime(m2.userEditedTimestampUsec)
 					def ttl= """
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix schema: <https://schema.org/> .
-@prefix work:  <http://visualartsdna.org/work/> .
-@prefix tko:   <http://visualartsdna.org/takeout/> .
-@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
-@prefix the:   <http://visualartsdna.org/thesaurus/> .
-@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+${rdf.Prefixes.forFile}
 			the:$cpt
 				a the:KeepNote ;
 				skos:inScheme      the:paintingNotes ;
@@ -216,7 +213,7 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 
 """
 					m2.findAll{k,v->
-						k.startsWith("skos:")// && k != "skos:related"
+						k==~ /(skos:|the:|vad:).*/
 					}.each{k,v->
 						//if (isUri(v))
 						ttl += """

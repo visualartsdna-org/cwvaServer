@@ -49,7 +49,7 @@ VADNA RDF Entry
 </td><td>
   <br><label for="id">Type:</label><br>
 
-  <input type="radio" id="type1" name="type" value="Watercolor">
+  <input type="radio" id="type1" name="type" value="Watercolor" checked>
   <label for="type1">Watercolor</label><br>
   <input type="radio" id="type2" name="type" value="Drawing">
   <label for="type2">Drawing</label><br>
@@ -63,7 +63,7 @@ VADNA RDF Entry
   <label for="type2">Left</label><br>
 </td><td>
   <label for="id">Media:</label><br>
-  <input type="checkbox" id="media1" name="media1" value="Watercolor">
+  <input type="checkbox" id="media1" name="media1" value="Watercolor" checked>
   <label for="media1">Watercolor</label><br>
   <input type="checkbox" id="media2" name="media2" value="Drawing">
   <label for="media2">Drawing</label><br>

@@ -61,18 +61,24 @@ class DBMgr {
 
 	def load() {
 
-		def clobber = System.getProperty("clobber")?:false
+		while (readLoadLock()) {
+			print "."
+			sleep(1000)
+		}
+		writeLoadLock()
+
+		def clobber = cwva.Server.getInstance().cfg.clobber
+		def multithreaded = cwva.Server.getInstance().cfg.multithreaded
 		// restore ttl from gcp
 		if (cfg.cloud) {
+			def ctms = System.currentTimeMillis()
 			println "gcpCpDirRecurse: ${cfg.cloud.src}, ${cfg.cloud.tgt}"
-			if (clobber) {
-				util.Gcp.gcpCpDirRecurseClobber(cfg.cloud.src,cfg.cloud.tgt)
-			}
-			else {
-				util.Gcp.gcpCpDirRecurse(cfg.cloud.src,cfg.cloud.tgt)
-			}
+			util.Gcp.gcpCpDirRecurse(cfg.cloud.src,cfg.cloud.tgt,clobber,multithreaded)
+			def ctms2 = 
+			println "gcpCpDirRecurse finished: ${new Date()}, elapsed: ${System.currentTimeMillis()-ctms}"
 		}
 		
+		deleteLoadLock()
 
 		instances = ju.loadFiles(cfg.data)
 		tags = ju.loadFiles(cfg.tags)
@@ -180,8 +186,9 @@ class DBMgr {
 	}
 
 	def print() {
+		def s = ""
 		getSizes().each{k,v->
-			println ("$k = $v")
+			s +=  "$k = $v\n"
 		}
 	}
 	
@@ -228,6 +235,19 @@ class DBMgr {
 		ValidationReport report = ShaclValidator.get().validate(shapes.getGraph(), dataGraph.getGraph());
 
 		ShLib.printReport(report)
+	}
+
+	def loadLock = ".loadLock"
+	def readLoadLock() {
+		new File(loadLock).exists()
+	}
+	
+	def writeLoadLock() {
+		new File(loadLock).text="locked"
+	}
+	
+	def deleteLoadLock() {
+		new File(loadLock).delete()
 	}
 
 }

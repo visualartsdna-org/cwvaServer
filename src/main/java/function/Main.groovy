@@ -27,6 +27,8 @@ class Main {
 			functionHost: "http://192.168.1.71:80",
 			verbose: true,
 			verboseAll: false,
+			clobber: false,
+			multithreaded: false,
 			artist: [
 				rspates: [
 					dir: "C:/temp/git/rspates",

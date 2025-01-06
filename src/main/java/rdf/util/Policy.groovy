@@ -14,7 +14,7 @@ class Policy {
 			}
 		def l=[]
 		def s=""
-		new File("$home/Policy.upd").text.eachLine{
+		new File("$home/res/Policy.upd").text.eachLine{
 			if (it.startsWith("# update delimiter")) {
 				if (s != "") l += s
 				s=""

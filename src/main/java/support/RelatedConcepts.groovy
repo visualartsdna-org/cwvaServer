@@ -23,24 +23,29 @@ class RelatedConcepts {
 		cwva.Server.getInstance().dbm.vocab
 	}
 
-def qConcept() {
+def qConcept(type) {
 		def m = getConceptModel() 
-		def ls = []
-		def l = ju.queryListMap4(m, prefixes, """
-select distinct ?s {
+		def ms = [:]
+		def l = ju.queryListMap1(m, prefixes, """
+select distinct ?s ?label ?alt {
 		?s a skos:Concept ;
+			rdfs:label ?label ;
 			skos:broader ?cp .
-		filter (?cp in (the:WatercolorPaint, the:watercolorTechnique, the:watercolorMaterial))
+		optional {
+			?s 	schema:brand/skos:altLabel ?alt .
+			}
+		filter (?cp = $type)
 } order by ?s
 """)
 		l.each{
 			def s = it.s
-			ls += s
 			.replaceAll(/[<>]/,"")
 			.replaceAll("http://visualartsdna.org/thesaurus/","the:")
-			//ls += "\n"
+			ms[s] = it.label
+			if (type == "the:WatercolorPaint")
+				ms[s] += ", ${it.alt}"
 		}
-		ls
+		ms
 	}
 	
 
@@ -74,7 +79,6 @@ select distinct ?s {
 		}
 		selected += "]"
 		
-		def lc = qConcept()
 		
 		def html = """
 <html>
@@ -99,46 +103,61 @@ copy and paste in keep notes, e.g,
 <a href="${cwva.Server.getInstance().cfg.host}">Home</a>
 <br>
 <h3>Watercolor Concepts</h3>
-Select paints and techniques to include related to the note for the work.
-<br>
+Select related paints and techniques to include in the note for the work.
+
+<button onclick="myFunction2()">Copy</button>
 <form id="myForm" action="/related.entry" method="get">
 <textarea id="related" name="relateds"  rows="4" cols="60">
 $selected
 </textarea>
 <!--<input type="text" id="related" name="relateds" size="120" value="$selected">-->
-<button onclick="myFunction2()">Copy</button>
+
+	 <input type = "submit" name = "submit" value = "Submit" />
+	 <input type = "submit" name = "reset" value = "Reset" />
 
 <br>
 <br>
-
+<table><tr>
+"""
+		
+		def html1 = ""
+		//
+		for (type in ["the:WatercolorPaint", "the:watercolorTechnique", "the:watercolorMaterial"]) {
+		def mc = qConcept(type)
+		html1 += """
+<td>
 <div id="checkboxes">
   <ul>
 """
-		def html1 = ""
-		lc.each{
+
+		mc.each{k,v->
 			
-		if (lr.contains (it))
-			html1 += "<li><input type=\"checkbox\" id=\"$it\" name=\"$it\" checked>$it</li>"
+		if (lr.contains (k))
+			html1 += "<li><input type=\"checkbox\" id=\"$k\" name=\"$k\" checked>$v</li>"
 		else
-			html1 += "<li><input type=\"checkbox\" id=\"$it\" name=\"$it\" >$it</li>"
+			html1 += "<li><input type=\"checkbox\" id=\"$k\" name=\"$k\" >$v</li>"
 		
 		}
-		
-		def html2="""
+		html1 += """
   </ul>
 </div>
+</td>
+"""
+		
+		}
+
+		
+		def html2="""
+</tr></table>
 <br>
-<br>
-	 <input type = "submit" name = "submit" value = "Submit" />
-	 <input type = "submit" name = "reset" value = "Reset" />
-<br>
-V 1.0
+V 2.0
 </form>
 
 <script>
 function myFunction() {
   document.getElementById("myForm").reset();
 }
+
 function myFunction2() {
   // Get the text field
   var copyText = document.getElementById("related");
@@ -148,10 +167,12 @@ function myFunction2() {
   copyText.setSelectionRange(0, 99999); // For mobile devices
 
    // Copy the text inside the text field
-  navigator.clipboard.writeText(copyText.value);
+//  navigator.clipboard.writeText(copyText.value);
+  document.execCommand('copy');
+//  window.getSelection().removeAllRanges();
 
   // Alert the copied text
-  //alert("Copied the text: " + copyText.value);
+ // alert("Copied the text: " + copyText.value);
 }
 </script>
 

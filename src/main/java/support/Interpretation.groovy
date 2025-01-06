@@ -37,12 +37,12 @@ class Interpretation {
 		def ttl = """
 ${rdf.Prefixes.forFile}
 $m.quid
-	    a                the:Interpretation ;
+	    a                skos:Concept ;
         tko:created      "$date"^^xsd:date ;
         tko:edited       "$dt"^^xsd:dateTime ;
         the:tag          ${m.tag} ;
-		skos:related	the:${util.Text.camelCase(m.kind)} ;
-		skos:related 	the:${util.Text.camelCase(m.source)} ;
+		skos:broader	the:${util.Text.camelCase(m.kind)} ;
+		the:source 	the:${util.Text.camelCase(m.source)} ;
         rdfs:label       "${m.kind.trim()} of ${m.label}" ;
         skos:definition  \"\"\"${m.definition}\"\"\" ;
 		.
@@ -114,11 +114,6 @@ definition
 tag
 </td><td>
 <input type="text" id="tag" name="tag" size="44" value="">
-</td></tr>
-<tr><td>
-type
-</td><td>
-<input type="text" id="type" name="type" size="44" value="the:Interpretation">
 </td></tr>
 </table>
 <br><input type = "submit" name = "submit" value = "Create" />

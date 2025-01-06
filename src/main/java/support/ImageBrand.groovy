@@ -26,7 +26,13 @@ class ImageBrand {
 		m.each{k,v->
 			s += "$k = $v\n"
 		}
-		
+		m.guid = m.guid.trim()
+		m.label = m.label.trim()
+		if (m.guid ==~ /work:.*/) {
+			def n = m.guid.indexOf(":") +1
+			m.guid = m.guid.substring(n)
+		}
+			
 		verify(m)
 		def filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
 
