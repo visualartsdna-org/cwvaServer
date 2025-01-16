@@ -56,7 +56,7 @@ class ServletBase extends HttpServlet {
 						
 						case "restart":
 						def server = Server.getInstance()
-						if (!server) server = function.Server.getInstance()
+// this can go						if (!server) server = function.Server.getInstance()
 						server.dbm = new rdf.util.DBMgr(server.cfg)
 						server.dbm.print()
 						util.Gcp.folderCleanup(
@@ -65,8 +65,8 @@ class ServletBase extends HttpServlet {
 							/.*\.JPG|.*\.jpg/) // filter
 				
 						// pass cmd to any remoteHost
-						if (cfg.functionHost) {
-							def url = "${cfg.functionHost}$path"
+						if (cfg.twinHost && cfg.primaryHost) {
+							def url = "${cfg.twinHost}$path"
 							if (query) url = "$url?$query"
 							def s = new URL(url).getText()
 						}
@@ -77,8 +77,8 @@ class ServletBase extends HttpServlet {
 						case "stats":
 							def os = System.getProperty("os.name")
 							def c = ""
-							if (os.contains("nix")) 
-								c = "top -b -n1 | head -5 ; top -b -n1 | grep java; df | grep 'sda1' ;ls -l *.log;echo errors; grep Exception *err.log | wc"
+							if (os.contains("Linux")) 
+								c = "./status.s"
 							else if (os.contains("Windows")) 
 								c = "C:\\stage\\bin\\stats.bat"
 							def s = new util.Exec().exec(c)

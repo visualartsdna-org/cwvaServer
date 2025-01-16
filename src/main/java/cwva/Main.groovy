@@ -24,10 +24,11 @@ class Main {
 			domain: "http://visualartsdna.org" ,
 			ns: "work",
 			host: "http://192.168.1.71:$port",
-			functionHost: "http://192.168.1.71:8082",
+			twinHost: "http://192.168.1.71:8082",
 			verbose: true,
 			clobber: false,
 			multithreaded: false,
+			primaryHost: true,
 			sparql: true
 		]).startJetty()
 		

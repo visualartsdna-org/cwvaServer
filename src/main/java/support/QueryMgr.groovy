@@ -170,7 +170,6 @@ Notes
 Format (csv, ...) applies only to Select statement results.<br>
 Construct and Describe statements result in Turtle (ttl) RDF.<br>
 Enable Update for SPARQL Update statement processing.<br>
-Only use single quotes around strings in queries, no double quotes.<br>
 <a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1 Query Language</a><br>
 
 </td></tr>
@@ -299,7 +298,6 @@ Notes
 Format (csv, ...) applies only to Select statement results.<br>
 Construct and Describe statements result in Turtle (ttl) RDF.<br>
 Enable Update for SPARQL Update statement processing.<br>
-Only use single quotes around strings in queries, no double quotes.<br>
 <a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1 Query Language</a><br>
 
 </td></tr>
@@ -507,7 +505,7 @@ tr:nth-child(even) {background-color: #f8f8f8;}
 					def pm = ju.getPrefix(getModel(),v)
 					def url = pm[0] != "null:" ? "${pm[0]}${pm[1]}" : "$v"
 					sb.append """<td>
-<a href=${v.replaceAll("http://visualartsdna.org",cwva.Server.getInstance().cfg.functionHost)} target="_blank" rel="noopener noreferrer">$url</a>
+<a href=${v.replaceAll("http://visualartsdna.org",cwva.Server.getInstance().cfg.twinHost)} target="_blank" rel="noopener noreferrer">$url</a>
 </td>"""
 				} else sb.append "<td>$v</td>"
 			}

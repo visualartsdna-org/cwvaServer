@@ -164,7 +164,7 @@ class Servlet extends ServletBase {
 					query += "&isMobile=$isMobile"
 				else query = "isMobile=$isMobile"
 					
-				def url = "${cfg.functionHost}$path"
+				def url = "${cfg.twinHost}$path"
 				if (query) url = "$url?$query"
 				def s = new URL(url).getText()
 				

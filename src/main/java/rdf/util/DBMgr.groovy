@@ -38,7 +38,7 @@ class DBMgr {
 
 	DBMgr(Map cfg) {
 		this.cfg = cfg
-		cleanUp()
+//		cleanUp()
 		def m = load()
 //				new Thread().start{
 //					new SparqlConsole().show(m as Model)

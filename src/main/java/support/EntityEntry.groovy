@@ -97,8 +97,8 @@ Type:
   <label for="type2">Work</label>
   <input type="radio" id="type2" name="type" value="Study">
   <label for="type2">Study</label>
-  <input type="radio" id="type2" name="type" value="Collection">
-  <label for="type2">Collection</label>
+  <input type="radio" id="type2" name="type" value="Topic">
+  <label for="type2">Topic</label>
   <input type="radio" id="type2" name="type" value="Organization">
   <label for="type2">Organization</label>
   <input type="radio" id="type2" name="type" value="Concept">

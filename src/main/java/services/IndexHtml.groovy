@@ -105,7 +105,7 @@ and in an
 <p>
 <p/>
 The current instance data can be browsed by selecting "Browse" at the top of the page.  
-Query the model, vocabulary and instance data by selecting "SPARQL" at the top of the page.
+${cwva.Server.getInstance().cfg.sparql ? "Query the model, vocabulary and instance data by selecting \"SPARQL\" at the top of the page." : ""}
 <!--The current instance data is also available in an 
 <a href="${cfg.host}/data">RDF file (TTL/text)</a>.  -->
 <!--A list of <a href="${cfg.host}/html/vocab.html">vocabulary concepts</a> is also available.
