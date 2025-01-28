@@ -114,12 +114,14 @@ ${cwva.Server.getInstance().cfg.sparql ? "Query the model, vocabulary and instan
 <p>
 
 """ +
-//<p/>
-//<p/>
-//The data in the instance model can be viewed with:
-//<p>
-//$graphTables
-//<p/>
+"""
+<p/>
+<p/>
+The data in the instance model can be viewed with:
+<p>
+$graphTables
+<p/>
+""" +
 """Development of the VisualArtsDNA ontology is motivated by
 a need to organize the <a href="http://rickspates.art">author's art information</a>,
 other artists may benefit from using the model for their own art information, and

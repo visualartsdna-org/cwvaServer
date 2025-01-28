@@ -20,6 +20,7 @@ class Servlet extends ServletBase {
 	def ib = new ImageBrand()
 	def qm = new QueryMgr(dir)
 	def em = new EntityEntry()
+	def au = new Authoring()
 //	def tm = new TagModel(data,vocab,tags,cfg.host)
 //	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
 	def artist = [:]
@@ -240,6 +241,20 @@ class Servlet extends ServletBase {
 				def tpls = new ParseDigitalRDF().parse(mq)
 				sendText(response,"$tpls")
 
+				break
+
+			case "/author_page":
+
+				def s = au.handleQueryParams([:])
+				sendHtml(response,s)
+
+				break
+
+			case "/author_page.entry":
+
+				def s = au.handleQueryParams(mq)
+				sendHtml(response,"$s")
+				
 				break
 
 			case "/entity_page":
