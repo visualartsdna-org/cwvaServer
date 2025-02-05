@@ -20,7 +20,8 @@ class Servlet extends ServletBase {
 	def ib = new ImageBrand()
 	def qm = new QueryMgr(dir)
 	def em = new EntityEntry()
-	def au = new Authoring()
+	def au = new Authoring(dbm().rdfs)
+//	def au = new Authoring()
 //	def tm = new TagModel(data,vocab,tags,cfg.host)
 //	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
 	def artist = [:]
@@ -123,7 +124,7 @@ class Servlet extends ServletBase {
 				break
 
 			case ~/\/loadKeepData/:	// load g keep notes data
-				def s = new rdf.util.TakeoutTtl2Notes().driver()
+				def s = new rdf.util.TakeoutTtl2All().driver(mq.selectAccount)
 				sendText(response,"$s")
 				break
 
@@ -245,7 +246,7 @@ class Servlet extends ServletBase {
 
 			case "/author_page":
 
-				def s = au.handleQueryParams([:])
+				def s = au.handleQueryParams(mq)
 				sendHtml(response,s)
 
 				break

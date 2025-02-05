@@ -94,4 +94,21 @@ class TestJunk {
 		println isMobile
 	}
 
+	// Remove .ext from filename
+	@Test
+	void test10() {
+		println "file.name.with.dots.tgz" - ~/\.\w+$/
+	}
+		
+	@Test
+	void test11() {
+		def s2 = """It didn’t turn out to be as lucrative as I had hoped.  My time in New York City wasn’t a total loss."""
+		println sanitize(s)
+	}
+		
+	def sanitize(s) {
+		s.trim().replaceAll("’","'")
+		
+	}
+
 }

@@ -8,8 +8,24 @@ class AuthoringTest {
 	
 	
 
+	// topics in hierarchy more than once
 	@Test
 	void test() {
+		def a = new Authoring()
+		def g = a.getGraph(a.abox)
+		def set=[:]
+		g.each{
+			it["tko:memberList"].each{t->
+				if (!set.containsKey(t))
+					set[t] = null
+				else throw new Exception("$t exists in multiple places")
+			}
+		}
+	}
+	
+	// difference last versioned topics.ttl
+	@Test
+	void test5() {
 		def a = new Authoring()
 		println a.difference()
 	}

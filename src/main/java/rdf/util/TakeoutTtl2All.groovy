@@ -19,33 +19,29 @@ import groovy.io.FileType
 // rule for matching on annotated properties
 // ns must be one of skos:|the:|vad:
 //
-class TakeoutTtl2Notes {
-	def prefixes = """
-prefix schema: <https://schema.org/> 
-prefix dct:   <http://purl.org/dc/terms/> 
-prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix work:  <http://visualartsdna.org/work/> 
-prefix z0:    <http://visualartsdna.org/system/> 
-prefix vad:   <http://visualartsdna.org/2021/07/16/model#> 
-prefix skos:  <http://www.w3.org/2004/02/skos/core#> 
-prefix tko:   <http://visualartsdna.org/takeout#> 
-prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> 
-prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
-prefix foaf:  <http://xmlns.com/foaf/0.1/> 
-"""
-	def tkoTmp = "C:/temp/Takeout/rickspatesart"
-	def downloads = "C:/Users/ricks/Downloads"
-	def tgt = "C:/stage/metadata"
+class TakeoutTtl2All {
 
+	def account = "rickspatesart"
+	// takeout zip extract to generic folder
+	def tkoTmp = "C:/temp/Takeout/export"
+	def downloads = "C:/Users/ricks/Downloads"
+	def tgt = "C:/work/author/ttl/$account"
+	def notesTgt = "C:/stage/metadata"
+	
 	def jsonDir = "json"
 	def ttlDir = "ttl"
-
-	@Test
-	void test() {
-		driver()
+	
+	TakeoutTtl2All(){
 	}
 	
-	def driver() {
+	@Test
+	void test() {
+		driver("rickspatesart")
+	}
+	
+	def driver(acct) {
+		account = acct
+		tgt = "C:/work/author/ttl/$account"
 		def stat = ""
 		FileUtils.deleteDirectory(new File("$tkoTmp/Takeout"))
 		stat += "directory deleted $tkoTmp/Takeout\n"
@@ -58,11 +54,21 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 		unzipFile(file,tkoTmp)
 		stat += "$tkoTmp unzipped\n"
 		
+		def s = checkAcct()
+		if (s) return s
+		
 		processJson("$tkoTmp/Takeout/Keep",tgt)
 		stat += "$tkoTmp/Takeout/Keep processed to $tgt\n"
 		stat
 	}
 
+	def checkAcct() {
+		def s = new File("$tkoTmp/Takeout/archive_browser.html").text
+		def a = (s =~ /Archive for ([A-Za-z\.]+)@gmail.com/)[0][1]
+		if (a != account) 
+			return "ERROR--Expected $account data but found $a account in takeout export"
+		null
+	}
 
 	def makeDate(ts) {
 		def ts2 = new Date(((ts as long) / 1000) as long)
@@ -126,37 +132,43 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 	def processJson(src,dest) {
 		def ju = new JenaUtils()
 		def model = ju.newModel()
+		def schemes=[:]
 		new File(src).eachFile {file->
 			def m2 = [:]
 			if (!file.name.endsWith(".json")) return
 				println file
 
-//			if (file.name.contains("Lily"))
+//			if (file.name.contains("Collection"))
 //				println "here"
 			def m = Rson.load("$file")
 			def col = getCol(m)
 
 			// check for publish label
-			def publish = col.tags.find{
-				it == "publish"
-			}
-			if (publish) {
+			def tag = col.labels.find{ it == "tag" }
+			def topic = col.labels.find{ it == "topic" }
+			if (!col.isArchived 
+				&& (tag || topic)) {
 				col.each{k,v->
-					if (k == "tags") return
 						if (k in
 								[
-									"title",
 									"userEditedTimestampUsec",
 									"createdTimestampUsec",
-									"filteredText",
-									"tag",
 									"annotations",
 									"attachments"
 								])
 							m2["${k}"]=v
+						else if (k in
+								[
+									"title",
+									"filteredText"
+								])
+							m2["${k}"]=v.trim()
+						else if (k in ["tag"]) 
+							m2["the:${k}"]=v
 						else if (k==~ /(skos:|the:|vad:).*/)  // namespaces
 							m2["${k}"]=v
 						else if (k in [
+									"inScheme",
 									"hasTopConcept",
 									"topConceptOf",
 									"altLabel",
@@ -189,8 +201,13 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 								])
 							m2["skos:${k}"]=v
 				}
-				if (!m2.tag) {
-					println "ERROR-no tag to the work"
+				if (topic && !m2["skos:inScheme"]) {
+					println "ERROR-no inScheme for the concept ${m2.title}"
+					return
+				} 
+
+				if (tag && !m2["the:tag"]) {
+					println "ERROR-no tag for the concept ${m2.title}"
 					return
 				}
 
@@ -200,16 +217,17 @@ prefix foaf:  <http://xmlns.com/foaf/0.1/>
 					def cpt = "${util.Text.camelCase(m2.title)}_$time"
 					def created = makeDate(m2.createdTimestampUsec)
 					def edited = makeDateTime(m2.userEditedTimestampUsec)
+					if (topic && m2["skos:inScheme"] && m2["skos:topConceptOf"])
+						schemes[m2["skos:inScheme"]] = "the:$cpt"
 					def ttl= """
 ${rdf.Prefixes.forFile}
 			the:$cpt
-				a the:KeepNote ;
-				skos:inScheme      the:paintingNotes ;
+				a skos:Concept ;
+				skos:inScheme  ${topic ? m2["skos:inScheme"] : "the:paintingNotes"} ; 
 				tko:created "$created"^^xsd:date ;
 				tko:edited "$edited"^^xsd:dateTime ;
-				rdfs:label "${m2.title} Notes" ;
-				the:tag ${m2.tag} ;
-				skos:definition \"\"\"${(m2.filteredText).trim()}\"\"\" ;
+				skos:prefLabel "${m2.title}${tag ? " Notes" : ""}" ;
+				skos:definition \"\"\"${(m2.filteredText)}\"\"\" ;
 
 """
 					m2.findAll{k,v->
@@ -217,7 +235,7 @@ ${rdf.Prefixes.forFile}
 					}.each{k,v->
 						//if (isUri(v))
 						ttl += """
-					$k $v ;
+						$k $v ;
 """
 					}
 
@@ -240,9 +258,10 @@ ${rdf.Prefixes.forFile}
 						if (it.mimetype == "image/jpeg") {
 							ttl += """schema:image <http://visualartsdna.org/images/${it.filePath}> ;
 """
+						def destDir = topic ? dest : notesTgt
 							// file copy from src to dest
 						Files.copy(new File("$src/${it.filePath}").toPath(), 
-							new File("$dest/${it.filePath}").toPath(), StandardCopyOption.REPLACE_EXISTING)
+							new File("$destDir/${it.filePath}").toPath(), StandardCopyOption.REPLACE_EXISTING)
 						}
 					}
 
@@ -251,16 +270,56 @@ ${rdf.Prefixes.forFile}
 					//${m2.tag} the:tag the:$cpt .
 					
 
-					//println ttl
+//					println ttl
 					model.add ju.saveStringModel(ttl, "TTL")
 				} catch (Exception ex) {
 					println "ERROR in data selection: $file, $ex"
 				}
+				
 			}
 		}
-		ju.saveModelFile(model, "$dest/tags/notes.ttl", "TTL")
-	}
+		schemes.each{k,v->
+			if (!v) println "ERROR-no topConcept for scheme ${k}"
 
+			def ttl = """
+${rdf.Prefixes.forFile}
+$k
+        a                     tko:KeepConceptScheme ;
+        skos:hasTopConcept    ${v ? v : cpt} ;
+        skos:prefLabel        "$k" ;
+			.
+"""
+			model.add ju.saveStringModel(ttl, "TTL")
+		}
+		// extract the data inScheme the:paintingNotes
+		// to seperate notes file and dir
+		def m1 = ju.queryDescribe(model,rdf.Prefixes.forQuery,"""
+			describe ?s {{
+		?s skos:inScheme ?sch  
+		filter (?sch != the:paintingNotes)
+		} union {
+			?s  a tko:KeepConceptScheme .
+		}}
+""")
+		ju.saveModelFile(m1, "$dest/${account}.ttl", "TTL")
+		
+		// painting notes can only come from the one account
+		if (account == "rickspatesart") {
+			def m2 = ju.queryDescribe(model,rdf.Prefixes.forQuery,"""
+				describe ?s {
+			?s skos:inScheme the:paintingNotes
+			}
+	""")
+			def dts = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
+			ju.saveModelFile(m2, "$notesTgt/tags/notes${dts}.ttl", "TTL")
+		}
+		
+	}
+	
+	def sanitize(s) {
+		s.trim().replaceAll("’","'")
+		
+	}
 
 	def getCol(m) {
 		def col = [:]
@@ -280,8 +339,9 @@ ${rdf.Prefixes.forFile}
 		col.title = m.title
 		col.userEditedTimestampUsec = m.userEditedTimestampUsec
 		col.createdTimestampUsec = m.createdTimestampUsec
+		col.isArchived = m.isArchived
 		// text
-		col.filteredText = text
+		col.filteredText = sanitize(text)
 		if (m.annotations) {
 			col.annotations = m.annotations
 		}
@@ -290,9 +350,9 @@ ${rdf.Prefixes.forFile}
 		}
 
 		// labels
-		col.tags = []
+		col.labels = []
 		m.labels.each{
-			col.tags += it.name
+			col.labels += it.name
 		}
 		col
 	}

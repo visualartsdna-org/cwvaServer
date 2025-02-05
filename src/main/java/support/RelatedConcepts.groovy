@@ -122,7 +122,12 @@ $selected
 		
 		def html1 = ""
 		//
-		for (type in ["the:WatercolorPaint", "the:watercolorTechnique", "the:watercolorMaterial"]) {
+		for (type in [
+			"the:WatercolorPaint", 
+			"the:watercolorTechnique", 
+			"the:watercolorMaterial",
+			"the:brushingPaint"
+			]) {
 		def mc = qConcept(type)
 		html1 += """
 <td>

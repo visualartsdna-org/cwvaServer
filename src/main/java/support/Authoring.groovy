@@ -16,30 +16,27 @@ import org.apache.jena.rdf.model.ModelFactory
 class Authoring {
 	
 	static def verbose=false
-	static def dir="/temp/Takeout/rspates.art"
+	def work="/work/author/ttl"
+//	def tFile = "rspates.art.ttl"
+	def aFile = "topics.ttl"
 	def prefixes = Prefixes.forQuery
 
 	def ju = new JenaUtilities()
-	def model //= ju.loadFiles(dir) // TODO initializing here creates problems for dir redef?!
+	def model
 	def abox 
 	def tbox 
+	def account
+	def base
 	
-	Authoring(){
-		tbox = ju.loadFile("$dir/rspates.art.ttl")
-		try {
-			abox = ju.loadFile("$dir/topics.ttl")
-		} catch (FileNotFoundException fnfe) {
-			abox = ju.newModel()
-		}
-		initSession()
+	Authoring(dbm){
+		base = dbm
 	}
 	
 	def id=100
+	def ms = System.currentTimeMillis()
 	def genId() {
-		"${id++}"
+		"${ms}_${id++}"
 	}
-	def adds=0
-	def deletes=0
 	
 	def diff(n1,m1,n2,m2) {
 		
@@ -54,6 +51,7 @@ class Authoring {
 	}
 	
 	def difference() {
+		def dir = "$work/$account"
 		// load last version of model
 		def vfile = []
 		new File(dir).eachFile{file->
@@ -65,15 +63,15 @@ class Authoring {
 		vfile.sort()
 		def n2 = vfile[0].name
 		def m2 = ju.loadFileModel(dir,n2)    //loadModelString(vfile[0].text)
-		diff("topics.ttl", abox, "$n2", m2)
+		diff("$aFile", abox, "$n2", m2)
 	}
 	
 	def versioning() {
+		def dir = "$work/$account"
 		def status = "version "
-		if (new File("$dir/topics.ttl").exists()) {
-			def newFile = "$dir/topics.ttl${System.currentTimeMillis()}"
-			new File("$dir/topics.ttl")
-				.renameTo(new File(newFile))
+		if (new File("$dir/$aFile").exists()) {
+			def newFile = "$dir/$aFile${System.currentTimeMillis()}"
+			new File(newFile).text = new File("$dir/$aFile").text
 			status += "$newFile created. "
 		}
 		status
@@ -81,10 +79,28 @@ class Authoring {
 	
 	def saveSession() {
 		def status = "save "
-		ju.saveModelFile(abox,"$dir/topics.ttl","ttl")
-		status += "$dir/topics.ttl"
+		def dir = "$work/$account"
+		ju.saveModelFile(abox,"$dir/$aFile","ttl")
+		status += "$dir/$aFile"
 	}
 	
+	def loadSession(acct) {
+		account = acct
+		def dir = "$work/$account"
+		def tFile = "${acct}.ttl"
+		tbox = ju.loadFile("$dir/$tFile")
+		if (base) {
+			tbox.add base
+		}
+		try {
+			abox = ju.loadFile("$dir/$aFile")
+		} catch (FileNotFoundException fnfe) {
+			abox = ju.newModel()
+		}
+		initSession()
+	}
+	def adds=0
+	def deletes=0
 	def initSession() {
 		model = ModelFactory.createRDFSModel(tbox, abox)
 		
@@ -117,9 +133,25 @@ class Authoring {
 		[adds:adds,deletes:deletes]
 	}
 	
+	def addConceptTopic(top) {
+		adds++
+		def ttl = """
+	tko:t${genId()}	
+		a    tko:Topic ;
+		a    tko:ConceptTopic ;
+        tko:head         $top ;
+        tko:memberList  "[]" ;
+	.
+"""
+		abox.add ju.saveStringModel("$prefixes\n$ttl", "ttl")
+
+	}
+	
 	def subPrefix(s) {
 		s.replaceAll("http://visualartsdna.org/takeout/","tko:")
 		.replaceAll("http://visualartsdna.org/thesaurus/","the:")
+		.replaceAll("http://visualartsdna.org/2021/07/16/model#","vad:")
+		.replaceAll("http://visualartsdna.org/work/","work:")
 	}
 	
 	def normalize(l) {
@@ -167,6 +199,17 @@ select distinct ?s ?l {
 	normalize(l)
 	}
 	
+	def qConceptSchemeTopConcept() {
+		def l = ju.queryListMap1(model, prefixes, """
+select distinct ?s ?l {
+		?s0 a tko:KeepConceptScheme ;
+			skos:hasTopConcept ?s .
+		?s skos:prefLabel ?l
+} order by ?l
+""")
+	normalize(l)
+	}
+	
 	def qConceptsInScheme(sch) {
 		def l = ju.queryListMap1(model, prefixes, """
 select distinct ?s ?l {
@@ -195,13 +238,30 @@ select distinct ?s ?l {
 	}
 	
 	def qConcepts() {
-		def l = ju.queryListMap1(model, prefixes, """
+//		def l = ju.queryListMap1(model, prefixes, """
+//select distinct ?s ?l {
+//		?s a skos:Concept ;
+//			skos:prefLabel ?l 
+//} order by ?l
+//""")
+		def l2 = ju.queryListMap1(model, prefixes, """
 select distinct ?s ?l {
 		?s a skos:Concept ;
-			skos:prefLabel ?l 
+			rdfs:label ?l 
 } order by ?l
 """)
-	normalize(l)
+//	l.addAll(l2)
+	normalize(l2)
+	}
+	
+	def qTopicExists(concept) {
+		def l = ju.queryListMap1(model, prefixes, """
+select distinct ?s {
+		?s a tko:Topic ;
+		tko:head $concept
+}
+""")
+		!l.isEmpty()
 	}
 	
 	def qSubTopics(topic) {
@@ -241,7 +301,12 @@ select distinct ?ml {
 select distinct ?s ?l {
 		${it} a tko:Topic ;
 			tko:head ?s .
+			{
 			?s skos:prefLabel ?l
+			} union
+			{
+			?s rdfs:label ?l
+			}
 }""")
 			lAll += l2
 		}
@@ -329,11 +394,21 @@ where {
 	
 	def handleQueryParams(m) {
 		
+		if (m.selectAccount) {
+			loadSession(m.selectAccount)
+			m=[:]
+		}
+		
 		m.selectSchemeOpts = qConceptScheme()
+		m.topConcept = qConceptSchemeTopConcept()
+		if (!m.selTopic)
+			m.selTopic = m.topConcept[0].s
 		m.selectTopicOpts = qTopics()
 		m.selectSubTopicOpts = qSubTopics(m.selTopic ? m.selTopic : "<_:nil>")
 		m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 		m.selectConcepts = qConcepts()
+		if (!m.selCptSch)
+			m.selCptSch = m.selectSchemeOpts[0].s
 		
 		
 		if (m.isEmpty()) {
@@ -398,6 +473,21 @@ where {
 				}
 					
 				break
+				case 'addConcept':
+				if (m.concept) {
+					
+					def l = add(m.concept, m.linkTopics)
+					// if a concept/topic does not exist
+					// add it here
+					if (!qTopicExists(m.concept))
+						addConceptTopic(m.concept)
+					execTopicLinks(m.selTopic, l)
+					
+					m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+					saveSession()
+				}
+					
+				break
 				case 'version':
 				println versioning()
 				break
@@ -423,12 +513,26 @@ where {
 		map["@graph"]
 	}
 
-	def printTopics() {
+	def printTopics0() {
 		def sb = new StringBuilder()
 		def l = getGraph(model)
 		def topCpt = ""
 		l.each {
 			if (it["@id"] == "tko:topScheme") {
+				topCpt = it.hasTopConcept
+			}
+		}
+		printTopic(topCpt,l,sb,1)
+		""+sb
+
+	}
+	
+	def printTopics(sch) {
+		def sb = new StringBuilder()
+		def l = getGraph(model)
+		def topCpt = ""
+		l.each {
+			if (it["@id"] == sch) {
 				topCpt = it.hasTopConcept
 			}
 		}
@@ -447,14 +551,15 @@ where {
 		def cpt = l.find{
 			it["@id"] == topCpt
 		}
-		
+		def defn = cpt.definition ? cpt.definition : cpt.description
 
 		sb.append """
 <h$n>
-${cpt.prefLabel}
+${cpt.prefLabel ? cpt.prefLabel : cpt.label}
 </h$n>
+${defn}
 <br/>
-${cpt.definition}
+<br/>
 """
 		ltop.each{top->
 			def c = l.find {
@@ -526,6 +631,14 @@ function setAction(x) {
 function resetFunction() {
   document.getElementById("myForm").reset();
 }
+
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem("scrollPositon", document.querySelector("#contents_container").scrollTop);
+});
+window.addEventListener("load", () => {
+  document.querySelector("#contents_container").scrollTop = localStorage.getItem("scrollPositon") || 0;
+});
+
 </script>
 
 <h3>
@@ -536,12 +649,12 @@ Authoring</h3>
 <tr>
 <td>
 
+<form id="myForm" action="/author_page.entry" method="get">
 <table>
 <tr>
 <td>
-<form id="myForm" action="http://localhost:8082/author_page.entry" method="get">
 <input type="hidden" id="action" name="action" value="">
-<label for="selectScheme">Select Concept Scheme</label>
+<label for="selectScheme">Select Concept Scheme</label><br>
 <select name="selectScheme" id="selectScheme" onchange="setAction('selCptSch')">
 """
 		 m.selectSchemeOpts.each{m0->
@@ -556,8 +669,8 @@ Authoring</h3>
 </select>
 <br>
 <br>
-<label for="selTopic">Top Concept</label>
-<h3><i><p style="text-indent: 20px;">Extinction Statement</i></h3>
+Top concept: ${m.topConcept[0].l}
+<br>
 <br>
 Select Topic
 <br>
@@ -646,24 +759,23 @@ Choose a Concept
   <br><label for="dir">Save dir:</label><br>
   <input type="text" id="dir" name="dir" size="25" value="/work/author/ttl">
 <br>
-  <label for="model">DB</label>
-  <input type="checkbox" id="model" name="model" value="RDMS" ${m.model=="RDMS" ? "checked" : ""}>
 <hr>
-Topic links: added 0, deleted 0, modified 0
+Links: added $adds, deleted $deletes; dbm ${base ? "enabled" : "disabled"}
 </td></tr>
 </table>
 </form>
 </td>
 <td>
+<div id="contents_container" style="overflow-y: scroll; max-height: 100vh;">
 
-${printTopics()}
-
+${printTopics(m.selCptSch)}
+</div>
 </td>
 </tr>
 </table>
 <br>
 
-version 1.0
+version 1.1
 </body></html>
 """
 	html
