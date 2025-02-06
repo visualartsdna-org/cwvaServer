@@ -431,8 +431,6 @@ where {
 			m.selTopic = m.topConcept[0].s
 		m.selectTopicOpts = qTopics()
 		
-		m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
-		
 		m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 		m.selectConcepts = qConcepts()
 		if (!m.selCptSch)
@@ -448,7 +446,7 @@ where {
 				def l = moveUp(m.linkSubTopic, m.linkTopics)
 				execTopicLinks(m.selTopic, l)
 				
-				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			}
 			
@@ -460,7 +458,7 @@ where {
 				def l = moveDown(m.linkSubTopic, m.linkTopics)
 				execTopicLinks(m.selTopic, l)
 				
-				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			}
 
@@ -471,11 +469,8 @@ where {
 				def l = remove(m.linkSubTopic, m.linkTopics)
 				execTopicLinks(m.selTopic, l)
 				
-				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
-				
-				m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
-
 			}
 
 			break
@@ -484,11 +479,8 @@ where {
 				def l = []
 				execTopicLinks(m.selTopic, l)
 				
-				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
-				
-				m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
-
 			break
 			case 'addSubTopic':
 			if (m.selSubTopic) {
@@ -496,12 +488,8 @@ where {
 				def l = add(m.selSubTopic, m.linkTopics)
 				execTopicLinks(m.selTopic, l)
 				
-				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
-				
-				
-				m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
-				
 			}
 				
 			break
@@ -515,7 +503,7 @@ where {
 					addConceptTopic(m.concept)
 				execTopicLinks(m.selTopic, l)
 				
-				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			}
 				
@@ -525,6 +513,11 @@ where {
 			break
 			
 		}
+		
+		m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+		// get subtopics after any add/delete actions
+		m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
+		
 		if (verbose) {
 			println ""
 			m.each{k,v->
