@@ -264,14 +264,20 @@ select distinct ?s {
 		!l.isEmpty()
 	}
 	
-	def qSubTopics(topic) {
+	def qSubTopics(list) {
+		def ls = ""
+		int i=0
+		list.each{ 
+			if (i++ >0) ls += ","
+			ls += it 
+			}
 		def l = ju.queryListMap1(model, prefixes, """
 select distinct ?s ?l {
 		?s a skos:Concept ;
 			skos:prefLabel ?l .
 		?s2 a tko:Topic ;
 			tko:head ?s .
-		filter (?s != $topic)
+		filter (?s not in ($ls))
 } order by ?l
 """)
 	normalize(l)
@@ -390,7 +396,27 @@ where {
 		move(topic, links, 1)
 	}
 	
-
+	/*
+	 * for exclusion in subTopic select list,
+	 * find all topic refs used in memberlists
+	 * add to that the topconcept and
+	 * currently selected topic from session
+	 */
+	def getHierarchy(m) {
+		def g = getGraph(abox)
+		def set=[m.selTopic,m.topConcept[0].s]
+		g.each{
+			def l = new JsonSlurper().parseText(it["memberList"])
+			l.each{t->
+				def h = g.find{
+					it["@id"] == t
+				}
+				if (h)
+					set += h.head
+			}
+		}
+		set
+	}
 	
 	def handleQueryParams(m) {
 		
@@ -404,100 +430,105 @@ where {
 		if (!m.selTopic)
 			m.selTopic = m.topConcept[0].s
 		m.selectTopicOpts = qTopics()
-		m.selectSubTopicOpts = qSubTopics(m.selTopic ? m.selTopic : "<_:nil>")
+		
+		m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
+		
 		m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 		m.selectConcepts = qConcepts()
 		if (!m.selCptSch)
 			m.selCptSch = m.selectSchemeOpts[0].s
 		
 		
-		if (m.isEmpty()) {
-			println "new Authoring"
-		}
-		else {
+		switch(m.action) {
 			
+			case 'moveUp': // linkSubTopic
+			if (m.linkSubTopic
+				&& m.linkSubTopic != m.linkTopics[0].s) {
+				
+				def l = moveUp(m.linkSubTopic, m.linkTopics)
+				execTopicLinks(m.selTopic, l)
+				
+				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+				saveSession()
+			}
 			
-			switch(m.action) {
+			break
+			case 'moveDown': 
+			if (m.linkSubTopic
+				&& m.linkSubTopic != m.linkTopics[m.linkTopics.size()-1].s) {
 				
-				case 'moveUp': // linkSubTopic
-				if (m.linkSubTopic
-					&& m.linkSubTopic != m.linkTopics[0].s) {
-					
-					def l = moveUp(m.linkSubTopic, m.linkTopics)
-					execTopicLinks(m.selTopic, l)
-					
-					m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
-					saveSession()
-				}
+				def l = moveDown(m.linkSubTopic, m.linkTopics)
+				execTopicLinks(m.selTopic, l)
 				
-				break
-				case 'moveDown': 
-				if (m.linkSubTopic
-					&& m.linkSubTopic != m.linkTopics[m.linkTopics.size()-1].s) {
-					
-					def l = moveDown(m.linkSubTopic, m.linkTopics)
-					execTopicLinks(m.selTopic, l)
-					
-					m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
-					saveSession()
-				}
+				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+				saveSession()
+			}
 
-				break
-				case 'removeSel': 
-				if (m.linkSubTopic) {
-					
-					def l = remove(m.linkSubTopic, m.linkTopics)
-					execTopicLinks(m.selTopic, l)
-					
-					m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
-					saveSession()
-				}
+			break
+			case 'removeSel': 
+			if (m.linkSubTopic) {
+				
+				def l = remove(m.linkSubTopic, m.linkTopics)
+				execTopicLinks(m.selTopic, l)
+				
+				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+				saveSession()
+				
+				m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
 
-				break
-				case 'clearList': 
-					
-					def l = []
-					execTopicLinks(m.selTopic, l)
-					
-					m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
-					saveSession()
-				break
-				case 'addSubTopic':
-				if (m.selSubTopic) {
-					
-					def l = add(m.selSubTopic, m.linkTopics)
-					execTopicLinks(m.selTopic, l)
-					
-					m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
-					saveSession()
-				}
-					
-				break
-				case 'addConcept':
-				if (m.concept) {
-					
-					def l = add(m.concept, m.linkTopics)
-					// if a concept/topic does not exist
-					// add it here
-					if (!qTopicExists(m.concept))
-						addConceptTopic(m.concept)
-					execTopicLinks(m.selTopic, l)
-					
-					m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
-					saveSession()
-				}
-					
-				break
-				case 'version':
-				println versioning()
-				break
+			}
+
+			break
+			case 'clearList': 
+				
+				def l = []
+				execTopicLinks(m.selTopic, l)
+				
+				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+				saveSession()
+				
+				m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
+
+			break
+			case 'addSubTopic':
+			if (m.selSubTopic) {
+				
+				def l = add(m.selSubTopic, m.linkTopics)
+				execTopicLinks(m.selTopic, l)
+				
+				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+				saveSession()
+				
+				
+				m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
 				
 			}
-			if (verbose) {
-				println ""
-				m.each{k,v->
-					println "$k=$v"
-				}
+				
+			break
+			case 'addConcept':
+			if (m.concept) {
+				
+				def l = add(m.concept, m.linkTopics)
+				// if a concept/topic does not exist
+				// add it here
+				if (!qTopicExists(m.concept))
+					addConceptTopic(m.concept)
+				execTopicLinks(m.selTopic, l)
+				
+				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+				saveSession()
+			}
+				
+			break
+			case 'version':
+			println versioning()
+			break
+			
+		}
+		if (verbose) {
+			println ""
+			m.each{k,v->
+				println "$k=$v"
 			}
 		}
 		if (verbose) println "model=${model.size()}"
@@ -513,20 +544,6 @@ where {
 		map["@graph"]
 	}
 
-	def printTopics0() {
-		def sb = new StringBuilder()
-		def l = getGraph(model)
-		def topCpt = ""
-		l.each {
-			if (it["@id"] == "tko:topScheme") {
-				topCpt = it.hasTopConcept
-			}
-		}
-		printTopic(topCpt,l,sb,1)
-		""+sb
-
-	}
-	
 	def printTopics(sch) {
 		def sb = new StringBuilder()
 		def l = getGraph(model)
