@@ -53,6 +53,10 @@ VADNA RDF Entry
   <label for="type1">Watercolor</label><br>
   <input type="radio" id="type2" name="type" value="Drawing">
   <label for="type2">Drawing</label><br>
+  <input type="radio" id="type2" name="type" value="Egg Tempera">
+  <label for="type2">Egg Tempera</label><br>
+  <input type="radio" id="type2" name="type" value="Sculpture">
+  <label for="type2">Sculpture</label><br>
 </td></tr><tr><td>
          <input type = "file" name = "fileupload" id = "file" accept = "image/*" />
   <br>
@@ -71,6 +75,12 @@ VADNA RDF Entry
   <label for="media3">WatercolorPencil</label><br>
   <input type="checkbox" id="media4" name="media4" value="EggTempera">
   <label for="media4">EggTempera</label><br>
+  <input type="checkbox" id="media4" name="media4" value="Marble">
+  <label for="media4">Marble</label><br>
+  <input type="checkbox" id="media4" name="media4" value="Limestone">
+  <label for="media4">Limestone</label><br>
+  <input type="checkbox" id="media4" name="media4" value="Steel">
+  <label for="media4">Steel</label><br>
 </td></tr><tr><td>
   <br><label for="hasArtistProfile">hasArtistProfile:</label><br>
   <input type="text" id="hasArtistProfile" name="hasArtistProfile" size="$inSize" value="work:ebab5e0c-cc32-4928-b326-1ddb4dd62c22"> 
