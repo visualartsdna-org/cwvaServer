@@ -61,10 +61,9 @@ class Servlet extends ServletBase {
 //	}
 		
 	def handler(path,query,response,HttpServletRequest request) {
-			
+		def state = 1
 		def mq = parse(query)
-		def tmp
-		setState(path)
+		setState(request)
 		def lowLevelRequest = 
 		(request && request.getMethod() == "POST") || (path =~ /\/artist\/.*\.jpg/)
 		
@@ -291,11 +290,14 @@ class Servlet extends ServletBase {
 				break
 
 			default:
-				serve(cfg,path,query,response)
+				serve(cfg,path,query,request,response)
+				state = 0
 				break
 		}
+		if (state) setState(request)
 		response.setStatus(HttpServletResponse.SC_OK);
-		if (tmp) Tmp.delTemp(tmp)
+		//if (tmp) Tmp.delTemp(tmp)
+		tmp.rmTemps()
 	}
 		
 }

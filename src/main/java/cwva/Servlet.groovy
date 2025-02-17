@@ -17,7 +17,6 @@ class Servlet extends ServletBase {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	throws ServletException, IOException {
-
 		try {
 			handler(request._uri._path,request._uri._query,response,request)
 		} catch (Exception e) {
@@ -27,11 +26,9 @@ class Servlet extends ServletBase {
 	}
 	
 	def handler(path,query,response,request) {
-
+		def state = 1
 		def mq=parse(query)
 		def tmpFile
-		def status = HttpServletResponse.SC_OK
-		setState(path)
 		if (cfg.verbose) println "$path ${query?:""}"
 		//dbm.reload()	// optional: useful for dev
 		
@@ -174,10 +171,12 @@ class Servlet extends ServletBase {
 				break
 
 			default:
-				serve(cfg,path,query,response)
+				serve(cfg,path,query,request,response)
+				state = 0
 				break
 		}
-		response.setStatus(status);
+		if (state) setState(request)
+		response.setStatus(HttpServletResponse.SC_OK);
 		tmp.rmTemps()
 	}	
 

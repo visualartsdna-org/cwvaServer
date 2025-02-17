@@ -10,6 +10,7 @@ import groovy.json.JsonBuilder
 import util.FileUtil
 import util.Tmp
 import java.nio.charset.StandardCharsets
+import java.text.SimpleDateFormat
 
 class ServletBase extends HttpServlet {
 
@@ -29,7 +30,7 @@ class ServletBase extends HttpServlet {
 		Server.getInstance().dbm
 	}
 
-	def serve(cfg,path,query,response) {
+	def serve(cfg,path,query,request,response) {
 		def dir = cfg.dir
 		def model = cfg.model
 		def vocab = cfg.vocab
@@ -37,6 +38,7 @@ class ServletBase extends HttpServlet {
 		def tags = cfg.tags
 		def domain = cfg.domain
 		def images = cfg.images
+		def state
 	
 		switch(path) {
 			case ~/\/images.*/:
@@ -82,6 +84,7 @@ class ServletBase extends HttpServlet {
 							else if (os.contains("Windows")) 
 								c = "C:\\stage\\bin\\stats.bat"
 							def s = new util.Exec().exec(c)
+							s +=  "db\n"
 							s += cwva.Server.getInstance().dbm.print()
 							sendJson(response,new JsonBuilder([stats:"$s"]))
 						break;
@@ -96,7 +99,7 @@ class ServletBase extends HttpServlet {
 
 			case "/metrics":
 				def payload = new JsonBuilder(metrics).toPrettyString()
-				logOut(payload)
+				//logOut(payload)
 				sendJson(response,payload)
 				break
 
@@ -114,10 +117,14 @@ class ServletBase extends HttpServlet {
 				break
 
 			default:
-				logOut "unrecognized command $path, ${query?:""}"
+				state = "unknownPath"
+				logOut "unknown path $path, ${query?:""}"
 				//throw new RuntimeException("unrecognized command $path, ${query?:""}")
 				break
 		}
+		setState(request,state)
+		response.setStatus(HttpServletResponse.SC_OK);
+		tmp.rmTemps()
 	}
 	
 	def sendHtml(response, so) {
@@ -195,13 +202,6 @@ class ServletBase extends HttpServlet {
 		response.getWriter().println("$s")
 	}
 
-	def setState(k) {
-		if (!metrics[k]) {
-			metrics[k]=0
-		}
-		metrics[k]++
-	}
-	
 	static def parse(query) {
 		def m=[:]
 		if (!query) return m
@@ -227,4 +227,63 @@ class ServletBase extends HttpServlet {
 		policy[name].path.any { it != "" && s =~ /$it/}
 	}
 
+	def getMetrics() {
+		def s=""
+		metrics.sort().each{k,v->
+			s += "$v\t$k\n"
+		}
+		s
+	}
+	
+	def setState(request) {
+		setState(request,null)
+	}
+	
+	def setState(request, facet) {
+		def path = request._uri._path
+		def ip = getIP(request)
+		
+		if (path == "/favicon.ico") 
+			return
+		if (path.contains("/images/"))
+			path = "/images"
+		if (facet == "unknownPath")
+			path = facet
+		
+		def date = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
+		if (!metrics[date]) {
+			metrics[date]= new TreeMap()
+			metrics[date].count=0
+		}
+		metrics[date].count++
+		
+		if (!metrics[date][ip]) {
+			metrics[date][ip]= new TreeMap()
+			metrics[date][ip].count=0
+		}
+		metrics[date][ip].count++
+		
+		if (facet && facet != "unknownPath") {
+			if (!metrics[date][ip][facet])
+				metrics[date][ip][facet]=0
+			metrics[date][ip][facet]++
+		}
+		
+		if (!metrics[date][ip][path]) {
+			metrics[date][ip][path] = new TreeMap()
+			metrics[date][ip][path].count = 0
+		}
+
+		metrics[date][ip][path].count++
+		
+	}
+	
+	def getIP(request) {
+		String ipAddress = request.getHeader("X-FORWARDED-FOR");
+		if (ipAddress == null) {
+			ipAddress = request.getRemoteAddr();
+		}
+		ipAddress
+	}
+	
 }
