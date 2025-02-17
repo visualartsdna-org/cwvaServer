@@ -127,7 +127,7 @@ class Authoring {
 		}
 		abox.add ju.saveStringModel("$prefixes\n$ttl", "ttl")
 		
-		println "adds"
+		println "added"
 		println ttl
 		//println ju.saveModelString(abox)
 		[adds:adds,deletes:deletes]
@@ -247,7 +247,12 @@ select distinct ?s ?l {
 		def l2 = ju.queryListMap1(model, prefixes, """
 select distinct ?s ?l {
 		?s a skos:Concept ;
-			rdfs:label ?l 
+			{
+			?s skos:prefLabel ?l
+			} union
+			{
+			?s rdfs:label ?l
+			}
 } order by ?l
 """)
 //	l.addAll(l2)
@@ -446,7 +451,6 @@ where {
 				def l = moveUp(m.linkSubTopic, m.linkTopics)
 				execTopicLinks(m.selTopic, l)
 				
-//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			}
 			
@@ -458,7 +462,6 @@ where {
 				def l = moveDown(m.linkSubTopic, m.linkTopics)
 				execTopicLinks(m.selTopic, l)
 				
-//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			}
 
@@ -469,7 +472,6 @@ where {
 				def l = remove(m.linkSubTopic, m.linkTopics)
 				execTopicLinks(m.selTopic, l)
 				
-//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			}
 
@@ -479,7 +481,6 @@ where {
 				def l = []
 				execTopicLinks(m.selTopic, l)
 				
-//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			break
 			case 'addSubTopic':
@@ -488,7 +489,6 @@ where {
 				def l = add(m.selSubTopic, m.linkTopics)
 				execTopicLinks(m.selTopic, l)
 				
-//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			}
 				
@@ -503,10 +503,28 @@ where {
 					addConceptTopic(m.concept)
 				execTopicLinks(m.selTopic, l)
 				
-//				m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
 				saveSession()
 			}
 				
+			break 
+			case 'moveToTop':
+			// move to top concept
+				m.selTopic = m.topConcept[0].s
+		
+			break
+			case 'moveUpLevel':
+			// locate current topic as a linked subtopic
+			// in the graph hierarchy
+			// change the selected topic to the link head
+			// reload as if topic selected
+//			if (m.linkSubTopic
+//				&& m.linkSubTopic != m.linkTopics[0].s) {
+//				
+//				def l = moveUp(m.linkSubTopic, m.linkTopics)
+//				execTopicLinks(m.selTopic, l)
+//				
+//			}
+			
 			break
 			case 'version':
 			println versioning()
@@ -514,7 +532,9 @@ where {
 			
 		}
 		
+		// catch any revision from add, delete or move actions
 		m.linkTopics = qTopicLinks(m.selTopic ? m.selTopic : m.selectTopicOpts[0].s)
+		
 		// get subtopics after any add/delete actions
 		m.selectSubTopicOpts = qSubTopics(getHierarchy(m))
 		
@@ -551,6 +571,8 @@ where {
 
 	}
 	
+	def rehost(s) {s}
+	
 	def printTopic(topCpt, l, sb, n) {
 		
 		def topic = l.find{
@@ -562,14 +584,37 @@ where {
 			it["@id"] == topCpt
 		}
 		def defn = cpt.definition ? cpt.definition : cpt.description
-
+		def image = ""
+		def dim = ""
+//		if (cpt.label=="Adelaide Sketch") {
+//			println "here"
+//		}
+		if (cpt.image) {
+			def size = "width=\"500\""
+			if (cpt.height && cpt.width) { // assume cpt is a work
+				def h = cpt.height as int
+				def w = cpt.width as int
+				def year = cpt.dateCreated.substring(0,4)
+				dim = "($year, $h x $w in)"
+				size = h<w ? "height=\"400\"" : "width=\"400\""
+			}
+			if (cpt.image instanceof List) {
+				image = ""
+				cpt.image.each {
+					image += """<img src="${rehost(it)}" $size><br/><br/>"""
+				}
+			} else {
+				image = """<img src="${rehost(cpt.image)}" $size><br/><br/>"""
+			}
+		}
 		sb.append """
 <h$n>
 ${cpt.prefLabel ? cpt.prefLabel : cpt.label}
 </h$n>
-${defn}
+${defn} $dim
 <br/>
 <br/>
+${image}
 """
 		ltop.each{top->
 			def c = l.find {
@@ -628,7 +673,6 @@ img {
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 5px;
-  width: 50px;
 }
 </style>
     </head>
@@ -696,9 +740,14 @@ Select Topic
 """
 </select>
 </td></tr><tr><td>
+	<button onclick="setAction('moveToTop')">Move to top</button>
+<br>
+<br>
+<!--
 	<button onclick="setAction('moveUpLevel')">Move up a level</button>
 <br>
 <br>
+-->
 <br>
 Linked Subtopics
 <br>
@@ -776,7 +825,7 @@ Links: added $adds, deleted $deletes; dbm ${base ? "enabled" : "disabled"}
 </form>
 </td>
 <td>
-<div id="contents_container" style="overflow-y: scroll; max-height: 100vh;">
+<div id="contents_container" style="overflow-y: scroll; max-height: 88vh;">
 
 ${printTopics(m.selCptSch)}
 </div>
