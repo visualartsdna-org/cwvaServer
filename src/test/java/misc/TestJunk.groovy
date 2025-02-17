@@ -2,18 +2,23 @@ package misc
 
 import static org.junit.jupiter.api.Assertions.*
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import java.text.SimpleDateFormat
 import org.junit.jupiter.api.Test
+import rdf.JenaUtils
+import rdf.tools.SparqlConsole
+import org.apache.commons.io.FileUtils
 
 class TestJunk {
-	
+
 	@Test
-	void test() {
+	void test13() {
 		// test load lock
-		
+
 		println "read lock =${readLoadLock()}"
 		writeLoadLock()
-		
+
 		def i=0
 		while (readLoadLock()) {
 			println "sleeping ${i++}"
@@ -21,38 +26,36 @@ class TestJunk {
 			if (i>5)
 				deleteLoadLock()
 		}
-		
+
 		println "read lock =${readLoadLock()}"
-		
 	}
-	
+
 	def loadLock = ".loadLock"
 	def readLoadLock() {
 		new File(loadLock).exists()
 	}
-	
+
 	def writeLoadLock() {
 		new File(loadLock).text="locked"
 	}
-	
+
 	def deleteLoadLock() {
 		new File(loadLock).delete()
 	}
-	
+
 	@Test
 	void test4() {
 		// test load lock
-		
+
 		println "read lock =${readLoadLock()}"
 
 		writeLoadLock()
 		println "read lock =${readLoadLock()}"
-		
+
 		deleteLoadLock()
 		println "read lock =${readLoadLock()}"
-		
 	}
-	
+
 	@Test
 	void test3() {
 		//def s = "/garbage"
@@ -60,7 +63,7 @@ class TestJunk {
 		def s = "/artist.rspates"
 		println policyAccept(s)
 	}
-	
+
 	def policyAccept(s) {
 		def rx = util.Rson.load("C:/temp/git/cwva/res/servletPolicy.json")
 		rx.function.path.any { it != "" && s =~ /$it/}
@@ -70,16 +73,18 @@ class TestJunk {
 	void test2() {
 		def m = [guid:" work:0a8cb92b-39e7-4dc9-972e-25007d8c6efc".trim()]
 		def guid = (m.guid =~ /([a-f0-9\-]+)$/)[0][1]
-//		def guidM = (m.guid =~ /.*([0-9a-f\-]+)$/)
-//		def guid0 = guidM[0]
+		//		def guidM = (m.guid =~ /.*([0-9a-f\-]+)$/)
+		//		def guid0 = guidM[0]
 		println guid
 	}
 
 	@Test
 	void test1() {
 		def sl2 = []
-		def sl = ["abcdefg\n123456",
-			"this is here\nthat is there"]
+		def sl = [
+			"abcdefg\n123456",
+			"this is here\nthat is there"
+		]
 		sl.each{
 			sl2+= it.replaceAll("\n","<br>")
 		}
@@ -99,16 +104,353 @@ class TestJunk {
 	void test10() {
 		println "file.name.with.dots.tgz" - ~/\.\w+$/
 	}
-		
+
 	@Test
 	void test11() {
 		def s2 = """It didn’t turn out to be as lucrative as I had hoped.  My time in New York City wasn’t a total loss."""
 		println sanitize(s)
 	}
-		
+
 	def sanitize(s) {
 		s.trim().replaceAll("’","'")
-		
 	}
 
+	@Test
+	void test20() {
+
+		def c = new JsonSlurper().parse(new File("stats.json"))
+		c.each{k,v->
+			println "$k"
+			v.each{k2,v2->
+
+				println "\t$k2"
+				if (v2 instanceof Map) v2.each{k3,v3->
+					if (k3 =~ /\/thesaurus\//)
+						println "\t\t$k3 = $v3"
+				}
+				else println "\t\t$v2"
+				//				v.find{k3,v3->
+				//					//				it =~ /\/work\//
+				//					v3 =~ /\/thesaurus\//
+				//				}.each {k4,v4->
+				//					println v4
+				//				}
+			}
+		}
+	}
+
+	@Test
+	void test22() {
+
+		def c = new JsonSlurper().parse(new File("stats.json"))
+		c.each{k,v->
+			println "$k"
+			v.each{k2,v2->
+
+				println "\t$k2"
+				if (v2 instanceof Map) v2.each{k3,v3->
+					if (k3 =~ /\/thesaurus\//)
+						println "\t\t$k3 = $v3"
+				}
+				else println "\t\t$v2"
+				//				v.find{k3,v3->
+				//					//				it =~ /\/work\//
+				//					v3 =~ /\/thesaurus\//
+				//				}.each {k4,v4->
+				//					println v4
+				//				}
+			}
+		}
+	}
+	
+	def ju = new JenaUtils()
+	def guid = new support.Guid()
+	def getGuid() {
+		guid.get()
+	}
+	
+	// extract metrics data to ttl
+	@Test
+	void testStats() {
+		def dir = "C:/work/stats/metrics"
+		def ttl = """
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
+@prefix st: <http://example.com/> .
+"""
+		def c = new JsonSlurper().parse(new File("$dir/stats.json"))
+		c.each{k,v->
+			//			println "$k"
+			v.each{k2,v2->
+
+				//			println "\t$k2"
+
+				ttl += """
+
+st:${getGuid()}
+		a st:Metric ;
+		st:date "$k"^^xs:date ;
+		st:ip \"\"\"$k2"\"\" ;
+"""
+			if (v2 instanceof Map)
+				v2.each{k3,v3->
+					if (k3.startsWith("/"))
+						ttl += """st:link	"$k3" ;
+"""
+					else if (k3 == "count") { // ip hits
+						ttl += """st:count $v3 ;"""
+					}
+					else if (k3 == "unknownPath") {
+							
+						ttl += """st:unknown	${v3.count} ;
+"""
+					}
+				}
+				
+				ttl += """
+.
+"""
+
+			}
+		}
+		//println ttl
+		def m = ju.saveStringModel(ttl,"TTL")
+		println ju.saveModelString(m,"TTL")
+		println "${m.size()}"
+		ju.saveModelFile(m,"$dir/stats.ttl","TTL")
+	}
+	
+
+	// extract artpal data to ttl
+	// needs date input
+	@Test
+	void testArtPal() {
+
+		def dir = "C:/work/stats/artpal"
+		def target = "$dir/artPal.ttl"
+		def date
+		def l=[]
+		def gMap = [:]
+		def workName
+		def ipData
+		def galleryData
+		def keys
+		def s = ""
+		new File("$dir/artpal.tsv").text.eachLine {
+			if (it.trim() == "") 
+				return
+			else if (it =~ /^IP Address	Location.*/) {
+				ipData = true
+				keys = it.split("\t")
+			}
+			else if (!ipData 
+				&& !date
+				&& it =~ /^(Saturday|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday).*/) {
+				def dt =  new SimpleDateFormat("EEE, MMM dd'th', yyyy").parse(it)
+				date = new SimpleDateFormat( "yyyy-MM-dd" ).format(dt)
+			}
+			else if (it =~ /^Note: Locations are approximate./) {
+				ipData = false
+			}
+			else if (it =~ /^Gallery$/) {
+				galleryData = true
+			}
+			else if (it =~ /^ArtPal/) {
+				galleryData = false
+			}
+			else if (ipData){
+				if (it =~ /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/
+						|| it =~ /[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+/
+						) {
+					s += "|$it"
+				}
+				else if (it =~ /^[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*/
+						|| it =~ /^[0-9a-f]*:[0-9a-f]*:.*/
+						) {
+					s += "|BAD_ADDRESS-$it"
+				}
+				else {
+					s += " $it"
+				}
+			}
+			else if (galleryData 
+				&& it =~ /^[0-9]+.*/
+				&& workName
+				){
+				gMap[workName]=it
+				workName = null
+			}
+			else if (galleryData){
+				workName = it
+			}
+		}
+		
+		// save gallery data
+		def gRec = [:]
+		gMap.each{k,v->
+			//println "$k = $v"
+			gRec[k] = [:]
+			gRec[k].count= (v.split(" ")[0]) as int
+			gRec[k].label= k.split(",")[0]
+			gRec[k].text=v
+			gRec[k].key= k
+		}
+		def gallery = [date:date,gallery:gRec]
+		new File("$dir/gallery/${date}.json").text = 
+			JsonOutput.prettyPrint(new JsonOutput().toJson(gallery))
+		// need to map the Label to a work id
+		// to make ttl
+		
+
+		def recs = s.tokenize("|")
+		recs.each{
+
+			def m = [:]
+			def i=0
+			def vals = it.split("\t")
+			vals.each{
+				m[keys[i++]] = it
+			}
+			if (!m["IP Address"].contains("BAD_ADDRESS"))
+				l += m
+		}
+
+		def ttl = """
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
+@prefix st: <http://example.com/> .
+"""
+		l.each{
+		ttl += """
+
+st:${getGuid()}
+		a st:ArtPal ;
+		st:date "$date"^^xs:date ;
+		st:ip "${it["IP Address"]}" ;
+		st:location "${it["Location"]}" ;
+"""
+		["Thumb","Large","Zoom","Room","Share","Frameshop","Add to Cart","Purchase"].each{stat->
+		
+		if (it.containsKey(stat)) 
+			ttl += """
+			st:${stat.replaceAll(" ","")} ${it[stat]?it[stat]:0} ;
+"""
+		}
+			
+		ttl += """
+."""
+		}
+
+		
+				//println ttl
+				def m = ju.saveStringModel(ttl,"TTL")
+				//println ju.saveModelString(m,"TTL")
+				println "${m.size()}"
+				ju.saveModelFile(m,"$dir/${date}.ttl","TTL")
+		
+	}
+	
+	@Test
+	void test21() {
+
+		def target = "c:/temp/git/cwvaServer/artPal.json"
+		def date = "2025-02-14"
+
+		def l=[]
+		def startData
+		def keys
+		def s = ""
+		new File("artpal.tsv").text.eachLine {
+
+			if (it =~ /^IP Address	Location.*/) {
+				startData = true
+				keys = it.split("\t")
+			}
+			else if (startData){
+				if (it =~ /[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/
+						|| it =~ /[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+/
+						) {
+					s += "|$it"
+				}
+				else if (it =~ /^[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*/
+						|| it =~ /^[0-9a-f]*:[0-9a-f]*:.*/
+						) {
+					s += "|BAD_ADDRESS-$it"
+				}
+				else {
+					s += " $it"
+				}
+			}
+		}
+
+		def recs = s.tokenize("|")
+		recs.each{
+
+			def m = [:]
+			def i=0
+			def vals = it.split("\t")
+			vals.each{
+				m[keys[i++]] = it
+			}
+			if (!m["IP Address"].contains("BAD_ADDRESS"))
+				l += m
+		}
+
+		// incomplete
+		//		def col = ["$date":[:]]
+		//		def map = [:]
+		//		l.each{m->
+		//			col["$date"][m["IP Address"]]=[m["Location"]]
+		//			if (m.Thumb)
+		//			col["$date"][map["IP Address"]].add map
+		//		}
+		//
+		//
+		//		println new JsonOutput(col).prettyPrint()
+		l.each{
+			it.each{k,v->
+				println "$k=$v"
+			}
+			println ""
+		}
+	}
+	
+	@Test
+	void test() {
+		def img="C:/stage/qrcFix/img"
+		def tgt="C:/stage/qrcFix/renamed"
+		def l = []
+		new File("C:/stage/qrcFix/qrcFix.txt").eachLine{
+			def fs = it.split(/[\t]+/) 
+			l += fs
+		}
+			l.each{
+				println "$img/${it[0]} -> $tgt/${it[1]}"
+				
+				FileUtils.copyFile(new File("$img/${it[0]}"), new File("$tgt/${it[1]}"))
+			}
+	}
+
+	@Test
+	void testSPARQL() {
+		def l = [
+			"C:/temp/git/cwvaServer/artPal.ttl",
+			"C:/temp/git/cwvaServer/stats.ttl",
+			]
+		def m2 = ju.loadListFilespec(l)
+		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl")
+		m.add m2
+		new SparqlConsole().show(m)
+	}
+
+	@Test
+	void testDate() {
+		def ds = "Sunday, February 16th, 2025 - Sunday, February 16th, 2025"
+		//def ds = "Saturday, February 15th, 2025 - Saturday, February 16th, 2025"
+		//def ds = "Saturday, February 15th, 2025"
+		def date =  new SimpleDateFormat("EEE, MMM dd'th', yyyy").parse(ds)
+		def dt = new SimpleDateFormat( "yyyy-MM-dd" ).format(date)
+		
+		
+		println date
+		println dt
+	}
 }
