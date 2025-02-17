@@ -258,7 +258,7 @@ ${rdf.Prefixes.forFile}
 						if (it.mimetype == "image/jpeg") {
 							ttl += """schema:image <http://visualartsdna.org/images/${it.filePath}> ;
 """
-						def destDir = topic ? dest : notesTgt
+						def destDir = notesTgt // was: topic ? dest : notesTgt
 							// file copy from src to dest
 						Files.copy(new File("$src/${it.filePath}").toPath(), 
 							new File("$destDir/${it.filePath}").toPath(), StandardCopyOption.REPLACE_EXISTING)
@@ -310,8 +310,8 @@ $k
 			?s skos:inScheme the:paintingNotes
 			}
 	""")
-			def dts = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-			ju.saveModelFile(m2, "$notesTgt/tags/notes${dts}.ttl", "TTL")
+//			def dts = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
+			ju.saveModelFile(m2, "$notesTgt/tags/notes.ttl", "TTL")
 		}
 		
 	}
