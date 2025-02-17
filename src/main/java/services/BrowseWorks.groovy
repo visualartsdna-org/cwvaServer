@@ -28,6 +28,14 @@ class BrowseWorks {
 			order = "order by ?artist desc(?date) ?label"
 		}
 
+		def archiveThreshold = """"2010-01-01"^^xs:date"""
+		def filter = ""
+		if (qm.archived) {
+			filter = """filter(year(?dc) < year($archiveThreshold))"""
+		} else {
+			filter = """filter(year(?dc) > year($archiveThreshold))"""
+		}
+		
 		def l = new JenaUtils().queryListMap1(m, 
 			rdf.Prefixes.forQuery, """
 select ?s ?label ?a ?artist {
@@ -36,6 +44,8 @@ select ?s ?label ?a ?artist {
  ?s vad:hasArtistProfile/vad:artist  ?a .
  ?a foaf:name ?artist .
  ?s a vad:CreativeWork .
+ ?s schema:dateCreated ?dc .
+ $filter
 } $order
 """
 )
@@ -54,6 +64,10 @@ Order:
 <label for="title">Title</label>
 <input type="radio" id="date" name="order" onclick="myFunction()" value="Date" ${qm.order=="Date" ? "checked" : ""}>
 <label for="date">Date</label>
+<!--
+<br><label for="archived" align="right">Archived</label>
+<input type="checkbox" id="archived" name="archived" onclick="myFunction()" value="Archived" ${qm.archived ? "checked" : ""}>
+-->
 </form>
 </h6>
 """
