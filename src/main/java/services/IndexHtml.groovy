@@ -113,7 +113,7 @@ ${cwva.Server.getInstance().cfg.sparql ? "Query the model, vocabulary and instan
 <p>
 <p>
 
-""" +
+""" + // comment out the next section to remove D3 and lsys graphics from index page
 """
 <p/>
 <p/>

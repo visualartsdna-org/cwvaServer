@@ -12,6 +12,8 @@ import org.apache.commons.io.FileUtils
 
 class TestJunk {
 
+	def ju = new JenaUtils()
+	def guid = new support.Guid()
 	@Test
 	void test13() {
 		// test load lock
@@ -163,8 +165,6 @@ class TestJunk {
 		}
 	}
 	
-	def ju = new JenaUtils()
-	def guid = new support.Guid()
 	def getGuid() {
 		guid.get()
 	}
@@ -432,13 +432,36 @@ st:${getGuid()}
 	@Test
 	void testSPARQL() {
 		def l = [
-			"C:/temp/git/cwvaServer/artPal.ttl",
-			"C:/temp/git/cwvaServer/stats.ttl",
+			//"C:/work/stats/artpal/artPal.ttl",
+			"C:/work/stats/metrics/stats.ttl",
 			]
 		def m2 = ju.loadListFilespec(l)
 		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl")
 		m.add m2
 		new SparqlConsole().show(m)
+	}
+
+	@Test
+	void testReport() {
+		def l = [
+			//"C:/work/stats/artpal/artPal.ttl",
+			"C:/work/stats/metrics/stats.ttl",
+			]
+		def m2 = ju.loadListFilespec(l)
+		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl")
+		m.add m2
+		
+		def rl =  ju.queryListMap1(m,rdf.Prefixes.forQuery,"""
+# count of work refs
+prefix st:    <http://example.com/>
+select (count(?s) as ?sum){
+	?s a st:Metric ;
+		st:link ?u
+	filter(regex(?u,"work"))
+}
+
+			""")
+		println rl
 	}
 
 	@Test
