@@ -11,7 +11,14 @@ import org.apache.jena.reasoner.*
 class TestQuery {
 
 	def ju = new JenaUtilities()
-		
+	
+	@Test
+	void testLoad() {
+		def dataFile = "C:/stage/metadata/vocab/palette.ttl"
+		Model data = ju.loadFiles(dataFile);
+		println data.size()
+	}
+
 	@Test
 	void test() {
 		// SparqlConsole loader

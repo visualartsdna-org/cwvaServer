@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import cwva.ServletBase
 import groovy.json.JsonBuilder
 import java.text.SimpleDateFormat
+import rdf.JenaUtilities
+import rdf.tools.SparqlConsole
 import rdf.util.ViaToTtl
 import support.*
 import support.util.*
@@ -146,6 +148,11 @@ class Servlet extends ServletBase {
 				sendHtml(response, "$s")
 				break
 
+			case "/statsReport":
+				def h = new StatsReport().handleQueryParams(mq)
+				sendHtml(response, "$h")
+				break
+
 			case ~/\/html.*/:
 				sendHtmlFile(response,"$dir/${path}")
 				break
@@ -192,7 +199,25 @@ class Servlet extends ServletBase {
 					sendText(response, "File not found")
 				}
 				break
+				
+			case "/loadTtl":
+				try {
+				def data = new JenaUtilities().loadFiles("${mq.directory}/${mq.fileupload}")
+				sendHtml(response,"File size=${data.size()}")
+				} catch (org.apache.jena.riot.RiotException re) {
+					sendText(response,"$re")
+				}
+				break
 
+			case "/queryTtl":
+				def data = new JenaUtilities().loadFiles("${mq.directory}/${mq.fileupload}")
+				Thread.start('query') {
+					new SparqlConsole().show(data)
+				}
+				sendText(response,"okay")
+				
+				break
+		
 			case "/imageBrand":
 				def s = ib.printHtml()
 				sendHtml(response,s)
