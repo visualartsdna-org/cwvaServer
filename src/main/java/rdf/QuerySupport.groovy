@@ -22,7 +22,11 @@ describe ${ns}:${guid}
 """)
 		if (mm["$ns:$guid"].size()==0) return mm
 		mm ["label"] = ju.queryListMap1(mdl, prefixes, """
-select ?label { ${ns}:${guid} rdfs:label ?label }
+select ?label { 
+			{ ${ns}:${guid} rdfs:label ?label }
+			union
+			{ ${ns}:${guid} skos:prefLabel ?label }
+}
 """)[0]["label"]
 		mm ["Tags"] =
 		ju.queryExecConstruct(mdl, prefixes, """
@@ -41,14 +45,14 @@ construct {
 		{
 		?s the:tag ?c .
 		?c a skos:Concept ;
-        		rdfs:label ?l ;
-			skos:definition ?d
+			skos:definition ?d .
+		{?c rdfs:label ?l} union {?c skos:prefLabel ?l} 
 		} union {
 		?col skos:member ?s .
 		?col the:tag ?c .
 		?c a skos:Concept ;
-        		rdfs:label ?l ;
-			skos:definition ?d
+		skos:definition ?d.
+        {?c rdfs:label ?l} union {?c skos:prefLabel ?l} 
 		}
 	} order by ?l
 }
