@@ -51,7 +51,14 @@ class EntityEntry {
 			}
 			
 			validate(m)
-		
+		//  support format <http://visualartsdna.org/images/NearElSoplador.jpg>
+			def il = m.image.split(",")
+			def is = ""
+			def j=0
+			il.each{
+				if (j++>0) is += ","
+				is += "<http://visualartsdna.org/images/${it.trim()}>"
+			}
 		def ttl = """
 ${rdf.Prefixes.forFile}
 work:${m.guid}
@@ -64,6 +71,8 @@ ${m.document?"":"#"}		the:document <${m.document}> ;
 ${m.primarySite?"":"#"}		schema:sameAs <${m.primarySite}> ;
 ${m.wikipedia?"":"#"}		the:wikipedia	<${m.wikipedia}> ;
 ${m.dbpedia?"":"#"}		the:dbpedia	<${m.dbpedia}> ;
+${m.image?"":"#"}		schema:image	$is ;
+${m.tag?"":"#"}		the:tag	${m.tag} ;
 		schema:datePublished "${m.recordedDateTime}"^^xs:date ;
 		skos:inScheme	the:entities ;
 		.
@@ -162,6 +171,16 @@ Type:
 </td></tr><tr><td align="right">
   <label for="dbpedia">Dbpedia:</label></td><td>
   <input type="text" id="dbpedia" name="dbpedia" size="60" value=""> 
+</td></tr><tr><td align="right">
+  <label for="image">Image Files:</label><br>filenames<br>w/commas
+</td><td>
+  <!--<input type="text" id="image" name="image" size="60" value="">-->
+ 	<textarea rows="3" cols="60" id="image" name="image"></textarea>
+</td></tr><tr><td align="right">
+  <label for="tag">Tags:</label><br>prefix URIs<br>w/commas
+</td><td>
+  <!--<input type="text" id="tag" name="tag" size="60" value="">-->
+ 	<textarea rows="3" cols="60" id="tag" name="tag"></textarea>
 </td></tr><tr><td align="right">
   <label for="recordedDateTime">Recorded:</label></td><td>
   <input type="text" id="recordedDateTime" name="recordedDateTime" size="20" value="${m.recordedDateTime}">
