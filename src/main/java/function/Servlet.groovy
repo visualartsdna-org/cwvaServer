@@ -202,19 +202,24 @@ class Servlet extends ServletBase {
 				
 			case "/loadTtl":
 				try {
-				def data = new JenaUtilities().loadFiles("${mq.directory}/${mq.fileupload}")
-				sendHtml(response,"File size=${data.size()}")
+				def data = new JenaUtilities().loadFiles("${mq.directory}/${mq.fileupload?:""}")
+				sendHtml(response,"${mq.directory}/${mq.fileupload?:""}, TTL model size=${data.size()}")
 				} catch (org.apache.jena.riot.RiotException re) {
 					sendText(response,"$re")
 				}
 				break
 
 			case "/queryTtl":
-				def data = new JenaUtilities().loadFiles("${mq.directory}/${mq.fileupload}")
+				//def command = "java -cp C:/stage/bin/cwvaServer-2.4.3.jar rdf.util.SparqlConsole -path ${mq.directory}/${mq.fileupload?:""}"
+				def command = "C:/stage/bin/queryConsole.bat ${mq.directory}/${mq.fileupload?:""}"
 				Thread.start('query') {
-					new SparqlConsole().show(data)
+					new util.Exec().exec(command)
 				}
-				sendText(response,"okay")
+//				def data = new JenaUtilities().loadFiles("${mq.directory}/${mq.fileupload?:""}")
+//				Thread.start('query') {
+//					new SparqlConsole().show(data)
+//				}
+				sendText(response,"Query for TTL model in ${mq.directory}/${mq.fileupload?:""} is opened")
 				
 				break
 		
