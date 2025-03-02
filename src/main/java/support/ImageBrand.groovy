@@ -26,7 +26,7 @@ class ImageBrand {
 		m.each{k,v->
 			s += "$k = $v\n"
 		}
-		m.guid = m.guid.trim()
+		m.guid = "" //m.guid.trim()
 		m.label = m.label.trim()
 		if (m.guid ==~ /work:.*/) {
 			def n = m.guid.indexOf(":") +1
@@ -34,7 +34,7 @@ class ImageBrand {
 		}
 			
 		verify(m)
-		def filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
+		def filename = ImageMgt2.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,"rickspates.art")
 
 		
 		"""Branded
@@ -42,7 +42,7 @@ $s"""
 	}
 	
 	def verify(m) {
-		assert m.guid				, "no m.guid			 "
+//		assert m.guid				, "no m.guid			 "
 		assert m.label				, "no m.label			 "
 	}
 
@@ -72,17 +72,21 @@ $s"""
 <table >
 <tr><td>
   <input type = "file" name = "fileupload" id = "file" accept = "image/*" />
+<!--
   <br>
   <br><label for="id">Signature:</label><br>
   <input type="radio" id="sig1" name="sig" value="right" checked>
   <label for="type1">Right</label><br>
   <input type="radio" id="sig2" name="sig" value="left">
   <label for="type2">Left</label><br>
+-->
 </td><td>
+<!--
   <br><label for="guid">guid:</label><br>
   <input type="text" id="guid" size="44" name="guid" value="">
 
 <br>
+-->
   <br><label for="label">label:</label><br>
   <input type="text" id="label" name="label" size="44" value=""> 
 

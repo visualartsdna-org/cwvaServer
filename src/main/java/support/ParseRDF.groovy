@@ -19,7 +19,12 @@ class ParseRDF {
 	def parse(m) {
 		
 		verify(m)
-		def filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
+		def filename = ImageMgt2.makeStampedFile(
+			m.guid,
+			m.fileupload,
+			m.label,
+			m.dir,
+			"rickspates.art")
 		m.fileupload = filename
 		def ttl = printTtl(m)
 		println ttl

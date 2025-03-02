@@ -21,7 +21,7 @@ class HtmlForm2DigitalTtl {
 	}
 	
 
-	def artistSite = "https://tratsi314.wixsite.com/tra-tsi-art"
+	def artistSite = "https://www.rspates.art/"
 	/*
 	 * Some thoughts:
 	 * Make hasPaper, hasPaperFinish dropdowns, ensure inclusive
@@ -51,6 +51,8 @@ VADNA RDF Digital Entry
   <label for="type2">PaintApplicationImage</label><br>
   <input type="radio" id="type1" name="type" value="LindenMayerSystemImage">
   <label for="type1">LindenMayerSystemImage</label><br>
+  <input type="radio" id="type0" name="type" value="BlenderComposition">
+  <label for="type0">BlenderComposition</label><br>
 </td></tr><tr><td>
          <input type = "file" name = "fileupload" id = "file" accept = "image/*" />
 </td><td>
@@ -91,6 +93,7 @@ VADNA RDF Digital Entry
 <option value="TIFF" >TIFF</option>
 <option value="PNG" >PNG</option>
 <option value="GIF" >GIF</option>
+<option value="OBJ" >OBJ</option>
   </select>
 </td></tr><tr><td>
   <br><label for="width">width (pixels):</label><br>

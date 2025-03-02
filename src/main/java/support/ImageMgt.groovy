@@ -47,7 +47,7 @@ class ImageMgt {
 
 	  
 	  /**
-	   *
+	   * NOT WORKING
 	   * @param ifile, the image
 	   * @param i2file, the work qrcode
 	   * @param i3file, the signature qrcode
@@ -112,7 +112,7 @@ class ImageMgt {
   //		g.setPaint(Color.white)
   //
   //		g.setFont (new Font ("Segoe Script", Font.ITALIC, 45))
-  //		g.drawString("Rick Spates",
+  //		g.drawString("rickspates.art",
   //              image.getWidth() - 400,
   //              image.getHeight() - 35
   //			  )
