@@ -9,11 +9,19 @@ import org.junit.jupiter.api.Test
 import rdf.JenaUtils
 import rdf.tools.SparqlConsole
 import org.apache.commons.io.FileUtils
-
+import groovy.io.FileType
 class TestJunk {
 
 	def ju = new JenaUtils()
 	def guid = new support.Guid()
+	
+	// Remove .ext from filename
+	@Test
+	void test10() {
+		println "file.name.with.dots.tgz" - ~/\.\w+$/
+	}
+
+
 	@Test
 	void test13() {
 		// test load lock
@@ -99,12 +107,6 @@ class TestJunk {
 		def isMobile = userAgent ==~ /.*(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*/
 		//def isMobile = userAgent ==~ /.*(webOS|iPhone).*/
 		println isMobile
-	}
-
-	// Remove .ext from filename
-	@Test
-	void test10() {
-		println "file.name.with.dots.tgz" - ~/\.\w+$/
 	}
 
 	@Test
@@ -414,7 +416,7 @@ st:${getGuid()}
 	}
 	
 	@Test
-	void test() {
+	void testQrcFix() {
 		def img="C:/stage/qrcFix/img"
 		def tgt="C:/stage/qrcFix/renamed"
 		def l = []
@@ -427,6 +429,23 @@ st:${getGuid()}
 				
 				FileUtils.copyFile(new File("$img/${it[0]}"), new File("$tgt/${it[1]}"))
 			}
+	}
+
+	@Test
+	void testQrcRebrand() {
+		//def img="C:/stage/qrcFix/img"
+		def src="C:/stage/qrcFix/renamed"
+		def tgt="c:/stage/qrcFix/rebranded"
+		def dir = new File(src)
+		dir.eachFileRecurse (FileType.FILES) { file ->
+				println "branding $file -> $tgt/${file.name}"
+				
+				def filename = (file.name - ~/\.\w+$/)
+				FileUtils.copyFile(new File("$file"), new File("$tgt/${file.name}"))
+				support.ImageMgt2.makeStampedFile("","$file.name",filename,
+				"C:/stage/qrcFix/rebranded","rickspates.art")
+		}
+		
 	}
 
 	@Test
@@ -464,6 +483,133 @@ select (count(?s) as ?sum){
 		println rl
 	}
 
+	@Test
+	void testListImagesInTtl() {
+		def m = ju.loadFiles("C:/stage/server/cwvaContent/ttl")
+		
+		def rl =  ju.queryListMap1(m,rdf.Prefixes.forQuery,"""
+# list images in ttl
+select ?l ?f {
+	?s schema:image ?f .
+	{?s rdfs:label ?l} union {?s skos:prefLabel ?l}
+} order by ?f
+
+			""")
+		def s = ""
+		rl.each{
+			//println "${it.l}\t${it.f}"
+			def n = "http://visualartsdna.org/images/".length()
+			def file = it.f.replaceAll("%20"," ")
+			s += "${file.substring(n)}\t${it.l}\n"
+		}
+		new File("C:/work/images/bucket/ttlRefsByFile.txt").text = s
+	}
+	
+	@Test
+	void testCompareBucketLocalImages() {
+		def path = "C:/work/images/bucket"
+		def m=[:]
+		new File("$path/files.txt").eachLine{
+			m[it] = null
+		}
+		println "files: ${m.size()}"
+		
+		int i=0,j=0
+		def dir = new File("/temp/images")
+		dir.eachFileRecurse (FileType.FILES) { file ->
+			if (!m.containsKey(file.name)) {
+				m[file.name] = 1
+				j++
+				println file
+			}
+			i++
+		}
+		println "files in /images: $i"
+		println "repo files matched in /images: $j"
+		
+//		m.each{k,v->
+//			if (!v) println k
+//		}
+		
+	}
+	
+	@Test
+	void testCompareBucketInstance1Images() {
+		def path = "C:/work/images/bucket"
+		def m=[:]
+		new File("$path/files.txt").eachLine{
+			m[it] = null
+		}
+		println "files: ${m.size()}"
+		
+		int i=0,j=0
+		new File("$path/instance1Images.txt").eachLine{file->
+			
+			if (!m.containsKey(file)) {
+				m[file] = 1
+				j++
+				println file
+			}
+			i++
+		}
+		println "files in /images: $i"
+		println "repo files matched in /images: $j"
+		
+//		m.each{k,v->
+//			if (!v) println k
+//		}
+		
+	}
+	
+	// find files from repo w/no 
+	// ttl reference
+	@Test
+	void testCompareImagesInRepos() {
+		def path = "C:/work/images/bucket"
+		def m=[:]
+		new File("$path/files.txt").eachLine{
+			m[it] = null
+		}
+		println "files: ${m.size()}"
+		
+		def c0 = 0
+		new File("$path/ttlRefsByFile.txt").eachLine{
+			def lf = it.split("\t")
+			m[lf[0]] = lf[1]
+			c0++
+		}
+		println "refs: $c0"
+		
+		int c = 0
+		m.each{k,v->
+			//if (v) println "$k\t$v"
+			if (v) c++
+		}
+		println "refs: $c"
+		println "not used: ${m.size()-c}"
+		
+		c=0
+		m.each{k,v->
+			if (!k.startsWith("qrc") && !v) {
+				println "$k"
+				c++
+			}
+		}
+		println "non qrc, no-ref bucket files = $c"
+	}
+	
+	@Test
+	void testFindReposImgsWJPG() {
+		
+		def path = "C:/work/images/bucket"
+		new File("$path/files.txt").eachLine{
+			if (it.endsWith(".JPG"))
+				println it
+		}
+	}
+
+
+	
 	@Test
 	void testDate() {
 		def ds = "Sunday, February 16th, 2025 - Sunday, February 16th, 2025"

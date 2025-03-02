@@ -19,7 +19,7 @@ class Token {
 	
 		def phrase = "I wanna hold your hand"
 		def hc = BigInteger.valueOf(phrase.hashCode())
-		def tolerance= 30000 // seconds
+		def tolerance= 30000 // milliseconds
 
 	def getTimeToken() {
 		getToken(new Date().getTime())

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*
 import java.text.SimpleDateFormat
 
 import static groovy.io.FileType.FILES
+import groovy.io.FileType
 
 import org.junit.jupiter.api.Test
 
@@ -63,9 +64,33 @@ class GcpTest {
 					println it
 				}
 	}
-
+	// load image files from bucket to dir
+	// given file of filenames
 	@Test
 	void test01() {
+		def dir = "C:/work/images/bucket/extraRepo"
+		def src = "images"
+		new File("C:/work/images/bucket/repoUnrefdImages.txt").eachLine{f->
+			
+			try {
+				def url = Gcp.gcpLs(src,f)
+				//if (url) println "found url: ${url}" // debug
+				if (url) Gcp.gcpCp(url,dir)
+			} catch (RuntimeException re) {
+				System.err.println ("$f not found, $re")
+				throw new FileNotFoundException("$f not found")
+			}
+			def f2 = new File("$dir/$f")
+			if (!f2.exists()) {
+				throw new FileNotFoundException("$f not found")
+			}
+		}
+	}
+
+		@Test
+		void test011() {
+			
+	
 		def l = Gcp.gcpLsNoDir("images", false)
 		l.each{ println it}
 	}
