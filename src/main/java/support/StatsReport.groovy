@@ -37,7 +37,6 @@ prefix st:    <http://example.com/>
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @prefix st: <http://example.com/> .
 """
-		//def c = new JsonSlurper().parse(new File("$dir/stats.json"))
 		def c = new JsonSlurper().parseText(json)
 		c.each{k,v->
 			//			println "$k"
@@ -73,11 +72,6 @@ st:${getGuid()}
 
 			}
 		}
-		//println ttl
-//		def m = ju.saveStringModel(ttl,"TTL")
-//		println ju.saveModelString(m,"TTL")
-//		println "${m.size()}"
-//		ju.saveModelFile(m,"$dir/stats.ttl","TTL")
 		ju.saveStringModel(ttl,"TTL")
 	}
 	
@@ -86,11 +80,6 @@ st:${getGuid()}
 	@Test
 	void test() {
 		loadQueries("C:/work/stats/query.txt")
-//		reportMap.each{k,v->
-//			println k
-//			println v
-//			println ""
-//		}
 		new File("C:/work/stats/junk.html").text = reportHtml()
 	}
 	
@@ -100,10 +89,6 @@ st:${getGuid()}
 			s += "$it\n"
 		}
 		def fs = s.split(/\n\n/)
-//		fs.each{
-//			println it
-//			println "-"
-//		}
 		fs.each{
 			int i=0
 			def key
@@ -119,13 +104,6 @@ st:${getGuid()}
 
 	def reportHtml(m) {
 		def report = ""
-//		def l = [
-//			//"C:/work/stats/artpal/artPal.ttl",
-//			"C:/work/stats/metrics/stats.ttl",
-//		]
-//		def m2 = ju.loadListFilespec(l)
-//		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl")
-//		m.add m2
 		
 		report += """
 <html>
@@ -218,26 +196,4 @@ ${new Date()}
 		
 	}
 
-//		def reportMap=[
-//			"sum unknown paths by ip by date":
-//			"""# sum unknown paths by ip by date
-//prefix st:    <http://example.com/>
-//select ?dt ?ip (sum(?u) as ?sum){
-//?s st:unknown ?u ;
-//	st:ip	?ip ;
-//	st:date ?dt .
-//	filter(?u > 1)
-//} group by ?dt ?ip order by ?dt desc(?sum)
-//""",
-//			"sum all unknown paths by ip":"""
-//# sum all unknown paths by ip
-//prefix st:    <http://example.com/>
-//select ?ip (sum(?u) as ?sum){
-//?s st:unknown ?u ;
-//	st:ip	?ip ;
-//	st:date ?dt .
-//	filter(?u > 10)
-//} group by ?ip order by desc(?sum)
-//"""
-//		]
-	}
+}
