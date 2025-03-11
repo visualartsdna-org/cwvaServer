@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Model
 import groovy.json.JsonSlurper
 import rdf.JenaUtilities
 import rdf.JenaUtils
-
+import rdf.QuerySupport
 import org.junit.Test
 
 
@@ -49,9 +49,21 @@ select ?s ?label ?a ?artist {
 } $order
 """
 )
+
+// refactor l into maps per artist
+		def ma=[:]
+		l.each{
+			if (!ma.containsKey(it.artist)) {
+				ma[it.artist]=[]
+			}
+			ma[it.artist] += [label:it.label,s:it.s]
+		}
+
+
 	def sb = new StringBuilder()
 	sb.append HtmlTemplate.head(host)
 	sb.append """
+<table>
 <script>
 function myFunction() {
   document.getElementById("myForm").submit();
@@ -71,22 +83,71 @@ Order:
 </form>
 </h6>
 """
-	sb.append HtmlTemplate.tableHead("Works")
-	
-	l.each { 
-		def s = it.s.replaceAll("http://visualartsdna.org",host)
-		def a = it.a.replaceAll("http://visualartsdna.org",host)
-		
-		sb.append """<tr><td>
-			
-			<a href="$s">${it.label}</a>
-</td><td>
-			<a href="$a">${it.artist}</a>
-</td></tr>
+//	sb.append HtmlTemplate.tableHead("Works")
+	sb.append """
+<table>
+<style>
+td {
+  vertical-align: top;
+}
+</style>
+<tr>
+<td vertical-align: bottom>
 
+  <i>Artists</i><br><br>
+"""
+	ma.each{k,v->
+		sb.append """<h4><a href="#$k">$k</a></h4>"""
+	}
+	sb.append """
+</td><td>
+<style>
+.container
+{
+	max-height:${qm.isMobile == "true" ? "400" : "800"}px;
+	overflow-y:scroll
+}
+</style>
+<div class="container">
+"""
+	
+	ma.each {k,v->
+		sb.append """<div id="$k"></div>
+		<b><i>Works by $k</i></b>
+"""
+		
+		
+		v.each { 
+			def s = it.s.replaceAll("http://visualartsdna.org",host)
+			//def a = it.a.replaceAll("http://visualartsdna.org",host)
+			
+			sb.append """<br>
+				<a href="$s">${it.label}</a>
+	
+	
+	"""
+		}
+		sb.append """<br><hr><br>
+"""		
+	}
+	def uri= "http://visualartsdna.org/thesaurus".replaceAll("http://visualartsdna.org",host)
+	sb.append """
+</div></td>
+${qm.isMobile == "true" ? "</tr><tr><td></td>" : ""}
+<td>
+<h5>Concept Collections</h5>
+"""
+	
+	def lc = new QuerySupport().queryCollections()
+	lc.each{
+		sb.append """
+<a href="${it.s.replaceAll("http://visualartsdna.org",host)}">${it.l}</a><br>
 """
 	}
-	sb.append HtmlTemplate.tableTail
+	sb.append """
+</td></tr></table>
+"""
+//	sb.append HtmlTemplate.tableTail
 	sb.append HtmlTemplate.tail
 	
 	""+sb
