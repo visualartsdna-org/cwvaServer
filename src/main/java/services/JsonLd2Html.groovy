@@ -13,7 +13,7 @@ class JsonLd2Html {
 
 	def ns = [:]
 	def defs = [:]
-	
+	def qs
 	// html for anartist from queries
 	@Test
 	public void testArtist() {
@@ -89,7 +89,7 @@ class JsonLd2Html {
 
 	def process(rdfs, domain,path, ns, guid, host) {
 		pfxNsMap = rdfs.getNsPrefixMap()
-		def qs = new QuerySupport(rdfs)
+		if (!qs) qs = new QuerySupport(rdfs)
 		this.host = host
 		def ljld = []
 		def desc = []
@@ -140,6 +140,7 @@ About:
 	}
 	
 	def printHtml(m, sb) {
+		def collection=false
 		if (m instanceof Map) {
 			m.each{k,v->
 				
@@ -158,6 +159,20 @@ About:
 						sb.append """<tr height="50"><td>ID</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
 					}
 
+				}
+				else if (k=="@type"
+						&& (v=="skos:Collection"
+						|| (v instanceof List
+						&&	"skos:Collection" in v))) {
+						collection=true
+					def vc = v instanceof List ? v : [v]
+					def s=""
+					int i=0
+					vc.each{ 
+						if (i++>0)	s += ", "
+						s += """<a href="${nsLookup(it)}">$it</a>"""
+					}
+					sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
 				}
 				else if (k=="@type"
 						|| k=="tag"
@@ -202,6 +217,22 @@ About:
 				else {
 					def type=m2["@type"]
 					if (type=="@id"
+						&& k == "member"
+						&& collection) {
+						collection = false
+						def id=m2["@id"]
+						def vc = v instanceof List ? v : [v]
+						// create map of id:label then iterate on map
+						def l = qs.queryCollection(vc)
+						l.each{map->
+							if (v =~ /_:b[0-9]+/) {
+							} else {
+								def uri=rehost(nsLookup(map.s))
+								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${uri}">${map.l}</a></td></tr>\n"""
+							}
+						}
+					}
+					else if (type=="@id"
 						&& k != "mailto") {
 						def id=m2["@id"]
 						def vc = v instanceof List ? v : [v]
@@ -212,7 +243,7 @@ About:
 						}
 					}
 					else {
-//						if (k=="definition")
+//						if (k=="skos:Collection")
 //							println "here"
 						sb.append """<tr height="50"><td><i>$k</i></td>"""
 						if (v instanceof List) {
