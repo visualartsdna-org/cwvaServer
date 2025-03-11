@@ -10,8 +10,39 @@ class QuerySupport {
 	def ju = new JenaUtilities()
 	def mdl = ju.newModel()
 
+	QuerySupport(){
+		this(null)
+	}
 	QuerySupport(mdl){
-		this.mdl = mdl
+		if (!mdl) this.mdl = cwva.Server.getInstance().dbm.rdfs
+		else this.mdl = mdl
+	}
+	
+	def queryCollections() {
+		
+		ju.queryListMap1(mdl, prefixes,
+		"""select ?s ?l {
+?s a skos:Collection .
+	{?s skos:prefLabel ?l} union {?s rdfs:label ?l}
+} order by ?l
+""")
+	}
+	
+	def queryCollection(list) {
+		def sql = """select ?s ?l {
+	{?s skos:prefLabel ?l} union {?s rdfs:label ?l}
+	filter (?s in (
+"""
+		int i=0
+		list.each{
+			if (i++) sql += ","
+			sql += "$it"
+		}
+			
+sql += """
+))} order by ?l
+"""
+		ju.queryListMap1(mdl, prefixes, sql)
 	}
 	
 	def query(ns,guid) {
