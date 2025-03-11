@@ -7,6 +7,18 @@ import groovy.json.JsonSlurper
 import org.junit.jupiter.api.Test
 
 class TestJArchivoCvt {
+	
+	def lfilter = [
+		"domOSCommonOntology.json",
+		"TheOntologyOfObstetricAndNeonatalDomain.json",
+		"RadiationBiologyOntology.json",
+		"PATO-ThePhenotypeAndTraitOntology.json",
+		"META-SHAREOntology.json",
+		"IDSInformationModel.json",
+		"GenomicsCohortsKnowledgeOntology.json",
+		"CellOntology.json",
+		"BIBFRAMEVocabulary.json"
+		]
 
 	@Test
 	void test() {
@@ -24,12 +36,24 @@ ${rdf.Prefixes.forFile}
 
 		def dir = new File(fname)
 		dir.eachFileRecurse (FileType.FILES) { file ->
+			
+			// filter
+			if (!(file.name in lfilter)) return
+			
+			
 			def col = new JsonSlurper().parse(file)
 			def s = (col[5].graph.rules =~ /x=@\(([A-Za-z0-9\:\- _,\.]+)\)/)[0][1]
 			def gf = s.split(", ")
 			def date = gf[0].split(" ")[0]
 			def time = gf[0].split(" ")[1]
 			def guid = gf[1]
+			
+			def border = (col[0].border =~ /([0-9]+)/)[0][1] as int
+			def height = (col[0].yspan =~ /([0-9]+)/)[0][1] as int
+			def width = (col[0].xspan =~ /([0-9]+)/)[0][1] as int
+			height += border
+			width += border
+			
 			def desc = ""
 			try {
 				desc = (col[3].graph.rules =~ /x=@\(([A-Za-z0-9\:\- _,\.]+)\)/)[0][1]
@@ -41,13 +65,13 @@ ${rdf.Prefixes.forFile}
 			ttl += """
 work:$guid
 	rdfs:label "${desc}" ;
-		a vad:LindenMayerSystemImage ;
+		a vad:LindenmayerSystemImage ;
 	vad:media	"Digital Imagery" ;
-	schema:height      "0"^^xs:float ;
-	schema:width       "0"^^xs:float ;
+	schema:height      "$height"^^xs:float ;
+	schema:width       "$width"^^xs:float ;
 	schema:identifier        "$guid" ;
 	schema:description "$desc" ;
-	schema:datePublished "2025-03-03T08:02:34"^^xs:dateTime ;
+	schema:datePublished "2025-03-04T08:02:34"^^xs:dateTime ;
 	schema:dateCreated "${date}T${time}"^^xs:dateTime ;
 	schema:image <http://visualartsdna.org/images/${imageFile}.jpg> ;
 	.
