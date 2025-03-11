@@ -52,7 +52,7 @@ class EntityEntry {
 			
 			validate(m)
 		//  support format <http://visualartsdna.org/images/NearElSoplador.jpg>
-			def il = m.image.split(",")
+			def il = m.image ? m.image.split(",") : []
 			def is = ""
 			def j=0
 			il.each{
@@ -73,6 +73,7 @@ ${m.wikipedia?"":"#"}		the:wikipedia	<${m.wikipedia}> ;
 ${m.dbpedia?"":"#"}		the:dbpedia	<${m.dbpedia}> ;
 ${m.image?"":"#"}		schema:image	$is ;
 ${m.tag?"":"#"}		the:tag	${m.tag} ;
+${m.note?"":"#"}		skos:$m.noteType	\"\"\"${m.note}\"\"\" ;
 		schema:datePublished "${m.recordedDateTime}"^^xs:date ;
 		skos:inScheme	the:entities ;
 		.
@@ -100,20 +101,22 @@ Art Entity work:${m.guid}</h2>
 </td></tr><tr><td><br>
 Type:
 </td></tr><tr><td>
+  <input type="radio" id="type1" name="type" value="Article">
+  <label for="type1">Article</label>
   <input type="radio" id="type1" name="type" value="Artist">
   <label for="type1">Artist</label>
-  <input type="radio" id="type2" name="type" value="Work">
-  <label for="type2">Work</label>
-  <input type="radio" id="type2" name="type" value="Study">
-  <label for="type2">Study</label>
-  <input type="radio" id="type2" name="type" value="Topic">
-  <label for="type2">Topic</label>
-  <input type="radio" id="type2" name="type" value="Organization">
-  <label for="type2">Organization</label>
   <input type="radio" id="type2" name="type" value="Concept">
   <label for="type2">Concept</label>
   <input type="radio" id="type2" name="type" value="Entity">
   <label for="type2">Entity</label>
+  <input type="radio" id="type2" name="type" value="Organization">
+  <label for="type2">Organization</label>
+  <input type="radio" id="type2" name="type" value="Study">
+  <label for="type2">Study</label>
+  <input type="radio" id="type2" name="type" value="Topic">
+  <label for="type2">Topic</label>
+  <input type="radio" id="type2" name="type" value="Work">
+  <label for="type2">Work</label>
 </td></tr><tr><td><br>
  Media:
 <table><tr><td>
@@ -163,7 +166,7 @@ Type:
   <label for="document">Document:</label></td><td>
   <input type="text" id="document" name="document" size="60" value=""> 
 </td></tr><tr><td align="right">
-  <label for="primarySite">PrimarySite:</label></td><td>
+  <label for="primarySite">Website:</label></td><td>
   <input type="text" id="primarySite" name="primarySite" size="60" value=""> 
 </td></tr><tr><td align="right">
   <label for="wikipedia">Wikipedia:</label></td><td>
@@ -177,10 +180,25 @@ Type:
   <!--<input type="text" id="image" name="image" size="60" value="">-->
  	<textarea rows="3" cols="60" id="image" name="image"></textarea>
 </td></tr><tr><td align="right">
+<!-- tags -->
   <label for="tag">Tags:</label><br>prefix URIs<br>w/commas
 </td><td>
   <!--<input type="text" id="tag" name="tag" size="60" value="">-->
  	<textarea rows="3" cols="60" id="tag" name="tag"></textarea>
+<!-- note -->
+  <!--<label for="note">Note:</label><br>prefix URIs<br>w/commas-->
+</td></tr><tr><td>
+<select name="noteType" size="1">
+  <option>note</option>
+  <option>changeNote</option>
+  <option>editorialNote</option>
+  <option>example</option>
+  <option>historyNote</option>
+  <option>scopeNote</option>
+</select></td><td>
+  <!--<input type="text" id="tag" name="note" size="60" value="">-->
+ 	<textarea rows="3" cols="60" id="tag" name="note"></textarea>
+<!-- recordedDateTime -->
 </td></tr><tr><td align="right">
   <label for="recordedDateTime">Recorded:</label></td><td>
   <input type="text" id="recordedDateTime" name="recordedDateTime" size="20" value="${m.recordedDateTime}">
