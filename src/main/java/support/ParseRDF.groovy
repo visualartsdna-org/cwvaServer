@@ -31,15 +31,15 @@ class ParseRDF {
 		//dir=m.dir
 		new File("${m.dir}/${m.guid}.ttl").text = ttl
 		
-		//printQRC(m.guid)
+		printQRC(m.guid)
 		
 		def mdl = new JenaUtils().loadFiles("${m.dir}/${m.guid}.ttl")
 		"triples: ${mdl.size()}"
 
 	}
-//	def printQRC(guid) {
-//		ImageMgt.qrcode(guid,dir)
-//	}
+	def printQRC(guid) {
+		ImageMgt.qrcode(guid,dir)
+	}
 
 	def printTtl(m) {
 		"""
