@@ -58,7 +58,8 @@ class TakeoutTtl2All {
 		if (s) return s
 		
 		processJson("$tkoTmp/Takeout/Keep",tgt)
-		stat += "$tkoTmp/Takeout/Keep processed to $tgt\n"
+		stat += "$tkoTmp/Takeout/Keep topics processed to $tgt\n"
+		stat += "$tkoTmp/Takeout/Keep tags processed to $notesTgt/tags/notes_${account}.ttl\n"
 		stat
 	}
 
@@ -138,7 +139,7 @@ class TakeoutTtl2All {
 			if (!file.name.endsWith(".json")) return
 				println file
 
-//			if (file.name.contains("Collection"))
+//			if (file.name.contains("Archivo"))
 //				println "here"
 			def m = Rson.load("$file")
 			def col = getCol(m)
@@ -223,7 +224,7 @@ class TakeoutTtl2All {
 ${rdf.Prefixes.forFile}
 			the:$cpt
 				a skos:Concept ;
-				skos:inScheme  ${topic ? m2["skos:inScheme"] : "the:paintingNotes"} ; 
+				skos:inScheme  ${topic ? m2["skos:inScheme"] : account == "rickspatesart" ? "the:paintingNotes" : "the:digitalNotes"} ; 
 				tko:created "$created"^^xsd:date ;
 				tko:edited "$edited"^^xsd:dateTime ;
 				skos:prefLabel "${m2.title}${tag ? " Notes" : ""}" ;
@@ -303,15 +304,15 @@ $k
 """)
 		ju.saveModelFile(m1, "$dest/${account}.ttl", "TTL")
 		
-		// painting notes can only come from the one account
-		if (account == "rickspatesart") {
+		// painting/graphic notes can only come from the two accounts
+		if (account in ["rickspatesart","rspates.art"]) {
 			def m2 = ju.queryDescribe(model,rdf.Prefixes.forQuery,"""
 				describe ?s {
-			?s skos:inScheme the:paintingNotes
+			?s skos:inScheme ${account == "rickspatesart" ? "the:paintingNotes" : "the:digitalNotes"}
 			}
 	""")
 //			def dts = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-			ju.saveModelFile(m2, "$notesTgt/tags/notes.ttl", "TTL")
+			ju.saveModelFile(m2, "$notesTgt/tags/notes_${account}.ttl", "TTL")
 		}
 		
 	}
