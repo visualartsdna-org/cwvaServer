@@ -27,6 +27,9 @@ class Servlet extends ServletBase {
 	
 	def handler(path,query,response,request) {
 		def state = 1
+		def userAgent = request.getHeader("User-Agent")
+		def isMobile = userAgent ==~ /.*(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*/
+
 		def mq=parse(query)
 		def tmpFile
 		if (cfg.verbose) println "$path ${query?:""}"
@@ -132,11 +135,20 @@ class Servlet extends ServletBase {
 				break
 
 			case "/browse":
-				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs, [order:"Title"])
+				if (query)
+					query += "&isMobile=$isMobile"
+				else query = "isMobile=$isMobile"
+				mq=parse(query)
+				mq.order="Title"
+ 				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs, mq)
 				sendHtml(response,s)
 				break
 				
 			case "/browseSort":
+				if (query)
+					query += "&isMobile=$isMobile"
+				else query = "isMobile=$isMobile"
+				mq=parse(query)
 				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs, mq)
 				sendHtml(response,s)
 				break
@@ -155,8 +167,8 @@ class Servlet extends ServletBase {
 				break
 
 			case ~/\/sparql/:
-				def userAgent = request.getHeader("User-Agent")
-				def isMobile = userAgent ==~ /.*(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*/
+//				def userAgent = request.getHeader("User-Agent")
+//				def isMobile = userAgent ==~ /.*(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*/
 				if (query)
 					query += "&isMobile=$isMobile"
 				else query = "isMobile=$isMobile"
