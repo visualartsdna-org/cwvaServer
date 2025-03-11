@@ -27,15 +27,20 @@ class ImageBrand {
 			s += "$k = $v\n"
 		}
 		m.guid = "" //m.guid.trim()
-		m.label = m.label.trim()
+		if (!m.label) {
+			m.label = m.fileupload - ~/\.\w+$/
+		}
+		else m.label = m.label.trim()
+			
 		if (m.guid ==~ /work:.*/) {
 			def n = m.guid.indexOf(":") +1
 			m.guid = m.guid.substring(n)
 		}
 			
 		verify(m)
-		def filename = ImageMgt2.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,"rickspates.art")
-
+		def filename = ImageMgt2.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
+		if (m.guid) printQRC(m.guid)
+		
 		
 		"""Branded
 $s"""
@@ -46,7 +51,11 @@ $s"""
 		assert m.label				, "no m.label			 "
 	}
 
-		
+	def printQRC(guid) {
+		ImageMgt.qrcode(guid,dir)
+	}
+
+
 	def printHtml() {
 				
 		 """
@@ -72,22 +81,20 @@ $s"""
 <table >
 <tr><td>
   <input type = "file" name = "fileupload" id = "file" accept = "image/*" />
-<!--
   <br>
   <br><label for="id">Signature:</label><br>
-  <input type="radio" id="sig1" name="sig" value="right" checked>
-  <label for="type1">Right</label><br>
-  <input type="radio" id="sig2" name="sig" value="left">
-  <label for="type2">Left</label><br>
--->
+  <input type="radio" id="sig1" name="sig" value="rickspates.art" checked>
+  <label for="type1">rickspates.art</label><br>
+  <input type="radio" id="sig2" name="sig" value="rspates.art">
+  <label for="type2">rspates.art</label><br>
 </td><td>
-<!--
-  <br><label for="guid">guid:</label><br>
+  <br><label for="guid">guid (optional):</label><br>
   <input type="text" id="guid" size="44" name="guid" value="">
 
 <br>
+<!--
 -->
-  <br><label for="label">label:</label><br>
+  <br><label for="label">label (optional):</label><br>
   <input type="text" id="label" name="label" size="44" value=""> 
 
 </td></tr>
