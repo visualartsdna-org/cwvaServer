@@ -144,7 +144,7 @@ About:
 	static def tail = """
 <center><font size="2" color="#666666">
 <br/><hr/><br/>
-<a href="mailto:inquiry@visualartsdna.org"/>inquiry@visualartsdna.org</a><br/>
+<a href="mailto:visualartsdna@gmail.com"/>visualartsdna@gmail.com</a><br/>
 Copyright &copy; ${getYear()} visualartsdna.org. All Rights Reserved.
 <br/>
 v ${cwva.Server.version}

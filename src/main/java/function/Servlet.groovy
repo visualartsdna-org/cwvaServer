@@ -65,7 +65,7 @@ class Servlet extends ServletBase {
 	def handler(path,query,response,HttpServletRequest request) {
 		def state = 1
 		def mq = parse(query)
-		setState(request)
+		//setState(request)
 		def lowLevelRequest = 
 		(request && request.getMethod() == "POST") || (path =~ /\/artist\/.*\.jpg/)
 		
