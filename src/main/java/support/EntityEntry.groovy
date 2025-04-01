@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat
 import org.apache.jena.rdf.model.Model
 import rdf.JenaUtilities
 import rdf.Prefixes
+import util.Guid
 
 class EntityEntry {
 	
