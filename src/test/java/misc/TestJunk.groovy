@@ -13,7 +13,7 @@ import groovy.io.FileType
 class TestJunk {
 
 	def ju = new JenaUtils()
-	def guid = new support.Guid()
+	def guid = new util.Guid()
 	
 	// Remove .ext from filename
 	@Test
