@@ -12,6 +12,7 @@ import rdf.tools.SparqlConsole
 import rdf.util.ViaToTtl
 import support.*
 import support.util.*
+import util.Guid
 import util.Tmp
 
 class Servlet extends ServletBase {
@@ -58,10 +59,6 @@ class Servlet extends ServletBase {
 		}
 	}
 
-//	def handler(path,query,response) {
-//		handler(path,query,response,null)
-//	}
-		
 	def handler(path,query,response,HttpServletRequest request) {
 		def state = 1
 		def mq = parse(query)
@@ -115,11 +112,13 @@ class Servlet extends ServletBase {
 				break
 
 			case ~/\/distributeData/: // distribute data
+				support.util.FileLoader.assertTtl("C:/stage/data")
 				def s = new util.Exec().exec("C:/stage/bin/distributeData.bat")
 				sendText(response,"$s")
 				break
 
 			case ~/\/distributeMetadata/:	// distribute metadata
+				support.util.FileLoader.assertTtl("C:/stage/metadata")
 				def s = new util.Exec().exec("C:/stage/bin/distributeMetadata.bat")
 				sendText(response,"$s")
 				break
@@ -200,13 +199,8 @@ class Servlet extends ServletBase {
 				}
 				break
 				
-			case "/loadTtl":
-				try {
-				def data = new JenaUtilities().loadFiles("${mq.directory}/${mq.fileupload?:""}")
-				sendHtml(response,"${mq.directory}/${mq.fileupload?:""}, TTL model size=${data.size()}")
-				} catch (org.apache.jena.riot.RiotException re) {
-					sendText(response,"$re")
-				}
+			case "/loadFile":
+				support.util.FileLoader.loadAny("${mq.directory}/${mq.fileupload}}")
 				break
 
 			case "/queryTtl":
@@ -215,10 +209,6 @@ class Servlet extends ServletBase {
 				Thread.start('query') {
 					new util.Exec().exec(command)
 				}
-//				def data = new JenaUtilities().loadFiles("${mq.directory}/${mq.fileupload?:""}")
-//				Thread.start('query') {
-//					new SparqlConsole().show(data)
-//				}
 				sendText(response,"Query for TTL model in ${mq.directory}/${mq.fileupload?:""} is opened")
 				
 				break
