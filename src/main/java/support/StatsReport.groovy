@@ -10,7 +10,7 @@ class StatsReport {
 
 	def ju = new JenaUtils()
 	def reportMap=[:]
-	def guid = new support.Guid()
+	def guid = new util.Guid()
 	def Prefixes = """
 ${rdf.Prefixes.forQuery}
 prefix st:    <http://example.com/>
@@ -22,7 +22,7 @@ prefix st:    <http://example.com/>
 		def site = "http://${m.tgt}/metrics"
 		def stats = new URL(site).text
 		def model = getStats(stats)
-		loadQueries("C:/work/stats/query.txt")
+		loadQueries("${cwva.Server.getInstance().cfg.dir}/res/metrics.sparql")
 		reportHtml(model.add(cwva.Server.getInstance().dbm.rdfs))
 	}
 
