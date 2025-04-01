@@ -24,8 +24,14 @@ class Interpretation {
 	}
 
 	def handleQueryParams(m) {
+		assert m.tag, "no tag specified"
+		
+		if (m.tag.startsWith("http://")) {
+			def ul = ju.getPrefix(getModel(),m.tag) // gets list w/prefix, path
+			m.tag = "${ul[0]}${ul[1]}"
+		}
 		m.label = qLabel(m.tag)
-		m.quid = makeGuid(m.tag,m.kind,m.label)
+		m.quid = makeGuid(m.kind,m.label)
 		def s = ""
 		m.each{k,v->
 			s += "$k = $v\n"
@@ -128,7 +134,7 @@ tag
 """
 	}
 	
-	
+	// assumes one tag!
 	def qLabel(tag) {
 		def m = ju.queryListMap2(getModel(), prefixes, """
 select ?l {
@@ -140,7 +146,7 @@ select ?l {
 	
 
 	
-	static def makeGuid(tag,kind,label) {
+	static def makeGuid(kind,label) {
 		kind = util.Text.camelCase(kind)
 		label = util.Text.camelCase(label)
 		def date = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
