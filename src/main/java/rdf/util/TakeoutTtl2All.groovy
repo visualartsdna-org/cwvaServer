@@ -46,7 +46,7 @@ class TakeoutTtl2All {
 		FileUtils.deleteDirectory(new File("$tkoTmp/Takeout"))
 		stat += "directory deleted $tkoTmp/Takeout\n"
 		
-		def file = getLatestFileType(downloads,".zip")
+		def file = getLatestFileType(downloads,"takeout",".zip")
 		if (!file) {
 			println "no zip file"
 			return "no zip file"
@@ -80,11 +80,12 @@ class TakeoutTtl2All {
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(ts2)
 	}
 
-	def getLatestFileType(folder, ext) {
+	def getLatestFileType(folder, pre, ext) {
 		def dir = new File(folder)
 		def list = []
 		dir.eachFileRecurse (FileType.FILES) { file ->
-			if ((""+file).endsWith(ext))
+			if ((""+file).contains(pre)
+				&& (""+file).endsWith(ext))
 				list << file
 		}
 		list.sort{a,b->
@@ -253,6 +254,16 @@ ${rdf.Prefixes.forFile}
 """
 						}
 						ttl += "] ;"
+					}
+					
+					// change any png files to jpeg
+					m2.attachments.each{
+						if (it.mimetype == "image/png") {
+							def oname = "${it.filePath - ~/\.\w+$/}.jpg"
+							support.util.ImageTypeMgt.convertDriver(src,src,it.filePath,oname)
+							it.mimetype = "image/jpeg"
+							it.filePath = "${it.filePath  - ~/\.\w+$/}.jpg"
+						}
 					}
 
 					m2.attachments.each{
