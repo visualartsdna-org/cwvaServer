@@ -59,7 +59,7 @@ class ImageTypeMgt {
 	// change file type
 	// returns list of status strings
 	// https://usage.imagemagick.org/resize/#scale
-	def convertDriver(src,tgt,iname,oname) {
+	static def convertDriver(src,tgt,iname,oname) {
 		def ls = []
 		def initSize=0
 		ls += "from $src/$iname"
