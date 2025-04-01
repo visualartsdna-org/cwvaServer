@@ -73,7 +73,7 @@ div {
   margin-top: 10px;
   margin-bottom: 10px;
   margin-right: 150px;
-  margin-left: 80px;
+  margin-left: 40px;
 }
 </style>
 	<meta charset="UTF-8">
