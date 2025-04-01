@@ -48,7 +48,8 @@ class QueryMgr {
 		//m.format = "HTML" // test
 		def format = m.format ?: "HTML"
 		def q = m.query ? m.query.trim() : ""
-		def resultMap = query(q.trim(),format) ?: ""
+		println "$q" // clear query for log file
+		def resultMap = query(q.trim(),format,m.isMobile=="true") ?: ""
 		// for mobile format
 		def htmlMobile = """
 <html>
@@ -315,7 +316,7 @@ function myFunction() {
 		else return html
 	}
 	
-	def query(sparql,format) {
+	def query(sparql,format,isMobile) {
 		def result = [time:0,status:"ok",resultSetSize:0,result:""]
 		
 		if (sparql.trim())
@@ -379,7 +380,7 @@ $ex"""
 
 						def res = new String( baos.toByteArray())
 						if (format != "HTML") {
-							result.result = fmtTextArea(res)
+							result.result = fmtTextArea(res,isMobile)
 							result.resultSetSize = resultSet.getRowNumber()
 						}
 						else {
@@ -390,13 +391,13 @@ $ex"""
 
 					case Query.QueryTypeDescribe:
 						mdl=ju.queryDescribe(getModel(),prefixes,sparql)
-						result.result = fmtTextArea(ju.saveModelString(mdl,"ttl"))
+						result.result = fmtTextArea(ju.saveModelString(mdl,"ttl"),isMobile)
 						result.resultSetSize = mdl.size()
 						break;
 
 					case Query.QueryTypeConstruct:
 						mdl=ju.queryExecConstruct(getModel(),prefixes,sparql)
-						result.result = fmtTextArea(ju.saveModelString(mdl,"ttl"))
+						result.result = fmtTextArea(ju.saveModelString(mdl,"ttl"),isMobile)
 						result.resultSetSize = mdl.size()
 						break;
 						
@@ -407,12 +408,12 @@ $ex"""
 				result.status = "Parse exception encountered"
 				result.result = fmtTextArea("""${numLines(prefixes + sparql)}
 ---
-${(""+qpex).substring((""+qpex).indexOf(":")+2)}""")
+${(""+qpex).substring((""+qpex).indexOf(":")+2)}""",isMobile)
 			} catch (Exception ex) {
 				result.status = "Exception encountered"
 				result.result = fmtTextArea("""${numLines(prefixes + sparql)}
 ---
-$ex""" )
+$ex""" ,isMobile)
 			} catch (OutOfMemoryError me) {
 				result.status="Out of Memory Error"
 				println "Out of Memory Error: $me"
@@ -423,14 +424,14 @@ $ex""" )
 			result.size = result.size()
 		}
 		if (result.size() > MAXRESULTSIZE) {
-			result.result = fmtTextArea("Result size (${result.size()}) > max size ($MAXRESULTSIZE)")
+			result.result = fmtTextArea("Result size (${result.size()}) > max size ($MAXRESULTSIZE)",isMobile)
 			result.status = "result string size > max"
 		}
 		result
 	}
 	
-	def fmtTextArea(s) {
-		"""<textarea readonly rows="20" cols="60" spellcheck="false">$s</textarea>"""
+	def fmtTextArea(s,isMobile) {
+		"""<textarea readonly rows="20" cols="${isMobile?"40":"60"}" spellcheck="false">$s</textarea>"""
 		
 	}
 	
