@@ -43,7 +43,7 @@ select distinct ?s ?label ?alt {
 			.replaceAll("http://visualartsdna.org/thesaurus/","the:")
 			ms[s] = it.label
 			if (type == "the:WatercolorPaint")
-				ms[s] += ", ${it.alt}"
+				ms[s] += it.alt ? ", ${it.alt}" :""
 		}
 		ms
 	}
@@ -52,30 +52,40 @@ select distinct ?s ?label ?alt {
 	
 	def handleQueryParams(m) {
 		def l=[]
+		def l2=[]
 		def reset = false
 		m.each{k,v->
 			if (k.startsWith("the:")
 				&& v == "on")
 				l += k
-			if (k.startsWith("reset")
+			else if (k.startsWith("reset")
 				&& v == "Reset")
 				reset = true
+			else if (k == "relateds") {
+				
+				def l0=v.split(/[=\]]/)
+				def l3=l0[1].split(",")
+				l3.each{ l2 += it.trim()}
+			}
 		}
-		if (reset) process([])
-		else process(l)
+		if (reset) process([],[])
+		else process(l,l2)
 	}
 
 	def process() {
-		process([])
+		process([],[])
 	}
 		
-	def process(lr) {
+	def process(lr,lagain) {
 		
 		def selected = "[related="
 		int i=0
-		lr.each{
+		def m = [:] 
+		lagain.each{if(it) m[it]=null} //build a set
+		lr.each{if(it) m[it]=null} //build a set
+		m.each{k,v->
 			if (i++) selected += ", "
-			selected += it
+			selected += k
 		}
 		selected += "]"
 		
@@ -105,7 +115,8 @@ copy and paste in keep notes, e.g,
 <h3>Watercolor Concepts</h3>
 Select related paints and techniques to include in the note for the work.
 
-<button onclick="myFunction2()">Copy</button>
+<button onclick="myFunction2()">Copy</button><br/>
+Place "relateds" string in textarea to auto-check boxes.
 <form id="myForm" action="/related.entry" method="get">
 <textarea id="related" name="relateds"  rows="4" cols="60">
 $selected
@@ -137,7 +148,8 @@ $selected
 
 		mc.each{k,v->
 			
-		if (lr.contains (k))
+		if (lr.contains(k)
+			|| lagain.contains(k))
 			html1 += "<li><input type=\"checkbox\" id=\"$k\" name=\"$k\" checked>$v</li>"
 		else
 			html1 += "<li><input type=\"checkbox\" id=\"$k\" name=\"$k\" >$v</li>"

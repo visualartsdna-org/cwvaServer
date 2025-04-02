@@ -136,5 +136,17 @@ select ?o ?l ?sym{
 				}
 		
 	}
+	
+	@Test
+	void testRelatedConcepts() {
+		def related = "[related=the:AlizarinCrimsonDD, the:AlizarinCrimsonLCS]"
+		
+		def l0=related.split(/[=\]]/)
+		def l=l0[1].split(",")
+		l.each{
+			println it.trim()
+		}
+	}
+
 
 }
