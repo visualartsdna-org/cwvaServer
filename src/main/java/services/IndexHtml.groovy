@@ -94,7 +94,7 @@ See this ontology titled "Information Model for the Visual Arts" on
 This ontology is not definitive or complete.
 <p>
 <p/>
-A vocabulary of visual arts terms is available 
+A vocabulary (thesaurus) of visual arts terms is available 
 in
 <a href="${cfg.host}/vocab.graph">graphical form&#42;</a>
 and in an 
@@ -111,7 +111,9 @@ ${cwva.Server.getInstance().cfg.sparql ? "Query the model, vocabulary and instan
 <!--A list of <a href="${cfg.host}/html/vocab.html">vocabulary concepts</a> is also available.
 -->
 <p>
-<p>
+<p><i>
+The thesaurus and the ontology use different knowledge representation formalisms (SKOS and OWL, respectively).  The concepts in the thesaurus serve as a vocabulary that can be used to populate or describe instances within the classes defined by the ontology.  The hierarchical relationships defined using skos:broader in the thesaurus align with the class hierarchies defined using rdfs:subClassOf in the ontology.  The organization of the thesaurus using skos:inScheme reflects different subject areas or modules within the ontology. The thesaurus and the ontology are intended to be semantically aligned and coherent, with the thesaurus providing the vocabulary for the domain modeled by the ontology. They work together to provide a structured representation of knowledge in the visual arts.
+</i> <br>[This analysis is from a <a href="https://gemini.google.com">google gemini</a> review of the thesaurus and ontology.]
 
 """ + // comment out the next section to remove D3 and lsys graphics from index page
 """
