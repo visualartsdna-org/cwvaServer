@@ -136,6 +136,7 @@ $selected
 		for (type in [
 			"the:WatercolorPaint", 
 			"the:watercolorTechnique", 
+			"the:watercolorTextureTechnique",
 			"the:watercolorMaterial",
 			"the:brushingPaint"
 			]) {
