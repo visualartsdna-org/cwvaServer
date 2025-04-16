@@ -200,7 +200,8 @@ class Servlet extends ServletBase {
 				break
 				
 			case "/loadFile":
-				support.util.FileLoader.loadAny("${mq.directory}/${mq.fileupload}}")
+				def s = support.util.FileLoader.loadAny("${mq.directory}/${mq.fileupload}")
+				sendText(response,"$s")
 				break
 
 			case "/queryTtl":
