@@ -46,6 +46,8 @@ class FileLoader {
 				return "$fs, TTL model size=${data.size()}"
 			} catch (org.apache.jena.riot.RiotException re) {
 				return "$fs, $re"
+			} catch (Exception e) {
+				return "$fs, $e"
 			}
 	}
 	
@@ -56,6 +58,8 @@ class FileLoader {
 				return true
 			} catch (org.apache.jena.riot.RiotException re) {
 				throw new RuntimeException("$fs, $re")
+			} catch (Exception e) {
+				throw new RuntimeException("$fs, $e")
 			}
 	}
 	
