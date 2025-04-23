@@ -20,7 +20,20 @@ class Token {
 		def phrase = "I wanna hold your hand"
 		def hc = BigInteger.valueOf(phrase.hashCode())
 		def tolerance= 30000 // milliseconds
-
+		
+		def hc() {
+			try {
+				def phraseFile = cwva.Server.getInstance() 
+					? "${cwva.Server.getInstance().cfg.dir}/res/phrase.txt"
+					: "C:/temp/git/cwva/res/phrase.txt"
+				phrase = new File(phraseFile).text
+			} catch (Exception e) {
+				println e
+				println "using default phrase"
+			}
+			hc = BigInteger.valueOf(phrase.hashCode())
+		}
+	
 	def getTimeToken() {
 		getToken(new Date().getTime())
 	}
@@ -30,7 +43,7 @@ class Token {
 	}
 	
 	def getToken(BigInteger time) {
-		time.multiply(hc)
+		time.multiply(hc())
 	}
 	
 	def validate(String token) {
@@ -40,7 +53,7 @@ class Token {
 	def validate(BigInteger token) {
 		
 		def time = new Date().getTime()
-		BigInteger sec = token.divide(hc)
+		BigInteger sec = token.divide(hc())
 		def timeMinus = BigInteger.valueOf(time - tolerance)
 		def timePlus = BigInteger.valueOf(time + tolerance)
 		if (verbose) println "dif=${BigInteger.valueOf(time).subtract(sec)}"
@@ -173,7 +186,7 @@ util.Token -url localhost:8082 -cmd abc
 	}
 	
 	@Test
-	void test() {
+	void test0() {
 		def max=3
 		def tot=0
 		for (int i=0;i<max;i++) {
@@ -182,6 +195,14 @@ util.Token -url localhost:8082 -cmd abc
 		}
 		println "trues=$tot / $max"
 	}
+	
+	@Test
+	void test() {
+		def token = getTimeToken()
+		def res = validate(token)
+		println "$token, $res"
+	}
+
 	
 	@Test
 	void testVariance() {
