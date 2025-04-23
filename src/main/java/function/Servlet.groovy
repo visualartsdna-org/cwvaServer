@@ -152,6 +152,14 @@ class Servlet extends ServletBase {
 				sendHtml(response, "$h")
 				break
 
+			case "/statsChart":
+				def h = new StatsReport().driver(
+					"http://visualartsdna.org/metrics",
+			"C:/work/stats/metricsSummary.sparql",
+			"C:/work/stats/log.zip")
+				sendHtml(response, "$h")
+				break
+
 			case ~/\/html.*/:
 				sendHtmlFile(response,"$dir/${path}")
 				break
