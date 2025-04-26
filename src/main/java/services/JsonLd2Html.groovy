@@ -115,11 +115,12 @@ class JsonLd2Html {
 		def sb = new StringBuilder()
 		sb.append HtmlTemplate.head(host)
 		sb.append """
-<h3 id="title">
-About:
-<a href="${domain}/${path}">$label</a> 
-</h3>
-"""
+		<h3 id="title">
+		About:
+		<a href="${domain}/${path}">$label</a>
+		</h3>
+		"""
+		buildAI(ljld[0],sb)
 			
 			int i=0
 			ljld.each{map->
@@ -288,6 +289,56 @@ About:
 			
 		}
 		//defs["@graph"]=[]
+	}
+	
+	def buildAI(aiMap,sb) {
+		if (!("vad:CreativeWork" in aiMap["@type"])) return
+		
+		sb.append """
+<p align="right" style="font-family:verdana">
+<table><tr><td>
+<form id="myFormAI" action="/aiInterpretation" method="get">
+AI Interpretation 
+<select name="kind" id="kind">
+<option value="Criticism ">Criticism</option>
+<option value="Evaluation">Evaluation</option>
+<option value="Assessment ">Assessment</option>
+<option value="Influences">Influences</option>
+<option value="Gallery Description">Gallery Description</option>
+<option value="Technical Assessment">Technical Assessment</option>
+</select>
+"""
+		if ("vad:ComputerArt" in aiMap["@type"]) {
+			sb.append """
+<input type="hidden" id="type" name="type" value="vad:ComputerArt">
+<input type="hidden" id="media" name="media" value="${aiMap.media}">
+<input type="hidden" id="image" name="image" value="${aiMap.image}">
+<input type="hidden" id="label" name="label" value="${aiMap.label}">
+<input type="hidden" id="height" name="height" value="${aiMap.height}">
+<input type="hidden" id="width" name="width" value="${aiMap.width}">
+<input type="hidden" id="description" name="description" value="${aiMap.description}">
+"""
+		} 
+		else if ("vad:Painting" in aiMap["@type"]) {
+			sb.append """
+<input type="hidden" id="type" name="type" value="vad:Painting">
+<input type="hidden" id="media" name="media" value="${aiMap.media}">
+<input type="hidden" id="image" name="image" value="${aiMap.image}">
+<input type="hidden" id="label" name="label" value="${aiMap.label}">
+<input type="hidden" id="hasPaperWeight" name="hasPaperWeight" value="${aiMap.hasPaperWeight}">
+<input type="hidden" id="hasPaperFinish" name="hasPaperFinish" value="${aiMap.hasPaperFinish}">
+<input type="hidden" id="height" name="height" value="${aiMap.height}">
+<input type="hidden" id="width" name="width" value="${aiMap.width}">
+<input type="hidden" id="description" name="description" value="${aiMap.description}">
+"""
+		}
+			sb.append """
+<input type = "submit" name = "submit" value = "Ask" />
+<a href="/AiInformationPage">more...</a>
+</form>
+</td></tr></table>
+</p>
+"""
 	}
 	
 }

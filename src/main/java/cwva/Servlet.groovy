@@ -166,6 +166,15 @@ class Servlet extends ServletBase {
 				sendHtmlFile(response,"$dir/html/copyright.html")
 				break
 
+			case "/AiInformationPage":
+				sendHtmlFile(response,"$dir/html/AiInformationPage.html")
+				break
+
+			case "/aiInterpretation":
+				def html = new AIInterpretation().handleQueryParams(mq)
+				sendHtml(response,html)
+				break
+
 			case ~/\/sparql/:
 //				def userAgent = request.getHeader("User-Agent")
 //				def isMobile = userAgent ==~ /.*(Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini).*/
