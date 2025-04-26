@@ -23,10 +23,10 @@ class Token {
 		
 		def hc() {
 			try {
-				def phraseFile = cwva.Server.getInstance() 
-					? "${cwva.Server.getInstance().cfg.dir}/res/phrase.txt"
-					: "C:/temp/git/cwva/res/phrase.txt"
-				phrase = new File(phraseFile).text
+				def cfg = Rson.load(cwva.Server.getInstance() 
+					? "${cwva.Server.getInstance().cfg.dir}/res/secrets.rson"
+					: "C:/temp/git/cwva/res/secrets.rson")
+				phrase = cfg.secrets.phrase
 			} catch (Exception e) {
 				println e
 				println "using default phrase"
