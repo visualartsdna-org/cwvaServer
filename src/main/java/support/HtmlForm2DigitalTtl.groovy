@@ -55,6 +55,15 @@ VADNA RDF Digital Entry
   <label for="type0">BlenderComposition</label><br>
 </td></tr><tr><td>
          <input type = "file" name = "fileupload" id = "file" accept = "image/*" />
+<br>
+  <input type="radio" id="sig1" name="sig" value="rickspates.art" checked>
+  <label for="type1">rickspates.art</label><br>
+  <input type="radio" id="sig2" name="sig" value="rspates.art">
+  <label for="type2">rspates.art</label><br>
+  <input type="radio" id="sig3" name="sig" value="left">
+  <label for="type2">left</label><br>
+  <input type="radio" id="sig4" name="sig" value="right">
+  <label for="type2">right</label><br>
 </td><td>
   <label for="id">Digital media:</label><br>
   <input type="checkbox" id="media1" name="media1" value="Graphics">

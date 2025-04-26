@@ -172,7 +172,7 @@ class ImageMgt {
 		
 	def static makeStampedFile(guid,ifile,title) {
 		def dir = "/stage/temp"
-		makeStampedFile(guid,ifile,title,dir,"right")
+		makeStampedFile(guid,ifile,title,dir,"left")
 	}
 		
 	def static makeStampedFile(guid,ifile,title,dir,ns,sigfile,factor,size,signature) {
@@ -187,7 +187,7 @@ class ImageMgt {
 		def bi2 = ImageMgt.scale(bi1, BufferedImage.TYPE_INT_RGB, (w*factor) as int, (h*factor) as int, factor, factor)
 
 		ImageMgt.overlay("$dir/$ifile",bi2,sigfile,ofile,
-			signature?:"right") // default for rdf digital
+			signature?:"left") // default for rdf digital
 		fname
 	}
 }

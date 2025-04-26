@@ -19,12 +19,19 @@ class ParseDigitalRDF {
 	def parse(m) {
 		
 		verify(m)
-		def filename = ImageMgt2.makeStampedFile(
+		def filename = ""
+		if (m.sig in ["right","left"]) {
+			
+			filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
+		}
+		else {
+			filename = ImageMgt2.makeStampedFile(
 			m.guid,
 			m.fileupload,
 			m.label,
 			m.dir,
-			"rspates.art")
+			m.sig)
+		}
 		m.fileupload = filename
 		def ttl = printTtl(m)
 		println ttl

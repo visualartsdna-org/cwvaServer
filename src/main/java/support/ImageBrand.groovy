@@ -26,7 +26,7 @@ class ImageBrand {
 		m.each{k,v->
 			s += "$k = $v\n"
 		}
-		m.guid = "" //m.guid.trim()
+		m.guid.trim()
 		if (!m.label) {
 			m.label = m.fileupload - ~/\.\w+$/
 		}
@@ -38,7 +38,15 @@ class ImageBrand {
 		}
 			
 		verify(m)
-		def filename = ImageMgt2.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
+		def filename = ""
+		if (m.sig in ["right","left"]) {
+			
+			filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
+		}
+		else {
+			filename = ImageMgt2.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
+			
+		}
 		if (m.guid) printQRC(m.guid)
 		
 		
@@ -87,6 +95,10 @@ $s"""
   <label for="type1">rickspates.art</label><br>
   <input type="radio" id="sig2" name="sig" value="rspates.art">
   <label for="type2">rspates.art</label><br>
+  <input type="radio" id="sig3" name="sig" value="left">
+  <label for="type2">left</label><br>
+  <input type="radio" id="sig4" name="sig" value="right">
+  <label for="type2">right</label><br>
 </td><td>
   <br><label for="guid">guid (optional):</label><br>
   <input type="text" id="guid" size="44" name="guid" value="">

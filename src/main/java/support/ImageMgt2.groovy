@@ -127,7 +127,7 @@ class ImageMgt2 extends ImageMgt {
 		
 	def static makeStampedFile(guid,ifile,title) {
 		def dir = "/stage/temp"
-		makeStampedFile(guid,ifile,title,dir,"right")
+		makeStampedFile(guid,ifile,title,dir,"qrc right")
 	}
 		
 	// factor,size not used
@@ -135,14 +135,15 @@ class ImageMgt2 extends ImageMgt {
 		def fname = "${util.Text.camelCase(title)}.jpg"
 		def ofile = "$dir/$fname"
 		
-		if (false) {  // no longer use qrc
+		if (false) {  // 
+			
 			def qrcFile = qrcode(guid,dir,ns,size)
 			BufferedImage bi1 = ImageIO.read(new File(qrcFile));
 			def h = bi1.getHeight()
 			def w = bi1.getWidth()
 			def bi2 = ImageMgt.scale(bi1, BufferedImage.TYPE_INT_RGB, (w*factor) as int, (h*factor) as int, factor, factor)
-		}
-		ImageMgt2.overlay("$dir/$ifile", ofile, signature)
+		} 
+			ImageMgt2.overlay("$dir/$ifile", ofile, signature)
 		fname
 	}
 
