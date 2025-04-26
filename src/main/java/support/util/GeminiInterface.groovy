@@ -27,13 +27,7 @@ description:"A white rhino visits a watering hole."
 	}
 	
 	def submit(m) {
-		def cfg = util.Rson.load(cwva.Server.getInstance()
-			? "${cwva.Server.getInstance().cfg.dir}/res/secrets.rson"
-			: "C:/temp/git/cwva/res/secrets.rson")
-		def key = cfg.secrets.geminiKey
-		
-		//def base64 = new URL(m.image).getBytes().encodeBase64()
-
+		def key = util.Secrets.get("geminiKey")
 		def gemini_image_url_working = false
 		def message =  gemini_image_url_working ?
 		"""

@@ -622,4 +622,12 @@ select ?l ?f {
 		println date
 		println dt
 	}
+	
+	@Test
+	void testSecrets() {
+		def home = System.getProperty("user.home")
+		println home
+
+	}
+
 }

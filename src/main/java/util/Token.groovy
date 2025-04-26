@@ -17,22 +17,12 @@ class Token {
 	static def verbose=true
 	Random rand = new Random()
 	
-		def phrase = "I wanna hold your hand"
-		def hc = BigInteger.valueOf(phrase.hashCode())
-		def tolerance= 30000 // milliseconds
-		
-		def hc() {
-			try {
-				def cfg = Rson.load(cwva.Server.getInstance() 
-					? "${cwva.Server.getInstance().cfg.dir}/res/secrets.rson"
-					: "C:/temp/git/cwva/res/secrets.rson")
-				phrase = cfg.secrets.phrase
-			} catch (Exception e) {
-				println e
-				println "using default phrase"
-			}
-			hc = BigInteger.valueOf(phrase.hashCode())
-		}
+	def tolerance= 30000 // milliseconds
+	
+	def hc() {
+		def phrase = util.Secrets.get("phrase")
+		BigInteger.valueOf(phrase.hashCode())
+	}
 	
 	def getTimeToken() {
 		getToken(new Date().getTime())
