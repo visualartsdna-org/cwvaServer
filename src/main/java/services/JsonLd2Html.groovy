@@ -56,6 +56,11 @@ class JsonLd2Html {
 	def parseConcept(path) {
 		(path =~ /^\/thesaurus\/([0-9A-Za-z\-_]+)$/)[0][1]
 	}
+
+	def parseClass(path) {
+		(path =~ /^\/2025\/04\/26\/model\/([0-9A-Za-z\-_]+)$/)[0][1]
+	}
+	
 	
 	def pfxNsMap
 	def host
@@ -136,6 +141,15 @@ class JsonLd2Html {
 				sb.append HtmlTemplate.tableTail
 			}
 			
+			sb.append("""
+<br/>
+<p style="font-size:12px">
+<i>*If you add the query "?format=ttl" to the URL for this page 
+the TTL for the items's instance is returned.  Other formats supported include: 
+"RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3"</i>
+</p>
+""")
+				
 		sb.append HtmlTemplate.tail
 		return ""+sb
 	}
@@ -177,6 +191,7 @@ class JsonLd2Html {
 				}
 				else if (k=="@type"
 						|| k=="tag"
+						|| k=="subClassOf"
 						|| k=="contains"
 						|| k=="related"
 						|| k=="broader"
