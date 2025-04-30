@@ -3,7 +3,7 @@ import org.apache.commons.text.WordUtils
 
 import rdf.JenaUtils
 
-class VocabToDot {
+class OntoToDotDef {
 
 	JenaUtils ju = new JenaUtils()
 	def model
@@ -15,22 +15,22 @@ class VocabToDot {
 	def wrapWidth = 20
 
 
-	VocabToDot(ttl){
+	OntoToDotDef(ttl){
 		model = ju.loadFiles(ttl)
 	}
 
 	static def driver(ttl,dot) {
 
-		def otd = new VocabToDot(ttl)
+		def otd = new OntoToDotDef(ttl)
 		def s = "${otd.getProlog()}"
 		def l = otd.getNodes()
 		l.each{
 			s += "$it\n"
 		}
-//		def lp = otd.getPropNodes()
-//		lp.each{
-//			s += "$it\n"
-//		}
+		def lp = otd.getPropNodes()
+		lp.each{
+			s += "$it\n"
+		}
 		def list = otd.getLabels()
 		list[0].each{
 			s += "$it\n"
@@ -38,13 +38,13 @@ class VocabToDot {
 		list[1].each{
 			s += "$it\n"
 		}
-//		def listProp = otd.getPropLabels()
-//		listProp[0].each{
-//			s += "$it\n"
-//		}
-//		listProp[1].each{
-//			s += "$it\n"
-//		}
+		def listProp = otd.getPropLabels()
+		listProp[0].each{
+			s += "$it\n"
+		}
+		listProp[1].each{
+			s += "$it\n"
+		}
 		s += "${otd.getEnd()}"
 		new File(dot).text = s
 	}
@@ -108,12 +108,11 @@ SELECT ?s ?l ?d ?r {
 		def list0 = ju.queryListMap1(model,"","""
 ${rdf.Prefixes.forQuery}
 SELECT ?s ?sc ?l ?c {
-  { ?s a skos:Concept } 
-#  { ?s a skos:Concept } UNION
-#  { ?s skos:broader+ ?o . ?o a skos:Concept . }
- optional { ?s skos:broader ?sc }
+  { ?s a owl:Class } UNION
+  { ?s owl:subClassOf+ ?o . ?o a owl:Class . }
+ optional { ?s rdfs:subClassOf ?sc }
  #optional { ?s rdfs:label ?l }
- optional { ?s rdfs:comment ?c }
+ optional { ?s skos:definition ?c }
  #optional { ?s rdfs:label ?pl }
 		} order by ?s
 """)
@@ -199,15 +198,13 @@ SELECT ?s ?l ?d ?r ?t {
 		def list0 = ju.queryListMap1(model,"","""
 ${rdf.Prefixes.forQuery}
 SELECT ?s ?sc ?l ?c ?pl {
-  { ?s a skos:Concept } 
-#  { ?s a skos:Concept } UNION
-#  { ?s skos:broader+ ?o . ?o a skos:Concept . }
- optional { ?s skos:broader ?sc }
+  { ?s a owl:Class } UNION
+  { ?s owl:subClassOf+ ?o . ?o a owl:Class . }
+ optional { ?s rdfs:subClassOf ?sc }
  #optional { ?s rdfs:label ?l }
- optional { ?s rdfs:comment ?c }
+ optional { ?s skos:definition ?c }
  #optional { ?s rdfs:label ?pl }
 		} order by ?s
-
 """)
 
 		def list = []
@@ -234,7 +231,7 @@ SELECT ?s ?sc ?l ?c ?pl {
 				def s = it.c
 				def id = s.hashCode()
 				l.add """"$id" [fillcolor="$literalColor" color="$literalColor" label="${fixLabel(s)}" shape="rect"]"""
-				g.add """"${it.s}" -> "$id" [label="rdfs:comment"]"""
+				g.add """"${it.s}" -> "$id" [label="skos:definition"]"""
 			}
 			if (it.pl) {
 				def s = it.pl
@@ -245,7 +242,7 @@ SELECT ?s ?sc ?l ?c ?pl {
 			if (it.sc) {
 				def s = it.sc
 				l.add """"$s" [fillcolor="$classColor" color="$classColor" label="${fixLabel(s)}"]"""
-				g.add """"${it.s}" -> "$s" [label="skos:broader"]"""
+				g.add """"${it.s}" -> "$s" [label="rdfs:subClassOf"]"""
 			}
 		}
 		[l, g]

@@ -8,39 +8,28 @@ class InstEffectOntoToDotDriver {
 	/**
 	 * Perform the ontology 
 	 * rendering in svg/html via dot
+	 * for the effective ontology 
+	 * inferred from the data
 	 * @param args
 	 */
-	public static void main(String[] args){
-
-		def map = Args.get(args)
-		if (map.isEmpty()) {
-			println """
-Usage, services.OntoToDotDriver -ttl ttl -dot dot -svg svg -html html
-Perform the ontology rendering in svg/html via dot
-"""
-			return
-		}
-		def ttl = map["ttl"]
-		assert ttl , "no ttl"
-		def dot = map["dot"]
-		assert dot , "no dot"
-		def svg = map["svg"]
-		assert svg , "no svg"
-		def html = map["html"]
-		assert html , "no html"
+	
+	// TODO: needs work and testing
+	static def drive(ttl, dot, html, svg) {
+		def effectiveOnto = util.Tmp.getTemp(".ttl")
 		
-		def effectiveOnto = "${System.getProperty("java.io.tmpdir")}/effectiveOnto.ttl"
-
+		
 		InstEffectOntoToDotDriver ieotdd = new InstEffectOntoToDotDriver()
 		
 		ieotdd.getEffectiveOnto(ttl,effectiveOnto)
 		ieotdd.graph(effectiveOnto,dot,svg,html)
+		util.Tmp.delTemp(effectiveOnto)
 		
 	}
+		
 	
 	def graph(ttl,dot,svg,html) {
 		
-		OntoToDot.driver(ttl,dot)
+		services.OntoToDotDef.driver(ttl,dot)
 		
 		// dot -Tsvg -o test100.svg test100.dot
 		Process process = "dot -Tsvg -o $svg $dot".execute()
@@ -60,12 +49,8 @@ Perform the ontology rendering in svg/html via dot
 
 	def getEffectiveOnto(ttl,tempOnto) {
 		
-//		def ttl2 = "C:/stage/planned/node/ttl/cwva.ttl"
 		JenaUtils ju = new JenaUtils()
 		def model = new JenaUtils().loadDirModel(ttl)
-		//def model = ju.loadFileModelFilespec(ttl)
-//		def onto = ju.loadFileModelFilespec(ttl2)
-//		model.add(onto)
 		def mobj = ju.queryExecConstruct(model,rdf.Prefixes.forQuery, """
 # object prop generator
 construct{
