@@ -90,7 +90,7 @@ and in an
 <p>
 <p/>
 See this ontology titled "Information Model for the Visual Arts" on  
-<a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/2021/07/16/model#">Archivo</a>.
+<a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/2025/04/26/model/">Archivo</a>.
 This ontology is not definitive or complete.
 <p>
 <p/>

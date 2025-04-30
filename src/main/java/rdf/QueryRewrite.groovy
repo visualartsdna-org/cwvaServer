@@ -17,7 +17,7 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix schema: <https://schema.org/> 
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix tko:   <http://visualartsdna.org/takeout#> 
-prefix vad: <http://visualartsdna.org/2021/07/16/model#> 
+prefix vad: <http://visualartsdna.org/2025/04/26/model/> 
 prefix work:	<http://visualartsdna.org/work/> 
 prefix xs: <http://www.w3.org/2001/XMLSchema#> 
 prefix z0:	<http://visualartsdna.org/system#> 

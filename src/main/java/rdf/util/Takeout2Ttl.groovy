@@ -88,7 +88,7 @@ class Takeout2Ttl {
 				sb.append  """
 @prefix via: <http://visualartsdna.org/via#> .
 @prefix tko: <http://visualartsdna.org/takeout#> .
-@prefix vad: <http://visualartsdna.org/2021/07/16/model#> .
+@prefix vad: <http://visualartsdna.org/2025/04/26/model/> .
 @prefix work:	<http://visualartsdna.org/work/> .
 @prefix z0:	<http://visualartsdna.org/system/> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .

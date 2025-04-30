@@ -39,11 +39,12 @@ class Servlet extends ServletBase {
 		switch (path) {
 
 			case "/model":
+			case "/2025/04/26/model":
 				sendTextFile(response,"$model/cwva.ttl")
 				break
 
 			case "/2021/07/16/model":
-				sendTextFile(response,"$model/cwva.ttl")
+				sendTextFile(response,"$model/../archive/cwva-20210716.ttl")
 				break
 
 			case "/data":
@@ -96,6 +97,24 @@ class Servlet extends ServletBase {
 
 			case ~/\/html.*/:
 				sendHtmlFile(response,"$dir/${path}")
+				break
+
+			case ~/\/2025\/04\/26\/model\/.*/:
+				def jl2h = new JsonLd2Html()
+				def relPath = jl2h.parsePath(path)
+				def guid = jl2h.parseClass(path)
+
+				if (query) {
+					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
+					def qs = new QuerySupport(dbm().rdfs)
+					def m = qs.getOneInstanceModel("vad",guid)
+
+					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
+					else sendModel(response, m, fmt.toLowerCase())
+				} else {
+					def s = jl2h.process(dbm().rdfs,domain,relPath,"vad",guid,cfg.host)
+					sendHtml(response,s)
+				}
 				break
 
 			case ~/\/work.*/:
