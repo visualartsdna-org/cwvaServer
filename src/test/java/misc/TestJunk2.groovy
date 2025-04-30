@@ -3,9 +3,14 @@ package misc
 import static org.junit.jupiter.api.Assertions.*
 
 import groovy.json.JsonSlurper
+import java.nio.charset.CharacterCodingException
+import java.nio.charset.CharsetDecoder
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test
 import rdf.JenaUtils
 import support.StatsReport
+import groovy.io.FileType
 
 class TestJunk2 {
 
@@ -145,6 +150,64 @@ select ?o ?l ?sym{
 		def l=l0[1].split(",")
 		l.each{
 			println it.trim()
+		}
+	}
+
+	static boolean isValidUTF8(def s) {
+		def input = s.getBytes()
+		CharsetDecoder cs = StandardCharsets.UTF_8.newDecoder();
+		try {
+			cs.decode(ByteBuffer.wrap(input));
+			return true;
+		} catch (CharacterCodingException e) {
+			return false;
+		}
+	}
+	static boolean isValidASCII(def s) {
+		def input = s.getBytes()
+		CharsetDecoder cs = StandardCharsets.US_ASCII.newDecoder();
+		try {
+			cs.decode(ByteBuffer.wrap(input));
+			return true;
+		} catch (CharacterCodingException e) {
+			return false;
+		}
+	}
+	@Test
+	void testDetectInvalidUtf8Str() {
+		def ba = [(byte) 0xC0, (byte) 0x41] as byte[]
+		def valStr = "abc"
+		def invStr = new String(ba)
+
+		println("Is valid UTF-8: " + isValidUTF8(valStr));
+		println("Is valid UTF-8: " + isValidUTF8(invStr));
+
+	}
+
+	@Test
+	void testDetectInvalidUtf8File() {
+		def i=0
+		new File("C:/temp/git/cwvaContent/ttl/vocab/vocabulary.ttl").eachLine{
+			i++
+			if (!isValidUTF8(it)) {
+				println "$i: $it"
+			}
+		}
+
+	}
+
+	@Test
+	void testDetectInvalidUtf8FileInDir() {
+		def dir = new File("C:/temp/git/cwvaContent/ttl/vocab")
+		dir.eachFileRecurse (FileType.FILES) { file ->
+			println "$file"
+		def i=0
+		file.eachLine{
+			i++
+			if (!isValidASCII(it)) {
+				println "$i: $it"
+			}
+		}
 		}
 	}
 
