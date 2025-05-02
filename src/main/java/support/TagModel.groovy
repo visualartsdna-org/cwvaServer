@@ -60,11 +60,7 @@ class TagModel {
 			}
 
 			def s = """
-@prefix vad: <http://visualartsdna.org/2025/04/26/model/> .
-@prefix work:	<http://visualartsdna.org/work/> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix the:	<http://visualartsdna.org/thesaurus/> .
+${rdf.Prefixes.forFile}
 """
 			wl.each{w->
 				tl.each{t->
@@ -87,11 +83,7 @@ class TagModel {
 			}
 			wl.each{w->
 			ju.queryExecUpdate(instanceModel,"""
-prefix vad: <http://visualartsdna.org/2025/04/26/model/> 
-prefix work:	<http://visualartsdna.org/work/> 
-prefix skos: <http://www.w3.org/2004/02/skos/core#> 
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix the:	<http://visualartsdna.org/thesaurus/> 
+${rdf.Prefixes.forQuery}
 ""","""
 			delete {
 			<$w> vad:tag ?o
@@ -265,18 +257,7 @@ version 1.0
 
 	def getData(mdl,type) {
 		def l = ju.queryListMap1(mdl, """
-prefix schema: <https://schema.org/> 
-prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
-prefix work:  <http://visualartsdna.org/work/> 
-prefix z0:    <http://visualartsdna.org/system/> 
-prefix vad:   <http://visualartsdna.org/2025/04/26/model/> 
-prefix tko:   <http://visualartsdna.org/takeout#> 
-prefix skos:  <http://www.w3.org/2004/02/skos/core#> 
-prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> 
-prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
-prefix foaf:  <http://xmlns.com/foaf/0.1/> 
-prefix dc:    <http://purl.org/dc/elements/1.1/> 
-prefix the:   <http://visualartsdna.org/thesaurus/>
+${rdf.Prefixes.forQuery}
 """, """
 			
 			select ?s ?label ?tag ?image {
@@ -354,18 +335,7 @@ prefix the:   <http://visualartsdna.org/thesaurus/>
 	def getNarrower(mdl, map, term) {
 
 		def l = ju.queryListMap1(mdl, """
-prefix schema: <https://schema.org/> 
-prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
-prefix work:  <http://visualartsdna.org/work/> 
-prefix z0:    <http://visualartsdna.org/system/> 
-prefix vad:   <http://visualartsdna.org/2025/04/26/model/> 
-prefix tko:   <http://visualartsdna.org/takeout#> 
-prefix skos:  <http://www.w3.org/2004/02/skos/core#> 
-prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> 
-prefix xs:    <http://www.w3.org/2001/XMLSchema#> 
-prefix foaf:  <http://xmlns.com/foaf/0.1/> 
-prefix dc:    <http://purl.org/dc/elements/1.1/> 
-prefix the:   <http://visualartsdna.org/thesaurus/>
+${rdf.Prefixes.forQuery}
 """, """
 
 select ?s {
