@@ -26,18 +26,22 @@ class ImageBrand {
 		m.each{k,v->
 			s += "$k = $v\n"
 		}
-		m.guid.trim()
+		
+		if (m.guid) {
+			m.guid = m.guid.trim()
+		}
+		if (m.guid ==~ /work:.*/) {
+			def n = m.guid.indexOf(":") +1
+			m.guid = m.guid.substring(n)
+		}
+		
 		if (!m.label) {
 			m.label = m.fileupload - ~/\.\w+$/
 		}
 		else m.label = m.label.trim()
 			
-		if (m.guid ==~ /work:.*/) {
-			def n = m.guid.indexOf(":") +1
-			m.guid = m.guid.substring(n)
-		}
-			
 		verify(m)
+		
 		def filename = ""
 		if (m.sig in ["right","left"]) {
 			
@@ -56,7 +60,8 @@ $s"""
 	
 	def verify(m) {
 //		assert m.guid				, "no m.guid			 "
-		assert m.label				, "no m.label			 "
+		assert m.label				, "no m.label"
+		assert new File(m.fileupload).exists()			, "file can't be opened"
 	}
 
 	def printQRC(guid) {

@@ -164,6 +164,7 @@ Date: _______________________
 			m.each{k,v->
 				
 				if (k=="@context") return
+				if (k=="tag") return
 				if (k=="@graph") {
 					v.each{
 						printHtml(it,sb)
