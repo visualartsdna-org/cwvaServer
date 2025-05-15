@@ -61,7 +61,7 @@ $s"""
 	def verify(m) {
 //		assert m.guid				, "no m.guid			 "
 		assert m.label				, "no m.label"
-		assert new File(m.fileupload).exists()			, "file can't be opened"
+		assert m.fileupload			, "file not present"
 	}
 
 	def printQRC(guid) {
@@ -105,13 +105,13 @@ $s"""
   <input type="radio" id="sig4" name="sig" value="right">
   <label for="type2">right</label><br>
 </td><td>
-  <br><label for="guid">guid (optional):</label><br>
+  <br><label for="guid">guid (if making QRcode):</label><br>
   <input type="text" id="guid" size="44" name="guid" value="">
 
 <br>
 <!--
 -->
-  <br><label for="label">label (optional):</label><br>
+  <br><label for="label">label (when renaming file):</label><br>
   <input type="text" id="label" name="label" size="44" value=""> 
 
 </td></tr>

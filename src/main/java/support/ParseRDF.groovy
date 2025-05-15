@@ -25,7 +25,7 @@ class ParseRDF {
 			filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
 		}
 		else {
-		ImageMgt2.makeStampedFile(
+		filename = ImageMgt2.makeStampedFile(
 			m.guid,
 			m.fileupload,
 			m.label,
