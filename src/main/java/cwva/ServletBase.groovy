@@ -41,10 +41,40 @@ class ServletBase extends HttpServlet {
 		def state
 	
 		switch(path) {
-			case ~/\/images.*/:
+			case ~/\/images.*\.glb/:
 				def f = FileUtil.loadImage(images,path)
-				sendJpegFile(response,f)
+				sendGlbFile(response, f)
 				break
+
+			case ~/\/images.*\.jpg/:
+				def f = FileUtil.loadImage(images,path)
+				sendJpegFile(response, f)
+				break
+
+			case ~/\/images.*\.png/:
+				def f = FileUtil.loadImage(images,path)
+				sendPngFile(response, f)
+				break
+
+			case ~/\/images.*\.gif/:
+				def f = FileUtil.loadImage(images,path)
+				sendGifFile(response, f)
+				break
+
+			case ~/\/images.*\.webp/:
+				def f = FileUtil.loadImage(images,path)
+				sendWebPFile(response, f)
+				break
+
+			case ~/\/images.*\.ico/:
+				def f = FileUtil.loadImage(images,path)
+				sendIconFile(response, f)
+				break
+
+//			case ~/\/images.*/:
+//				def f = FileUtil.loadImage(images,path)
+//				sendJpegFile(response,f)
+//				break
 
 			case "/cmd":
 				def qm = parse(query)
@@ -176,15 +206,24 @@ class ServletBase extends HttpServlet {
 		response.setContentType("image/jpeg");
 		sendImageFile(response, file)
 	}
+	def sendPngFile(response, file) {
+		response.setContentType("image/png");
+		sendImageFile(response, file)
+	}
+	def sendWebPFile(response, file) {
+		response.setContentType("image/webp");
+		sendImageFile(response, file)
+	}
+	def sendGlbFile(response, file) {
+		response.setContentType("model/gltf-binary");
+		sendImageFile(response, file)
+	}
 	def sendGifFile(response, file) {
 		response.setContentType("image/gif");
 		sendImageFile(response, file)
 	}
-	def sendIconFile(response, String file) {
-		sendIconFile(response, new File(file))
-	}
-	def sendIconFile(response, File file) {
-		response.setContentType("image/x-icon");
+	def sendIconFile(response, file) {
+		response.setContentType("image/x-icon")
 		sendImageFile(response, file)
 	}
 	def sendModelFile(response, fileSpec) {
