@@ -119,6 +119,22 @@ class JsonLd2Html {
 	def printHtml(ljld, desc, domain,path, ns, guid, label) {
 		def sb = new StringBuilder()
 		sb.append HtmlTemplate.head(host)
+		
+		// model-viewer
+		sb.append """
+<!--required-->
+<style> 
+.mvDiv {
+  border: 1px solid;
+  padding: 7px; 
+  width: 300px;
+  height: 200px;
+  resize: both;
+  overflow: auto;
+}
+</style>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+"""
 		sb.append """
 		<h3 id="title">
 		About:
@@ -224,6 +240,14 @@ the TTL for the items's instance is returned.  Other formats supported include:
 					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="500"></a></td></tr>\n"""
 
 				}
+				else if (k=="image3d") {
+					if (v instanceof List) {
+						v.each{
+								sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v))}</td></tr>\n"""
+							}
+					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v))}</td></tr>\n"""
+
+				}
 				else if (k=="qrcode") {
 					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="100"></a></td></tr>\n"""
 				}
@@ -287,6 +311,18 @@ the TTL for the items's instance is returned.  Other formats supported include:
 		else 
 			sb.append "<td>$m</td></tr>\n"
 		
+	}
+	
+	def do3d(fs) {
+		
+		"""<div class="mvDiv" >
+    <model-viewer src="$fs" ar ar-modes="webxr scene-viewer quick-look" camera-controls tone-mapping="neutral" shadow-intensity="2"
+	style="flex-grow: 1; height: 100%; background-color: lightgray;">
+     </model-viewer>
+     </div>
+	<img style='display:inline;' src="images/left-click.png" width="23px" height="23px">drag
+	<img style='display:inline;' src="images/right-click.png" width="23px" height="23px">pan
+	<img style='display:inline;' src="images/scroll.png" width="23px" height="23px">zoom"""
 	}
 	
 	def buildTables(cm) {

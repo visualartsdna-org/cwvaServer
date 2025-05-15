@@ -88,13 +88,34 @@ class Servlet extends ServletBase {
 				if (n>=0) kind = path.substring(n+1)
 				tmpFile = tmp.getTemp("lsys",".jpg")
 				new LsysDriver().doGet(data,kind,tmpFile)
-				sendJpegFile(response,new File(tmpFile))
+				sendJpegFile(response,tmpFile)
 				break
 
 			case ~/\/dist.*/:
 				sendJSFile(response,"$dir${path}")
 				break
 
+//			case ~/\/3d.*\.glb/:
+//				sendGlbFile(response, "C:/temp/git/cwva${path}")
+//				break
+//
+//			case ~/\/3d.*\.png/:
+//				sendPngFile(response, "C:/temp/git/cwva${path}")
+//				break
+//
+//			case ~/\/3d.*\.ico/:
+//				sendIconFile(response, "C:/temp/git/cwva${path}")
+//				break
+//
+//			case ~/\/3d.*\.js/:
+//			case ~/\/3d.*\.css/:
+//				sendTextFile(response,"C:/temp/git/cwva${path}")
+//				break
+//
+//			case ~/\/3d.*/:
+//				sendHtmlFile(response,"C:/temp/git/cwva${path}")
+//				break
+//
 			case ~/\/html.*/:
 				sendHtmlFile(response,"$dir/${path}")
 				break
@@ -115,6 +136,11 @@ class Servlet extends ServletBase {
 					def s = jl2h.process(dbm().rdfs,domain,relPath,"vad",guid,cfg.host)
 					sendHtml(response,s)
 				}
+				break
+				
+			// this occurs with model-viewer needing icons from a work context
+			case ~/\/work\/images.*\.png/:
+				sendPngFile(response, path.replaceAll("/work/images","${cfg.images}"))
 				break
 
 			case ~/\/work.*/:
