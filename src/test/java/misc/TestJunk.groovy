@@ -322,18 +322,6 @@ st:${getGuid()}
 	}
 
 	@Test
-	void testSPARQL() {
-		def l = [
-			//"C:/work/stats/artpal/artPal.ttl",
-			"C:/work/stats/metrics/stats.ttl",
-			]
-		def m2 = ju.loadListFilespec(l)
-		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl")
-		m.add m2
-		new SparqlConsole().show(m)
-	}
-
-	@Test
 	void testReport() {
 		def l = [
 			//"C:/work/stats/artpal/artPal.ttl",
