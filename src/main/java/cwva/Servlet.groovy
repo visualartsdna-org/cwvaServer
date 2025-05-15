@@ -140,8 +140,11 @@ class Servlet extends ServletBase {
 				
 			// this occurs with model-viewer needing icons from a work context
 			case ~/\/work\/images.*\.png/:
-				sendPngFile(response, path.replaceAll("/work/images","${cfg.images}"))
-				break
+				def p2 = path.replaceAll("/work/images","${cfg.images}")
+//				sendPngFile(response, path.replaceAll("/work/images","${cfg.images}"))
+				def f = util.FileUtil.loadImage(cfg.images,p2)
+				sendPngFile(response, f)
+			break
 
 			case ~/\/work.*/:
 				def jl2h = new JsonLd2Html()
