@@ -107,6 +107,25 @@ select ?label ?image ?qrcode ?year ?desc
 """)
 	}
 	
+	// queryRegistry doesn't get everything
+	// this is the complement
+	def queryRegistryOther() {
+		
+		ju.queryListMap1(mdl, prefixes, """
+select ?label ?image ?qrcode ?year ?desc
+			{ ?s rdfs:label ?label ;
+				schema:image ?image ;
+				vad:qrcode ?qrcode ;
+				vad:media	?med ;
+				vad:hasArtistProfile work:ebab5e0c-cc32-4928-b326-1ddb4dd62c22 ;
+				schema:description ?desc ;
+				schema:dateCreated ?date
+				bind (year(?date) as ?year)
+				filter(?med != 'Watercolor')
+				} order by ?label #Limit 3
+""")
+	}
+	
 	def queryCertAuth(ns,guid) {
 		def mm = [:]
 		
