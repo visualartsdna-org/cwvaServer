@@ -60,8 +60,8 @@ ${m.id}
 	schema:width       "${m.width}"^^xs:float ;
 	schema:identifier        "${m.guid}" ;
 	schema:location "${m.location}" ;
-	schema:description "${m.description}" ;
-	skos:note "${m.note}" ;
+	schema:description \"\"\"${m.description}\"\"\" ;
+	skos:note \"\"\"${m.note}\"\"\" ;
 	schema:datePublished "${m.recordedDateTime}"^^xs:dateTime ;
 	schema:dateCreated "${m.completedDateTime}"^^xs:dateTime ;
 	vad:hasPaper "${m.hasPaper}" ;
@@ -78,6 +78,7 @@ ${m.id}
 	def verify(m) {
 	assert m.type				, "no m.type			 "	
 	assert m.label				, "no m.label			 "	
+	m.label = m.label.trim()
 	assert m.media1|| m.media2|| m.media3|| m.media4            , 
 	"no m.media            "
 	assert m.height             , "no m.height           "
