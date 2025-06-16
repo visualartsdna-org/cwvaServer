@@ -113,6 +113,7 @@ VADNA RDF Entry
 <option value="Strathmore Watercolor cold press, block" >Strathmore Watercolor cold press, block</option>
 <option value="Strathmore Watercolor" >Strathmore Watercolor</option>
 <option value="Strathmore heavyweight mixed media vellum finish" >Strathmore heavyweight mixed media vellum finish</option>
+<option value="Arteza Sketchbook" >Arteza Sketchbook</option>
   </select>
 </td><td>
   <br><label for="hasPaperFinish">hasPaperFinish:</label><br>
