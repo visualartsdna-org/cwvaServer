@@ -13,8 +13,8 @@ class RelatedConcepts {
 	def prefixes = Prefixes.forQuery
 
 	def ju = new JenaUtilities()
-	def data
-	def conceptModel
+//	def data
+//	def conceptModel
 	
 	RelatedConcepts(){
 	}
