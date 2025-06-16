@@ -210,6 +210,11 @@ class Servlet extends ServletBase {
 				sendHtml(response,s)
 				break
 
+			case "/otherStuff":
+				def s = new OtherStuff().get()
+				sendHtml(response,s)
+				break
+
 			case "/copyright":
 				sendHtmlFile(response,"$dir/html/copyright.html")
 				break
@@ -220,6 +225,11 @@ class Servlet extends ServletBase {
 
 			case "/aiInterpretation":
 				def html = new AIInterpretation().handleQueryParams(mq)
+				sendHtml(response,html)
+				break
+				
+			case "/metricTables":
+				def html = new OtherStuff().getMetrics()
 				sendHtml(response,html)
 				break
 
