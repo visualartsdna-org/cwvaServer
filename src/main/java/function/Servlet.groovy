@@ -24,6 +24,7 @@ class Servlet extends ServletBase {
 	def qm = new QueryMgr(dir)
 	def em = new EntityEntry()
 	def au = new Authoring(dbm().rdfs)
+	def sl = new StoreListing()
 //	def au = new Authoring()
 //	def tm = new TagModel(data,vocab,tags,cfg.host)
 //	def sm = new StudiesModel(dbm().rdfs,cfg.studies)
@@ -121,6 +122,16 @@ class Servlet extends ServletBase {
 				support.util.FileLoader.assertTtl("C:/stage/metadata")
 				def s = new util.Exec().exec("C:/stage/bin/distributeMetadata.bat")
 				sendText(response,"$s")
+				break
+
+			case ~/\/storeGroup/:	// load store
+				def s = sl.handleQueryParams(mq)
+				sendHtml(response, "$s")
+				break
+
+			case ~/\/storeGroup.pick/:	// load store
+				def s = sl.handleQueryParams(mq)
+				sendHtml(response, "$s")
 				break
 
 			case ~/\/loadKeepData/:	// load g keep notes data
