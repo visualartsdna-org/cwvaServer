@@ -224,7 +224,7 @@ class ServletBase extends HttpServlet {
 	}
 	def sendIconFile(response, file) {
 		response.setContentType("image/x-icon")
-		sendImageFile(response, file)
+		sendImageFile(response, new File(file))
 	}
 	def sendModelFile(response, fileSpec) {
 		def m = ju.loadFiles(fileSpec)
