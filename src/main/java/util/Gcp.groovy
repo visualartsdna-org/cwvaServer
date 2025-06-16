@@ -112,8 +112,19 @@ class Gcp {
 		oa
 	}
 	// copy a file to a bucket
+	static def gcpCpBucket(src,tgt) {
+		def bucket = System.getProperty("gcp_bucket")
+		assert bucket, "no gcp bucket"
+		gcpCpBucket(src,tgt,bucket)
+	}
+	// copy a file to a bucket
 	static def gcpCpBucket(src,tgt,bucket) {
-		throw new NotImplementedException()
+//		throw new NotImplementedException()
+		def cmd = """$gsutil cp $src "gs://$bucket/$tgt" """
+		def oa = new Exec().execQuiet(cmd)
+		if (oa[1].contains("Exception"))
+			throw new RuntimeException("${oa[1]}")
+		oa
 	}
 	
 	static def folderCleanup(gDir,fDir,filter) {

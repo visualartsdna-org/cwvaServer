@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import rdf.JenaUtils
 import rdf.tools.SparqlConsole
 import groovy.io.FileType
+import util.Gcp
 
 /**
  * supports both current site metric stats
@@ -35,8 +36,8 @@ prefix st:    <http://example.com/>
 
 	def cnt = 0
 	def getGuid() {
-		//guid.get()	// metric scope is just one report
-		"metric${cnt++}"
+		guid.get()	// metric scope is just one report
+		//"metric${cnt++}"
 	}
 	
 	// extract metrics data to ttl
@@ -291,6 +292,31 @@ new Chart("myChart$i", {
 		s
 	}
 
+	
+	/**
+	 * Run a cwva server
+	 * @param args
+	 */
+	public static void main(String[] args){
+
+		def map = util.Args.get(args)
+		def sr = new StatsReport()
+		def html = sr.driver("http://visualartsdna.org/metrics",
+			"C:/work/stats/metricsSummary.sparql",
+			"C:/work/stats/log.zip"
+			)
+
+//		new File("/work/stats/metrics.html").text = html
+		// send metrics.html to gcp/metrics folder
+		// overwriting any previous file
+			
+		def src = "/work/stats/chart.html"
+		new File(src).text = html
+		def oa = Gcp.gcpCpBucket(src,"stats/chart.html")
+//		html
+
+	}
+
 
 	// generate metric summary graphs
 	@Test
@@ -314,12 +340,14 @@ new Chart("myChart$i", {
 		def stats = new URL(site).text
 		def c = new JsonSlurper().parseText(stats)
 		def mod = getStats(c)
-
+//		def mod = ju.newModel()
+		
 		// add all archived log-metric data to model
 		mod.add loadLogZip(logFiles)
 //		mod.add loadLogDir(logFiles)
 		
 		// generate html from model
+		def date = "${new Date()}"
 		def sb = """
 
 <!DOCTYPE html>
@@ -329,9 +357,10 @@ new Chart("myChart$i", {
 </script>
 </head>
 <body>
-<a href="${cwva.Server.getInstance().cfg.host}">Home</a>
 <br>
 <h3>Activity Metrics</h3>
+$date
+<br>
 <br>
 """
 		def canvas=0
@@ -363,7 +392,7 @@ $k
 </body>
 </html>
 """
-			"$sb"
+		"$sb"
 	}
 
 	// loads metric data from archived log files
@@ -454,10 +483,10 @@ $k
 		def c = new JsonSlurper().parseText(stats)
 		def mod = getStats(c)
 		
-		ju.saveModelFile(mod,"/work/stats/test2.ttl","ttl")
+		ju.saveModelFile(mod,"/work/stats/testMetricsNow.ttl","ttl")
 		
 		// add all archived log-metric data to model
-		//mod.add loadLogZip(logFiles)
+		mod.add loadLogZip(logFiles)
 		new SparqlConsole().show(mod)
 		
 	}
