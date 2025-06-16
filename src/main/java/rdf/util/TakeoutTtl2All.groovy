@@ -51,7 +51,11 @@ class TakeoutTtl2All {
 			println "no zip file"
 			return "no zip file"
 		}
-		unzipFile(file,tkoTmp)
+		def files = getTemplateFiles(downloads, file,".zip")
+		
+		files.each{f->
+			unzipFile(f,tkoTmp)
+		}
 		stat += "$tkoTmp unzipped\n"
 		
 		def s = checkAcct()
@@ -78,6 +82,23 @@ class TakeoutTtl2All {
 	def makeDateTime(ts) {
 		def ts2 = new Date(((ts as long) / 1000) as long)
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(ts2)
+	}
+
+	// takeout-20250529T194122Z-1-001.zip - main data
+	// takeout-20250529T194122Z-001.zip - html
+	def getTemplateFiles(folder, firstFile,ext) {
+		def stamp = (firstFile =~ /^.*takeout-([0-9]+T[0-9]+Z)-.*\.zip$/)[0][1]
+		def dir = new File(folder)
+		def list = []
+		dir.eachFileRecurse (FileType.FILES) { file ->
+			if ((""+file).contains("takeout-$stamp")
+				&& (""+file).endsWith(ext))
+				list << file
+		}
+		list.sort{a,b->
+			b.lastModified() <=> a.lastModified()
+		}
+		list
 	}
 
 	def getLatestFileType(folder, pre, ext) {
