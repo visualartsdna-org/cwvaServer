@@ -187,7 +187,7 @@ class Servlet extends ServletBase {
 					query += "&isMobile=$isMobile"
 				else query = "isMobile=$isMobile"
 				mq=parse(query)
-				mq.order="Title"
+				mq.order="Date"
  				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs, mq)
 				sendHtml(response,s)
 				break

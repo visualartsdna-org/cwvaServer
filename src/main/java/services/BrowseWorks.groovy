@@ -72,10 +72,10 @@ function myFunction() {
 <h6>
 <form id="myForm" action="/browseSort" method="get">
 Order:
-<input type="radio" id="title" name="order" onclick="myFunction()" value="Title" ${qm.order=="Title" ? "checked" : ""}>
-<label for="title">Title</label>
 <input type="radio" id="date" name="order" onclick="myFunction()" value="Date" ${qm.order=="Date" ? "checked" : ""}>
 <label for="date">Date</label>
+<input type="radio" id="title" name="order" onclick="myFunction()" value="Title" ${qm.order=="Title" ? "checked" : ""}>
+<label for="title">Title</label>
 <!--
 <br><label for="archived" align="right">Archived</label>
 <input type="checkbox" id="archived" name="archived" onclick="myFunction()" value="Archived" ${qm.archived ? "checked" : ""}>
