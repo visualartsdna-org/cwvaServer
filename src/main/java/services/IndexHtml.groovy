@@ -91,7 +91,7 @@ and in an
 <p/>
 See this ontology titled "Information Model for the Visual Arts" on  
 <a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/2021/07/16/model#">Archivo</a>.
-This ontology is not definitive or complete.  <!--need to upgrade archivo model-->
+<!--need to upgrade archivo model-->
 <p>
 <p/>
 A vocabulary (thesaurus) of visual arts terms is available 
@@ -105,15 +105,10 @@ and in an
 <p>
 <p/>
 The current instance data can be browsed by selecting "Browse" at the top of the page.  
-${cwva.Server.getInstance().cfg.sparql ? "Query the model, vocabulary and instance data by selecting \"SPARQL\" at the top of the page." : ""}
-<!--The current instance data is also available in an 
-<a href="${cfg.host}/data">RDF file (TTL/text)</a>.  -->
-<!--A list of <a href="${cfg.host}/html/vocab.html">vocabulary concepts</a> is also available.
--->
+${cwva.Server.getInstance().cfg.sparql ? "Query the model, vocabulary and instance data by selecting \"More\" at the top of the page, then \"SPARQL\"" : ""}
 <p>
-<p><i>
-The thesaurus and the ontology use different knowledge representation formalisms (SKOS and OWL, respectively).  The concepts in the thesaurus serve as a vocabulary that can be used to populate or describe instances within the classes defined by the ontology.  The hierarchical relationships defined using skos:broader in the thesaurus align with the class hierarchies defined using rdfs:subClassOf in the ontology.  The organization of the thesaurus using skos:inScheme reflects different subject areas or modules within the ontology. The thesaurus and the ontology are intended to be semantically aligned and coherent, with the thesaurus providing the vocabulary for the domain modeled by the ontology. They work together to provide a structured representation of knowledge in the visual arts.
-</i> <br>[This analysis is from a <a href="https://gemini.google.com">google gemini</a> review of the thesaurus and ontology.]
+<p/>
+See AI platform reviews of the ontology and thesaurus by OpenAI, MetaAI, Gemini and Perplexity.  Select \"More\" at the top of the page, then \"AI Reviews\".  
 
 """ + // comment out the next section to remove D3 and lsys graphics from index page
 """
@@ -128,6 +123,7 @@ $graphTables
 a need to organize the <a href="http://rickspates.art">author's art information</a>,
 other artists may benefit from using the model for their own art information, and
 collaborating artists may need a common information model over the visual arts creative-process domain.
+This ontology is not definitive or complete.
 <p/>
 <p/>
 <p/>

@@ -45,9 +45,10 @@ table {
 }
 </style>
 <center><h2>
-Tools
+More
 </h2></center>
 <p/>
+<a href="${cfg.host}/html/AICWVAReview.html">AI Reviews</a></br>
 <a href="${cfg.host}/sparql">SPARQL Browser</a></br>
 <a href="${cfg.host}/metricTables">Metrics</a></br>
 <a href="${cfg.host}/html/references.html">References</a></br>

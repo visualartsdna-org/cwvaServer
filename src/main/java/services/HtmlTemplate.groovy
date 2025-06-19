@@ -89,7 +89,7 @@ div {
 <small><ul>
   <li><a class="active" href="$host">VisualArtsDNA</a></li>
   <li><a href="$host/browse">Browse</a></li>
-  <li><a href="$host/otherStuff">Tools</a></li>
+  <li><a href="$host/otherStuff">More</a></li>
 </ul></small>
 """
 //		${getSparql(host)}
