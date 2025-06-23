@@ -20,7 +20,7 @@ class RelatedConcepts {
 	}
 
 	Model getConceptModel() {
-		cwva.Server.getInstance().dbm.vocab
+		cwva.Server.getInstance().dbm.rdfs
 	}
 
 def qConcept(type) {
