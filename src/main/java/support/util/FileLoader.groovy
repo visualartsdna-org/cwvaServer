@@ -32,6 +32,7 @@ class FileLoader {
 	}
 	
 	static def loadAny(fs) {
+		detectInvalidCharsFile(fs)
 		switch ((fs =~ /.*\.([a-z]+)$/)[0][1]) {
 			case "json":
 				loadJson(fs)
@@ -41,7 +42,6 @@ class FileLoader {
 				loadTtl(fs)
 			break
 		}
-		detectInvalidCharsFile(fs)
 	}
 	
 	static def loadTtl(fs) {
