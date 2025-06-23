@@ -197,7 +197,10 @@ class ServletBase extends HttpServlet {
 		response.getWriter().println("$s")
 
 	}
-	def sendImageFile(response, file) {
+	def sendImageFile(response, String file) {
+		sendImageFile(response, new File(file))
+	}
+	def sendImageFile(response, File file) {
 		def payload = file.readBytes()
 		def os = response.getOutputStream()
 		os.write(payload)
