@@ -150,7 +150,7 @@ class Authoring {
 	def subPrefix(s) {
 		s.replaceAll("http://visualartsdna.org/takeout/","tko:")
 		.replaceAll("http://visualartsdna.org/thesaurus/","the:")
-		.replaceAll("http://visualartsdna.org/2025/04/26/model/","vad:")
+		.replaceAll("http://visualartsdna.org/model//","vad:")
 		.replaceAll("http://visualartsdna.org/work/","work:")
 	}
 	

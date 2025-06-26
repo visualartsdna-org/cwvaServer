@@ -58,7 +58,7 @@ class JsonLd2Html {
 	}
 
 	def parseClass(path) {
-		(path =~ /^\/2025\/04\/26\/model\/([0-9A-Za-z\-_]+)$/)[0][1]
+		(path =~ /^\/model\/([0-9A-Za-z\-_]+)$/)[0][1]
 	}
 	
 	

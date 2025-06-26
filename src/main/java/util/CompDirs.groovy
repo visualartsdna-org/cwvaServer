@@ -39,7 +39,7 @@ class CompDirs {
 		def ju = new rdf.JenaUtilities()
 		def lm = ju.queryListMap1(model,"","""
 prefix schema: <https://schema.org/>
-prefix vad: <http://visualartsdna.org/2025/04/26/model/>
+prefix vad: <http://visualartsdna.org/model/>
 select ?img ?qrc {
   ?s schema:image ?img .
   ?s vad:qrcode ?qrc .

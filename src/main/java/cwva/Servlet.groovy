@@ -39,7 +39,7 @@ class Servlet extends ServletBase {
 		switch (path) {
 
 			case "/model":
-			case "/2025/04/26/model":
+			//case "/2025/06/22/model":
 				sendTextFile(response,"$model/cwva.ttl")
 				break
 
@@ -120,7 +120,7 @@ class Servlet extends ServletBase {
 				sendHtmlFile(response,"$dir/${path}")
 				break
 
-			case ~/\/2025\/04\/26\/model\/.*/:
+			case ~/\/model\/.*/:
 				def jl2h = new JsonLd2Html()
 				def relPath = jl2h.parsePath(path)
 				def guid = jl2h.parseClass(path)

@@ -22,7 +22,7 @@ class ClassHierarchy {
 		def ch = [:]
 		col["@graph"].each { 
 			if (it["@id"].startsWith("_")) return
-			if (it["@id"] == "http://visualartsdna.org/2025/04/26/model/") return
+			if (it["@id"] == "http://visualartsdna.org/model//") return
 			
 			def c = it["@id"]
 			def p = it["subClassOf"]
@@ -55,7 +55,7 @@ class ClassHierarchy {
 		def ch = [:]
 		c["@graph"].each { 
 			if (it["@id"].startsWith("_")) return
-			if (it["@id"] == "http://visualartsdna.org/2025/04/26/model/") return
+			if (it["@id"] == "http://visualartsdna.org/model//") return
 			//println "${it["@id"]}\t->${it["subClassOf"]}" 
 			if (!ch.containsKey(it["@id"])) {
 				ch[it["@id"]]=[]

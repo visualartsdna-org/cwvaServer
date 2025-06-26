@@ -157,7 +157,7 @@ schema:  &lt;https://schema.org/&gt;  <br>
 skos:  &lt;http://www.w3.org/2004/02/skos/core#&gt;  <br>
 the:  &lt;http://visualartsdna.org/thesaurus/&gt;  <br>
 tko:  &lt;http://visualartsdna.org/takeout/&gt; <br>
-vad:  &lt;http://visualartsdna.org/2025/04/26/model/&gt; <br>
+vad:  &lt;http://visualartsdna.org/model//&gt; <br>
 work:  &lt;http://visualartsdna.org/work/&gt;  <br>
 xs:  &lt;http://www.w3.org/2001/XMLSchema#&gt;  <br>
 xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt;  <br>
@@ -287,7 +287,7 @@ schema:  &lt;https://schema.org/&gt;  <br>
 skos:  &lt;http://www.w3.org/2004/02/skos/core#&gt;  <br>
 the:  &lt;http://visualartsdna.org/thesaurus/&gt;  <br>
 tko:  &lt;http://visualartsdna.org/takeout/&gt; <br>
-vad:  &lt;http://visualartsdna.org/2025/04/26/model/&gt; <br>
+vad:  &lt;http://visualartsdna.org/model//&gt; <br>
 work:  &lt;http://visualartsdna.org/work/&gt;  <br>
 xs:  &lt;http://www.w3.org/2001/XMLSchema#&gt;  <br>
 xsd:  &lt;http://www.w3.org/2001/XMLSchema#&gt;  <br>

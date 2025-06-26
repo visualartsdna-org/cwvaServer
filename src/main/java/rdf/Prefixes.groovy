@@ -12,7 +12,7 @@ prefix schema: <https://schema.org/>
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix the:   <http://visualartsdna.org/thesaurus/> 
 prefix tko:   <http://visualartsdna.org/takeout/>
-prefix vad: <http://visualartsdna.org/2025/04/26/model/> 
+prefix vad: <http://visualartsdna.org/model/> 
 prefix work:	<http://visualartsdna.org/work/> 
 prefix xs: <http://www.w3.org/2001/XMLSchema#> 
 prefix xsd: <http://www.w3.org/2001/XMLSchema#> 
@@ -28,7 +28,7 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix the:   <http://visualartsdna.org/thesaurus/> .
 @prefix tko:   <http://visualartsdna.org/takeout/> .
-@prefix vad: <http://visualartsdna.org/2025/04/26/model/> .
+@prefix vad: <http://visualartsdna.org/model/> .
 @prefix work:	<http://visualartsdna.org/work/> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
