@@ -48,6 +48,7 @@ table {
 More
 </h2></center>
 <p/>
+<a href="https://w3id.org/lode/owlapi/http://visualartsdna.org/model">Ontology Documentation (via LODE server)</a></br>
 <a href="${cfg.host}/html/AICWVAReview.html">AI Reviews</a></br>
 <a href="${cfg.host}/sparql">SPARQL Browser</a></br>
 <a href="${cfg.host}/metricTables">Metrics</a></br>

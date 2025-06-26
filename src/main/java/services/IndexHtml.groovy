@@ -87,6 +87,7 @@ This ontology is inspired by the
 <a href="${cfg.host}/model.graph">graphical form&#42;</a>
 and in an 
 <a href="${cfg.host}/model">RDF file (TTL/text)</a>.
+View the <a href="https://w3id.org/lode/owlapi/http://visualartsdna.org/model">ontology documentation via LODE server</a>.</br>
 <p>
 <p/>
 See this ontology titled "Information Model for the Visual Arts" on  
