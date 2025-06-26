@@ -226,9 +226,24 @@ class DBMgr {
 //		}
 	}
 
-	def shacl(Model dataGraph, shacl) {
+	static def shacl(String dataGraph, String shacl) {
+		Model data = new JenaUtilities().loadFiles(dataGraph)
+		Model shapesGraph = new JenaUtilities().loadFiles(shacl)
 		
-		Model shapesGraph = ju.loadFiles(shacl)
+		Shapes shapes = Shapes.parse(shapesGraph);
+	
+		ValidationReport report = ShaclValidator.get().validate(shapes.getGraph(), data.getGraph());
+
+		def rep = ""
+		report.entries.each{
+			rep += "${it}\n"
+		}
+		rep
+	}
+	
+	static def shacl(Model dataGraph, String shacl) {
+			
+		Model shapesGraph = new JenaUtilities().loadFiles(shacl)
 		
 		Shapes shapes = Shapes.parse(shapesGraph);
 	

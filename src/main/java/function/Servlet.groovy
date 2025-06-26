@@ -9,6 +9,7 @@ import groovy.json.JsonBuilder
 import java.text.SimpleDateFormat
 import rdf.JenaUtilities
 import rdf.tools.SparqlConsole
+import rdf.util.DBMgr
 import rdf.util.ViaToTtl
 import support.*
 import support.util.*
@@ -220,6 +221,13 @@ class Servlet extends ServletBase {
 				
 			case "/loadFile":
 				def s = support.util.FileLoader.loadAny("${mq.directory}/${mq.fileupload}")
+				sendText(response,"$s")
+				break
+
+			case "/validateFile":
+				def shacl = "${mq.directory}/${mq.shaclupload}"
+				def model = "${mq.directory}/${mq.fileupload}"
+				def s = DBMgr.shacl(model, shacl)
 				sendText(response,"$s")
 				break
 
