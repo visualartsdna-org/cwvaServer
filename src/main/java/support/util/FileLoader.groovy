@@ -32,7 +32,7 @@ class FileLoader {
 	}
 	
 	static def loadAny(fs) {
-		detectInvalidCharsFile(fs)
+		//detectInvalidCharsFile(fs)
 		switch ((fs =~ /.*\.([a-z]+)$/)[0][1]) {
 			case "json":
 				loadJson(fs)
@@ -61,6 +61,10 @@ class FileLoader {
 		try {
 			def data = new JenaUtilities().loadFiles(fs)
 				return true
+			} catch (org.apache.jena.atlas.RuntimeIOException rioe) {
+				if ((""+rioe).contains("MalformedInputException"))
+					throw new RuntimeException("$fs, MalformedInputException: +$rioe")
+				else throw new RuntimeException("$fs, $rioe")
 			} catch (org.apache.jena.riot.RiotException re) {
 				throw new RuntimeException("$fs, $re")
 			} catch (Exception e) {
