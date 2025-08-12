@@ -38,6 +38,7 @@ class Servlet extends ServletBase {
 		if (policyAccept("main",path))
 		switch (path) {
 
+			case "/model/":
 			case "/model":
 			//case "/2025/06/22/model":
 				sendTextFile(response,"$model/cwva.ttl")
@@ -49,6 +50,10 @@ class Servlet extends ServletBase {
 
 			case "/data":
 				sendModel(response, dbm().instances)
+				break
+
+			case "/rdfs":
+				sendModel(response, dbm().rdfs)
 				break
 
 			case "/vocab":
