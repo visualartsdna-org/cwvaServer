@@ -25,36 +25,9 @@ class IndexHtml {
 	
 	def get() {
 		
-	def grafTblArrangement = "</tr><tr></tr><tr>" // stacked
-	//def grafTblArrangement = "" // side-by-side
 	
 	def sb = new StringBuilder()
 	
-	def graphTables = """
-<table><tr><td>
-<table cellspacing="3" cellpadding="3" style="white-space: nowrap">
-<tr><th><a href="https://d3js.org/">D3 graphics</a></th></tr>
-<tr><td><a href="${cfg.host}/d3.wcDrawBasic">drawings and watercolors basic data</a></td></tr>
-<tr><td><a href="${cfg.host}/d3.wcBasic">watercolors basic data</a></td></tr>
-<tr><td><a href="${cfg.host}/d3.wcPhysical">watercolors physical data</a></td></tr>
-<tr><td><a href="${cfg.host}/d3.wcNFT">watercolors NFT data</a></td></tr>
-<tr><td><a href="${cfg.host}/d3.drawBasic">drawings basic data</a></td></tr>
-<tr><td><a href="${cfg.host}/d3.drawPhysical">drawings physical data</a></td></tr>
-<tr><td><a href="${cfg.host}/d3.drawNFT">drawings NFT data</a></td></tr>
-</table>
-</td>$grafTblArrangement<td>
-<table cellspacing="3" cellpadding="3" style="white-space: nowrap">
-<tr><th><a href="https://github.com/rspates/lsys">Lsys graphics</a></th></tr>
-<tr><td><a href="${cfg.host}/lsys.wcDrawBasic">drawings and watercolors basic data</a></td></tr>
-<tr><td><a href="${cfg.host}/lsys.wcBasic">watercolors basic data</a></td></tr>
-<tr><td><a href="${cfg.host}/lsys.wcPhysical">watercolors physical data</a></td></tr>
-<tr><td><a href="${cfg.host}/lsys.wcNFT">watercolors NFT data</a></td></tr>
-<tr><td><a href="${cfg.host}/lsys.drawBasic">drawings basic data</a></td></tr>
-<tr><td><a href="${cfg.host}/lsys.drawPhysical">drawings physical data</a></td></tr>
-<tr><td><a href="${cfg.host}/lsys.drawNFT">drawings NFT data</a></td></tr>
-</table>
-</td></tr></table>
-"""
 // <tr><td><a href="${cfg.host}/d3.all">all data</a></td></tr>
 // <tr><td><a href="${cfg.host}/lsys.all">all data</a></td></tr>
 
@@ -86,13 +59,8 @@ This ontology is inspired by the
 <br/>The ontology is available in
 <a href="${cfg.host}/model.graph">graphical form&#42;</a>
 and in an 
-<a href="${cfg.host}/model">RDF file (TTL/text)</a>.
-View the <a href="https://w3id.org/lode/owlapi/http://visualartsdna.org/model">ontology documentation via LODE server</a>.</br>
-<p>
-<p/>
-See this ontology titled "Information Model for the Visual Arts" on  
-<a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/2021/07/16/model#">Archivo</a>.
-<!--need to upgrade archivo model-->
+<a href="${cfg.host}/model/">RDF file (TTL/text)</a>.
+View the <a href="https://w3id.org/lode/owlapi/http://visualartsdna.org/model/">ontology documentation via LODE server</a>.</br>
 <p>
 <p/>
 A vocabulary (thesaurus) of visual arts terms is available 
@@ -109,15 +77,12 @@ The current instance data can be browsed by selecting "Browse" at the top of the
 ${cwva.Server.getInstance().cfg.sparql ? "Query the model, vocabulary and instance data by selecting \"More\" at the top of the page, then \"SPARQL\"" : ""}
 <p>
 <p/>
-See AI platform reviews of the ontology and thesaurus by OpenAI, MetaAI, Gemini and Perplexity.  Select \"More\" at the top of the page, then \"AI Reviews\".  
+See AI platform reviews of the ontology and thesaurus by top AI platforms.  Select \"More\" at the top of the page, then \"AI Reviews\".  
 
 """ + // comment out the next section to remove D3 and lsys graphics from index page
 """
 <p/>
 <p/>
-The data in the instance model can be viewed with:
-<p>
-$graphTables
 <p/>
 """ +
 """Development of the VisualArtsDNA ontology is motivated by
