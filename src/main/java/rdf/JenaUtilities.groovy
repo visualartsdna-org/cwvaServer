@@ -1,7 +1,9 @@
 package rdf
 import groovy.io.FileType
 import groovy.json.JsonSlurper
+import java.nio.charset.CharacterCodingException
 import org.apache.jena.rdf.model.*
+import org.apache.jena.riot.RiotException
 import rdf.util.JsonRdfUtil
 import org.apache.jena.query.*
 
@@ -154,12 +156,12 @@ class JenaUtilities extends JenaUtils {
 			new File(spec).eachFileRecurse(FileType.FILES) {
 				if (!(""+it).toLowerCase().endsWith(".ttl")) return
 				println "loading $it"
-				model.add( loadFile(""+it) )
+				model.add( loadTtlFile(it) )
 			}
 
 		} else {
 
-			model = loadFileModelFilespec(spec)
+			model = loadTtlFile(spec)
 		}
 		model
 	}
@@ -177,5 +179,78 @@ class JenaUtilities extends JenaUtils {
 		qexec.execSelect() // returns ResultSet
 	}
 
+	def loadTtlFile(file){
+		try {
+		loadJenaModelWithEncodingFallback(new FileInputStream(file))
+		} catch (RuntimeException re) {
+			throw new RuntimeException("$file, $re")
+		}
+	}
+	
 
+	/**
+	 * Loads an Apache Jena Model from an InputStream with a robust encoding fallback.
+	 *
+	 * This method attempts to load the stream as UTF-8. If it fails, it falls back
+	 * to Windows-1252, and if that also fails, it attempts UTF-16. This provides
+	 * a comprehensive way to handle different source encodings.
+	 *
+	 * @param inputStream The InputStream containing the RDF data.
+	 * @return A Jena Model loaded with the correctly decoded data, or null if loading fails.
+	 */
+	def loadJenaModelWithEncodingFallback(InputStream inputStream) {
+		if (!inputStream) {
+			//println "Input stream is null. Cannot load model."
+			return null
+		}
+			// Read the entire stream into a byte array
+			byte[] bytes = inputStream.bytes
+			//println new String(bytes,  "UTF-16")
+	
+		try {
+	
+			// Attempt 1: UTF-8 (most common)
+			//println "Attempting to load model with UTF-8 encoding..."
+			def decodedString = new String(bytes, 'UTF-8')
+			def model = ModelFactory.createDefaultModel()
+			model.read(new StringReader(decodedString), null, "TURTLE")
+			//println "Model loaded successfully with UTF-8 encoding."
+			return model
+	
+		} catch (CharacterCodingException|RiotException e) {
+			// This catch block handles the case where the input stream is NOT valid UTF-8.
+			//println "UTF-8 decoding failed. Falling back to Windows-1252..."
+			try {
+				// Attempt 2: Windows-1252 (common for legacy files)
+				def decodedString = new String(bytes, 'Windows-1252')
+				
+				def model = ModelFactory.createDefaultModel()
+				model.read(new StringReader(decodedString), null, "TURTLE")
+				//println "Model loaded successfully with Windows-1252 fallback."
+				return model
+	
+			} catch (CharacterCodingException|RiotException ex) {
+				// This catch block handles the case where the input is neither UTF-8 nor Windows-1252.
+				//println "Windows-1252 decoding failed. Falling back to UTF-16..."
+				try {
+					// Attempt 3: UTF-16 (another common encoding)
+					def decodedString = new String(bytes, 'UTF-16')
+					
+					def model = ModelFactory.createDefaultModel()
+					model.read(new StringReader(decodedString), null, "TURTLE")
+					//println "Model loaded successfully with UTF-16 fallback."
+					return model
+	
+				} catch (Exception finalEx) {
+					throw new RuntimeException("Loading with all fallbacks failed. $finalEx")
+				}
+			} catch (Exception ex) {
+				throw new RuntimeException( "An unexpected error occurred during Windows-1252 fallback.")
+			}
+		} catch (Exception e) {
+			throw new RuntimeException( "An unexpected error occurred during model loading.")
+		}
+		return null
+	}
+	
 }
