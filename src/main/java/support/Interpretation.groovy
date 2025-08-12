@@ -50,7 +50,8 @@ $m.quid
 		skos:broader	the:${util.Text.camelCase(m.kind)} ;
 		the:source 	the:${util.Text.camelCase(m.source)} ;
         rdfs:label       "${m.kind.trim()} of ${m.label}" ;
-        skos:definition  \"\"\"${m.definition}\"\"\" ;
+        vad:prompt  \"\"\"${m.prompt}\"\"\" ;
+        vad:response  \"\"\"${m.response}\"\"\" ;
 		.
 """
 		new File("${m.dir}/${m.quid.substring(4)}.ttl").text = ttl
@@ -111,9 +112,15 @@ source
 </select>
 </td></tr>
 <tr><td>
-definition
+prompt
 </td><td>
-<textarea id="definition" name="definition" rows="4" cols="50">
+<textarea id="prompt" name="prompt" rows="4" cols="50">
+</textarea>
+</td></tr>
+<tr><td>
+response
+</td><td>
+<textarea id="response" name="response" rows="20" cols="80">
 </textarea>
 </td></tr>
 <tr><td>
