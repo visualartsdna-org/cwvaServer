@@ -29,7 +29,11 @@ class Main {
 			clobber: false,
 			multithreaded: false,
 			primaryHost: true,
-			sparql: true
+			sparql: true,
+			aiVersion: [
+				"gemini": "gemini-2.5-flash"
+			]
+
 		]).startJetty()
 		
 	}

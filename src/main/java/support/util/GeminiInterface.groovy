@@ -68,7 +68,8 @@ ${getTemplate(m)}
    }"""
 		  
 // POST
-	def post = new URL("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$key").openConnection();
+    def version = cwva.Server.getInstance().cfg.aiVersion.gemini ?: "gemini-2.5-flash"
+	def post = new URL("https://generativelanguage.googleapis.com/v1beta/models/$version:generateContent?key=$key").openConnection();
 	//def message = '{"message":"this is a message"}'
 	post.setRequestMethod("POST")
 	post.setDoOutput(true)
