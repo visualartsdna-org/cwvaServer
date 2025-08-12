@@ -58,8 +58,8 @@ class TakeoutTtl2All {
 		}
 		stat += "$tkoTmp unzipped\n"
 		
-		def s = checkAcct()
-		if (s) return s
+//		def s = checkAcct()
+//		if (s) return s
 		
 		processJson("$tkoTmp/Takeout/Keep",tgt)
 		stat += "$tkoTmp/Takeout/Keep topics processed to $tgt\n"
@@ -161,7 +161,7 @@ class TakeoutTtl2All {
 			if (!file.name.endsWith(".json")) return
 				println file
 
-//			if (file.name.contains("Archivo"))
+//			if (file.name.contains("Sargent"))
 //				println "here"
 			def m = Rson.load("$file")
 			def col = getCol(m)
@@ -244,7 +244,7 @@ class TakeoutTtl2All {
 						schemes[m2["skos:inScheme"]] = "the:$cpt"
 					def ttl= """
 ${rdf.Prefixes.forFile}
-			the:$cpt
+			the:${strict(cpt)}
 				a skos:Concept ;
 				skos:inScheme  ${topic ? m2["skos:inScheme"] : account == "rickspatesart" ? "the:paintingNotes" : "the:digitalNotes"} ; 
 				tko:created "$created"^^xsd:date ;
@@ -347,6 +347,10 @@ $k
 			ju.saveModelFile(m2, "$notesTgt/tags/notes_${account}.ttl", "TTL")
 		}
 		
+	}
+	
+	def strict(s) {
+		s.replaceAll(/[' \n]/,"")
 	}
 	
 	def sanitize(s) {
