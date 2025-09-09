@@ -168,6 +168,26 @@ def correctlyDecodedString = stringToUtf8Bytes(s)
 println "Correctly Decoded String: ${correctlyDecodedString}"
 }
 
+@Test
+void test9() {
+	def s = "this is a quote: \"\"\"now is the \"time\"\"\"\""
+	
+	def b = s ==~ /.*""""$/
+	println b
+}
+@Test
+void test9a() {
+	def s = "this is a quote: \"now is the time\""
+	
+	println "${fixQuote(s)}|"
+	
+}
 
+def fixQuote(s) {
+	
+	if (s ==~ /.*"$/)
+		s = s += " "
+	s
+}
 	
 }
