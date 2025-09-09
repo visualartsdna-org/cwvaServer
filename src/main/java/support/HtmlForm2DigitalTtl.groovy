@@ -54,11 +54,16 @@ VADNA RDF Digital Entry
   <input type="radio" id="type0" name="type" value="BlenderComposition">
   <label for="type0">BlenderComposition</label><br>
 </td></tr><tr><td>
+jpeg: 
          <input type = "file" name = "fileupload" id = "file" accept = "image/*" />
 <br>
-  <input type="radio" id="sig1" name="sig" value="rickspates.art" checked>
+<br>
+gLTF 2.0 (.glb):
+         <input type = "file" name = "fileuploadglb" id = "file2" accept = ".glb" />
+</td></tr><tr><td>
+  <input type="radio" id="sig1" name="sig" value="rickspates.art">
   <label for="type1">rickspates.art</label><br>
-  <input type="radio" id="sig2" name="sig" value="rspates.art">
+  <input type="radio" id="sig2" name="sig" value="rspates.art" checked>
   <label for="type2">rspates.art</label><br>
   <input type="radio" id="sig3" name="sig" value="left">
   <label for="type2">left</label><br>
@@ -76,7 +81,7 @@ VADNA RDF Digital Entry
   <label for="media4">Text</label><br>
 </td></tr><tr><td>
   <br><label for="hasArtistProfile">hasArtistProfile:</label><br>
-  <input type="text" id="hasArtistProfile" name="hasArtistProfile" size="$inSize" value="work:ebab5e0c-cc32-4928-b326-1ddb4dd62c22"> 
+  <input type="text" id="hasArtistProfile" name="hasArtistProfile" size="$inSize" value="work:6d5746c7-3ffb-485f-a51c-0f652b9cd2d3"> 
 </td><td>
   <br><label for="guid">guid:</label><br>
   <input type="text" id="guid" size="$inSize" name="guid" value="$guid">

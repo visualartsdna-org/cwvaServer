@@ -32,6 +32,9 @@ class ParseDigitalRDF {
 			m.dir,
 			m.sig)
 		}
+		// move original jpg file to IMG_* for cleanup
+		new File("$dir/${m.fileupload}").renameTo("$dir/IMG_${m.fileupload}")
+		
 		m.fileupload = filename
 		def ttl = printTtl(m)
 		println ttl
@@ -71,6 +74,7 @@ ${m.id}
 	vad:hasArtistProfile ${m.hasArtistProfile} ;
 	vad:qrcode <${m.qrcode}> ;
 	schema:image <http://visualartsdna.org/images/${m.fileupload}> ;
+${m.fileuploadglb ? "" : "#"}	schema:image3d <http://visualartsdna.org/images/${m.fileuploadglb}> ;
 	.
 """
 	}
