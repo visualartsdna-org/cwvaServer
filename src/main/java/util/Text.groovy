@@ -56,5 +56,12 @@ class Text {
 		return new SimpleDateFormat( "yyyy-MM-dd'T'hh:mm:ss").format(date)
 	}
 
+	// simple fix to avoid four-double-quotes problem
+	static def fixQuote(s) {
+		
+		if (s ==~ /.*"$/)
+			s = s += " "
+		s
+	}
 	
 }
