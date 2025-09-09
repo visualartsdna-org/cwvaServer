@@ -88,6 +88,11 @@ class Servlet extends ServletBase {
 				//sendText(response,"$status")
 				break
 
+			case "/guid":
+				def guid = new Guid().get()
+				sendText(response,"$guid")
+				break
+
 			case "/fileScale":
 				def status = new ImageGraphMgtTest().handleUpload(mq)
 				sendText(response,"$status")
