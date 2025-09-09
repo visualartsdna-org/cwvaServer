@@ -250,7 +250,7 @@ ${rdf.Prefixes.forFile}
 				tko:created "$created"^^xsd:date ;
 				tko:edited "$edited"^^xsd:dateTime ;
 				skos:prefLabel "${m2.title}${tag ? " Notes" : ""}" ;
-				skos:definition \"\"\"${(m2.filteredText)}\"\"\" ;
+				skos:definition \"\"\"${util.Text.fixQuote(m2.filteredText)}\"\"\" ;
 
 """
 					m2.findAll{k,v->
