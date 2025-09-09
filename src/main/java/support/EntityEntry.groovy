@@ -110,8 +110,8 @@ Type:
   <label for="type2">Concept</label>
   <input type="radio" id="type2" name="type" value="Entity">
   <label for="type2">Entity</label>
-  <input type="radio" id="type2" name="type" value="Organization">
-  <label for="type2">Organization</label>
+  <input type="radio" id="type2" name="type" value="AI">
+  <label for="type2">AI</label>
   <input type="radio" id="type2" name="type" value="Study">
   <label for="type2">Study</label>
   <input type="radio" id="type2" name="type" value="Topic">
@@ -151,10 +151,10 @@ Type:
 </td><td>
   <input type="checkbox" id="media13" name="media13" value="Historical">
   <label for="media13">Historical</label><br>
-  <input type="checkbox" id="media14" name="media14" value="Other">
-  <label for="media14">Other</label><br>
-  <input type="checkbox" id="media15" name="media15" value="None">
-  <label for="media15">None</label><br>
+  <input type="checkbox" id="media14" name="media14" value="Interpretation">
+  <label for="media14">Interpretation</label><br>
+  <input type="checkbox" id="media15" name="media15" value="Other">
+  <label for="media15">Other</label><br>
 </td></tr></table>
 </td></tr><tr><td><br>
          Definition : <br>
@@ -167,7 +167,7 @@ Type:
   <label for="document">Document:</label></td><td>
   <input type="text" id="document" name="document" size="60" value=""> 
 </td></tr><tr><td align="right">
-  <label for="primarySite">Website:</label></td><td>
+  <label for="primarySite">URL:</label></td><td>
   <input type="text" id="primarySite" name="primarySite" size="60" value=""> 
 </td></tr><tr><td align="right">
   <label for="wikipedia">Wikipedia:</label></td><td>

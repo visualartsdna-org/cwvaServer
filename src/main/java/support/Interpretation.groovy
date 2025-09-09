@@ -50,7 +50,7 @@ $m.quid
 		skos:broader	the:${util.Text.camelCase(m.kind)} ;
 		the:source 	the:${util.Text.camelCase(m.source)} ;
         rdfs:label       "${m.kind.trim()} of ${m.label}" ;
-        vad:prompt  \"\"\"${m.prompt}\"\"\" ;
+        skos:description  \"\"\"${m.prompt}\"\"\" ;
         vad:response  \"\"\"${m.response}\"\"\" ;
 		.
 """
