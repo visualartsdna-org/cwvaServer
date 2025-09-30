@@ -55,7 +55,9 @@ More
 <p/>
 <a href="https://w3id.org/lode/owlapi/http://visualartsdna.org/model/">Ontology Documentation (via LODE server)</a><br/>
 <a href="${cfg.host}/html/AICWVAReview.html">Ontology and Thesaurus AI Reviews by OpenAI, MetaAI, Gemini and Perplexity</a><br/>
+<!--
 See the Ontology, "Information Model for the Visual Arts," on <a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/model/">Archivo</a><br/>
+-->
 <a href="${cfg.host}/sparql">SPARQL Browser</a><br/>
 <a href="${cfg.host}/metricTables">Metrics</a><br/>
 <a href="${cfg.host}/html/references.html">References</a><br/>
