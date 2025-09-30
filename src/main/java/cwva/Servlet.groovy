@@ -68,6 +68,13 @@ class Servlet extends ServletBase {
 				new D3Driver().doGet(data,kind,tmpFile)
 				sendHtmlFile(response,tmpFile)
 				break
+				
+			case "/modelviewer":
+				if (!mq.containsKey("isMobile"))  // maybe redirected from other server
+					mq["isMobile"] = ""+isMobile
+ 				def s = new ModelViewer().process(mq, cfg.host, dbm().rdfs)
+				sendHtml(response,s)
+				break
 
 			case "/model.graph":
 				tmpFile = tmp.getTemp("dot",".html")
@@ -100,27 +107,6 @@ class Servlet extends ServletBase {
 				sendJSFile(response,"$dir${path}")
 				break
 
-//			case ~/\/3d.*\.glb/:
-//				sendGlbFile(response, "C:/temp/git/cwva${path}")
-//				break
-//
-//			case ~/\/3d.*\.png/:
-//				sendPngFile(response, "C:/temp/git/cwva${path}")
-//				break
-//
-//			case ~/\/3d.*\.ico/:
-//				sendIconFile(response, "C:/temp/git/cwva${path}")
-//				break
-//
-//			case ~/\/3d.*\.js/:
-//			case ~/\/3d.*\.css/:
-//				sendTextFile(response,"C:/temp/git/cwva${path}")
-//				break
-//
-//			case ~/\/3d.*/:
-//				sendHtmlFile(response,"C:/temp/git/cwva${path}")
-//				break
-//
 			case ~/\/html.*/:
 				sendHtmlFile(response,"$dir/${path}")
 				break

@@ -196,5 +196,17 @@ describe ${work}
 				)
 	}
 
+	def queryOnePropertyFromInstance(inst, prop) {
+		
+		if (inst.startsWith("http://")){
+			inst = "<$inst>"
+		}
+		def lm = ju.queryListMap1(mdl, prefixes,
+		"""select ?o {
+$inst $prop ?o 
+}
+""")
+		lm[0]["o"]
+	}
 
 }

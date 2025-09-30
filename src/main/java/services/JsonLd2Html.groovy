@@ -14,7 +14,9 @@ class JsonLd2Html {
 	def ns = [:]
 	def defs = [:]
 	def qs
-	// html for anartist from queries
+	def pfxNsMap
+	def host
+	
 	@Test
 	public void testArtist() {
 		def host = "test"
@@ -61,9 +63,6 @@ class JsonLd2Html {
 		(path =~ /^\/model\/([0-9A-Za-z\-_]+)$/)[0][1]
 	}
 	
-	
-	def pfxNsMap
-	def host
 	
 	def nsLookup(s) {
 		if (!(s instanceof String)) return s
@@ -126,11 +125,16 @@ class JsonLd2Html {
 <style> 
 .mvDiv {
   border: 1px solid;
+  margin-left: 0;
   padding: 7px; 
-  width: 300px;
-  height: 200px;
+  width: 500px;
+  height: 300px;
   resize: both;
   overflow: auto;
+}
+model-viewer {
+  width: 100%;
+  height: 100%;
 }
 </style>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
@@ -241,11 +245,15 @@ the TTL for the items's instance is returned.  Other formats supported include:
 
 				}
 				else if (k=="image3d") {
+					def bkgndImage
+					if (m.background)	{
+						bkgndImage = qs.queryOnePropertyFromInstance(m.background, "schema:image")
+					}
 					if (v instanceof List) {
 						v.each{
-								sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v))}</td></tr>\n"""
+								sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v),rehost(bkgndImage))}</td></tr>\n"""
 							}
-					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v))}</td></tr>\n"""
+					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v),rehost(bkgndImage))}</td></tr>\n"""
 
 				}
 				else if (k=="qrcode") {
@@ -313,16 +321,27 @@ the TTL for the items's instance is returned.  Other formats supported include:
 		
 	}
 	
-	def do3d(fs) {
+	def do3d(fs,bkgnd) {
 		
-		"""<div class="mvDiv" >
-    <model-viewer src="$fs" ar ar-modes="webxr scene-viewer quick-look" camera-controls tone-mapping="neutral" shadow-intensity="2"
+		def bg = """
+	environment-image=$bkgnd
+	skybox-image=$bkgnd
+"""
+		
+		// removed AR mode from model-viewer: ar ar-modes="webxr scene-viewer quick-look"
+		// to get rid of AR button in model-viewer on IOS
+		// TODO: need .glb to .usdz convert
+		// ios-src="/images/female-t3-prism3.usdz" 
+		"""<div class="mvDiv">
+    <model-viewer src="$fs"  
+	camera-controls tone-mapping="neutral" shadow-intensity="0"
+	${bkgnd ? bg : ""}
 	style="flex-grow: 1; height: 100%; background-color: lightgray;">
      </model-viewer>
      </div>
-	<img style='display:inline;' src="images/left-click.png" width="23px" height="23px">drag
-	<img style='display:inline;' src="images/right-click.png" width="23px" height="23px">pan
-	<img style='display:inline;' src="images/scroll.png" width="23px" height="23px">zoom"""
+	<img style='display:inline;' src="images/left-click.png" width="20px" height="20px">drag
+	<img style='display:inline;' src="images/right-click.png" width="20px" height="20px">pan
+	<img style='display:inline;' src="images/scroll.png" width="20px" height="20px">zoom"""
 	}
 	
 	def buildTables(cm) {
