@@ -46,7 +46,7 @@ class ServletBase extends HttpServlet {
 				sendGlbFile(response, f)
 				break
 
-			case ~/\/images.*\.jpg/:
+			case ~/\/images.*\.(jpg|JPG)/:
 				def f = FileUtil.loadImage(images,path)
 				sendJpegFile(response, f)
 				break
@@ -69,6 +69,11 @@ class ServletBase extends HttpServlet {
 			case ~/\/images.*\.ico/:
 				def f = FileUtil.loadImage(images,path)
 				sendIconFile(response, f)
+				break
+
+			case ~/\/images.*\.usdz/:
+				def f = FileUtil.loadImage(images,path)
+				sendUsdzFile(response, f)
 				break
 
 //			case ~/\/images.*/:
@@ -227,7 +232,11 @@ class ServletBase extends HttpServlet {
 	}
 	def sendIconFile(response, file) {
 		response.setContentType("image/x-icon")
-		sendImageFile(response, new File(file))
+		sendImageFile(response, new File(file))  // why does this take a File?
+	}
+	def sendUsdzFile(response, file) {
+		response.setContentType("image/usdz")
+		sendImageFile(response, file)
 	}
 	def sendModelFile(response, fileSpec) {
 		def m = ju.loadFiles(fileSpec)
@@ -315,9 +324,8 @@ class ServletBase extends HttpServlet {
 			metrics[date][ip][path] = new TreeMap()
 			metrics[date][ip][path].count = 0
 		}
-
-		metrics[date][ip][path].count++
-		
+println "date:$date, ip:$ip, path:$path, metrics:${metrics[date][ip][path]}"
+		metrics[date][ip][path].count++; 
 	}
 	
 	def getIP(request) {
