@@ -112,6 +112,9 @@ gLTF 2.0 (.glb):
 </td></tr><tr><td>
   <br><label for="width">width (pixels):</label><br>
   <input type="text" id="width" name="width" size="$inSize" value=""> 
+</td><td>
+  <br><label for="background">background:</label><br>
+  <input type="text" id="background" name="background" size="$inSize" value=""> 
 </td></tr><tr><td>
   <br><label for="label">label:</label><br>
   <input type="text" id="label" name="label" size="$inSize" value=""> 

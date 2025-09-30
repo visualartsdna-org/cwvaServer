@@ -74,7 +74,8 @@ ${m.id}
 	vad:hasArtistProfile ${m.hasArtistProfile} ;
 	vad:qrcode <${m.qrcode}> ;
 	schema:image <http://visualartsdna.org/images/${m.fileupload}> ;
-${m.fileuploadglb ? "" : "#"}	schema:image3d <http://visualartsdna.org/images/${m.fileuploadglb}> ;
+${m.fileuploadglb ? "" : "#"}	vad:image3d <http://visualartsdna.org/images/${m.fileuploadglb}> ;
+${m.background ? "" : "#"}	vad:background ${m.background} ;
 	.
 """
 	}
