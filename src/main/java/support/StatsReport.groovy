@@ -343,7 +343,8 @@ new Chart("myChart$i", {
 //		def mod = ju.newModel()
 		
 		// add all archived log-metric data to model
-		mod.add loadLogZip(logFiles)
+		mod.add loadLogZipTtl(logFiles)
+//		mod.add loadLogZip(logFiles)
 //		mod.add loadLogDir(logFiles)
 		
 		// generate html from model
@@ -396,6 +397,31 @@ $k
 	}
 
 	// loads metric data from archived log files
+	// into local permanent ttl files
+	// adding new ones as necessary
+	// more efficient
+	def loadLogZipTtl(ds) {
+		def ttlDir = "C:/work/stats/ttl"
+
+		def lzf = new File(ds)
+		def zipFile = new java.util.zip.ZipFile(lzf)
+		zipFile.entries().each {file->
+			if (file.name.startsWith("log/out")) {
+				def tfn = file.name
+				.replaceAll(".log",".ttl")
+				.replaceAll("log/","${ttlDir}/")
+				if (!new File(tfn).exists()) {
+					def s = loadFromLog(zipFile.getInputStream(file).text)
+					def c = new JsonSlurper().parseText(s)
+					def m = getStats(c)
+					ju.saveModelFile(m,tfn,"ttl")
+				}
+			}
+		}
+		ju.loadFiles(ttlDir)
+	}
+	
+	// loads metric data from archived log files
 	def loadLogZip(ds) {
 		def ttl = "C:/work/stats/logMetric.ttl"
 		def msf = new File(ttl)
@@ -407,7 +433,7 @@ $k
 				return ju.loadFiles(ttl)
 			}
 		
-		def dir = new File(ds)
+//		def dir = new File(ds)
 		Map m = [:]
 		def zipFile = new java.util.zip.ZipFile(lzf)
 		zipFile.entries().each {file->
@@ -487,6 +513,25 @@ $k
 		
 		// add all archived log-metric data to model
 		mod.add loadLogZip(logFiles)
+		new SparqlConsole().show(mod)
+		
+	}
+
+	@Test
+	void testSparql2() {
+		long ctms = System.currentTimeMillis()
+		def site = "http://visualartsdna.org/metrics"
+		def logFiles ="C:/work/stats/log.zip"
+		
+		// load current metric data to model
+		def stats = new URL(site).text
+		def c = new JsonSlurper().parseText(stats)
+		def mod = getStats(c)
+		
+		ju.saveModelFile(mod,"/work/stats/testMetricsNow.ttl","ttl")
+		
+		// add all archived log-metric data to model
+		mod.add loadLogZipTtl(logFiles)
 		new SparqlConsole().show(mod)
 		
 	}
