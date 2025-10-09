@@ -76,6 +76,11 @@ class Servlet extends ServletBase {
 		if (policyAccept("function",path))
 		switch (path) {
 
+			case "/proof":
+				def html = new Proof().handleQueryParams(mq)
+				sendHtml(response,html)
+				break
+
 			case "/certificate":
 				def status = new CertAuthenticity().handleUpload(mq)
 				sendHtmlFile(response,"/temp/html/ca.html")
