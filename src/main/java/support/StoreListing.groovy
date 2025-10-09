@@ -109,9 +109,9 @@ html += """
 	
 	def load() {
 		def gMap = [:]
-			def m = cwva.Server.getInstance().dbm.rdfs
+			Model m = cwva.Server.getInstance().dbm.rdfs
 			m.add ju.loadFiles(listings)
-			
+//			new rdf.tools.SparqlConsole().show(m)
 			
 			def ms = [:]
 			def l = ju.queryListMap1(m, prefixes, """
