@@ -75,6 +75,14 @@ class Servlet extends ServletBase {
  				def s = new ModelViewer().process(mq, cfg.host, dbm().rdfs)
 				sendHtml(response,s)
 				break
+				
+			case "/modelviewer.bkgnd":
+				if (!mq.containsKey("isMobile"))  // maybe redirected from other server
+					mq["isMobile"] = ""+isMobile
+				def s = new ModelViewer().process(mq, cfg.host, dbm().rdfs)
+				sendHtml(response,s)
+
+				break
 
 			case "/model.graph":
 				tmpFile = tmp.getTemp("dot",".html")

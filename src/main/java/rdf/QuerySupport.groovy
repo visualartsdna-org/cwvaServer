@@ -209,4 +209,17 @@ $inst $prop ?o
 		lm[0]["o"]
 	}
 
+	def queryBackgrounds() {
+		
+		def lm = ju.queryListMap1(mdl, prefixes,
+"""
+select ?s ?l {
+?s a the:Background ;
+	rdfs:label ?l
+}"""
+)
+		lm
+	}
+	
+
 }

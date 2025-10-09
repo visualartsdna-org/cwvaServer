@@ -176,6 +176,7 @@ the TTL for the items's instance is returned.  Other formats supported include:
 	
 	def printHtml(m, sb) {
 		def collection=false
+		def work
 		if (m instanceof Map) {
 			m.each{k,v->
 				
@@ -193,7 +194,7 @@ the TTL for the items's instance is returned.  Other formats supported include:
 					} else {
 						sb.append """<tr height="50"><td>ID</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
 					}
-
+					work = v
 				}
 				else if (k=="@type"
 						&& (v=="skos:Collection"
@@ -251,9 +252,9 @@ the TTL for the items's instance is returned.  Other formats supported include:
 					}
 					if (v instanceof List) {
 						v.each{
-								sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v),rehost(bkgndImage))}</td></tr>\n"""
+								sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v),rehost(bkgndImage),work)}</td></tr>\n"""
 							}
-					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v),rehost(bkgndImage))}</td></tr>\n"""
+					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v),rehost(bkgndImage),work)}</td></tr>\n"""
 
 				}
 				else if (k=="qrcode") {
@@ -321,7 +322,9 @@ the TTL for the items's instance is returned.  Other formats supported include:
 		
 	}
 	
-	def do3d(fs,bkgnd) {
+	def do3d(fs,bkgnd,work) {
+		
+		def site = qs.queryOnePropertyFromInstance(work, "vad:workOnSite")
 		
 		def bg = """
 	environment-image=$bkgnd
@@ -339,9 +342,14 @@ the TTL for the items's instance is returned.  Other formats supported include:
 	style="flex-grow: 1; height: 100%; background-color: lightgray;">
      </model-viewer>
      </div>
+	<table><tr><td>
+	<a href="${rehost("http://visualartsdna.org/modelviewer?work=$work&site=$site")}">3D Viewer</a>
+	</td><td style="width:50%">
 	<img style='display:inline;' src="images/left-click.png" width="20px" height="20px">drag
 	<img style='display:inline;' src="images/right-click.png" width="20px" height="20px">pan
-	<img style='display:inline;' src="images/scroll.png" width="20px" height="20px">zoom"""
+	<img style='display:inline;' src="images/scroll.png" width="20px" height="20px">zoom
+	</td></tr></table>
+"""
 	}
 	
 	def buildTables(cm) {
