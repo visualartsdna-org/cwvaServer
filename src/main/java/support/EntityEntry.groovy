@@ -112,12 +112,15 @@ Type:
   <label for="type2">Entity</label>
   <input type="radio" id="type2" name="type" value="AI">
   <label for="type2">AI</label>
+</td></tr><tr><td>
   <input type="radio" id="type2" name="type" value="Study">
   <label for="type2">Study</label>
   <input type="radio" id="type2" name="type" value="Topic">
   <label for="type2">Topic</label>
   <input type="radio" id="type2" name="type" value="Work">
   <label for="type2">Work</label>
+  <input type="radio" id="type2" name="type" value="Background">
+  <label for="type2">Background</label>
 </td></tr><tr><td><br>
  Media:
 <table><tr><td>
