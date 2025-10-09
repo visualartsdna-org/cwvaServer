@@ -38,6 +38,14 @@ class ParseDigitalRDF {
 		m.fileupload = filename
 		def ttl = printTtl(m)
 		println ttl
+		
+		// incipient proof
+		if (m.proofJpg=="proofJpg")
+			Proof.createIncipientProof(m.guid,m.fileupload)
+		
+		if (m.proofGlb=="proofGlb")
+			Proof.createIncipientProof(m.guid,m.fileuploadglb)
+		
 		dir=m.dir
 		new File("$dir/${m.guid}.ttl").text = ttl
 		
