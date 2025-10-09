@@ -21,7 +21,7 @@ class HtmlForm2Ttl {
 	}
 	
 
-	def artistSite = "https://rickspates.art"
+	def artistSite = "http://rickspates.art"
 	/*
 	 * Some thoughts:
 	 * Make hasPaper, hasPaperFinish dropdowns, ensure inclusive
