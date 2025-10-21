@@ -76,8 +76,8 @@ construct {
 		{
 		?s the:tag ?c .
 		?c a skos:Concept ;
-			skos:definition ?d .
 		{?c rdfs:label ?l} union {?c skos:prefLabel ?l} 
+		{?c skos:definition ?d} union {?c schema:description ?d} 
 		} union {
 		?col skos:member ?s .
 		?col the:tag ?c .
@@ -206,7 +206,7 @@ describe ${work}
 $inst $prop ?o 
 }
 """)
-		lm[0]["o"]
+		lm[0] ? lm[0]["o"] : null
 	}
 
 	def queryBackgrounds() {
