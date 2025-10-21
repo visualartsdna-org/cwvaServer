@@ -53,7 +53,7 @@ class Proof {
 		def formatPattern = "MM/dd/yyyy, HH:mm:ss a"
 		
 		// Parse the string into a Date object
-		def newDate = Date.parse(formatPattern, ts)
+		def newDate = new SimpleDateFormat(formatPattern).parse(ts)
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(newDate)
 	}
 
@@ -156,7 +156,7 @@ $prefixes
 
 work:${guid}
 	a vad:Proof ;
-	vad:work work:$workGuid ;
+	vad:assetOf work:$workGuid ;
 	vad:asset <$imagesUrl/$asset> ;
 	vad:created	"${getNow()}"^^xsd:dateTime ;
 	vad:service <$service> ;
