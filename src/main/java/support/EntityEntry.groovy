@@ -121,6 +121,8 @@ Type:
   <label for="type2">Work</label>
   <input type="radio" id="type2" name="type" value="Background">
   <label for="type2">Background</label>
+  <input type="radio" id="type2" name="type" value="Collection">
+  <label for="type2">Collection</label>
 </td></tr><tr><td><br>
  Media:
 <table><tr><td>
