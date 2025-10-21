@@ -15,7 +15,7 @@ class ModelViewer {
 		def sb = new StringBuilder()
 		if (!qs) qs = new QuerySupport(rdfs)
 		this.host = host
-		sb.append HtmlTemplate.head(host)
+		sb.append HtmlTemplate.head(host) //, "#757575")
 		printHtml(sb,mq.work,mq.site,mq.selectBkgnd)
 		sb.append HtmlTemplate.tail
 		"$sb"
@@ -39,7 +39,7 @@ class ModelViewer {
   border: 1px solid;
   margin-left: 0;
   padding: 7px; 
-  width: ${isMobile ? "368" : "600"}px;
+  width: ${isMobile ? "402" : "600"}px;
   height: 500px;
   resize: both;
   overflow: auto;
