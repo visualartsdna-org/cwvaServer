@@ -152,12 +152,12 @@ model-viewer {
 				ns = [:]
 				defs = [:]
 				sb.append("""
-<h5>${desc[i++]}</h5>
+<h5>${desc[i]}</h5>
 """)
 				buildTables(map["@context"])
 				//println map
 				sb.append HtmlTemplate.tableHead("Property","Value")
-				printHtml(map,sb)
+				printHtml(map,sb,i++)
 				sb.append HtmlTemplate.tableTail
 			}
 			
@@ -174,7 +174,7 @@ the TTL for the items's instance is returned.  Other formats supported include:
 		return ""+sb
 	}
 	
-	def printHtml(m, sb) {
+	def printHtml(m, sb, cnt) {
 		def collection=false
 		def work
 		if (m instanceof Map) {
@@ -183,14 +183,15 @@ the TTL for the items's instance is returned.  Other formats supported include:
 				if (k=="@context") return
 				if (k=="@graph") {
 					v.each{
-						printHtml(it,sb)
+						printHtml(it,sb,cnt)
 					}
 					return
 				}
 				def m2=defs[k]
 				if (k=="@id") {
 					if (v =~ /_:b[0-9]+/) {
-						sb.append """<tr height="50"></tr>\n"""
+						//sb.append """<tr height="50"></tr>\n"""
+						sb.append """\n"""
 					} else {
 						sb.append """<tr height="50"><td>ID</td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
 					}
@@ -211,7 +212,6 @@ the TTL for the items's instance is returned.  Other formats supported include:
 					sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
 				}
 				else if (k=="@type"
-						|| k=="tag"
 						|| k=="subClassOf"
 						|| k=="contains"
 						|| k=="related"
@@ -223,6 +223,18 @@ the TTL for the items's instance is returned.  Other formats supported include:
 					vc.each{ 
 						if (i++>0)	s += ", "
 						s += """<a href="${nsLookup(it)}">$it</a>"""
+					}
+					sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
+				}
+				else if (k=="tag" && cnt==0) {
+					def vc = v instanceof List ? v : [v]
+					def s=""
+					int i=0
+					vc.each{
+						// lookup label for tag
+						def label = getLabel(it)
+						if (i++>0)	s += ", "
+						s += """<a href="${nsLookup(it)}">$label</a>"""
 					}
 					sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
 				}
@@ -260,6 +272,24 @@ the TTL for the items's instance is returned.  Other formats supported include:
 				else if (k=="qrcode") {
 					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="100"></a></td></tr>\n"""
 				}
+				else if (k=="hasArtistProfile"
+					|| k=="artist"
+					|| k=="background"
+					|| k=="pseudonymFor"
+					){
+					sb.append """<tr height="50"><td><i>$k</i></td>"""
+					if (v instanceof List) {
+						def v2=[]
+						v.each{
+							v2+= it.replaceAll("\n","<br>")
+						}
+						printHtml(v2,sb,cnt)
+					} else {
+						v = v.replaceAll("\n","<br>")
+						def label = getLabel(v)
+						sb.append """<td><a href="${nsLookup(v)}">$label</a></td></tr>\n"""
+					}
+				}
 				else if (isUri(nsLookup(v))) { 
 					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
 				}
@@ -291,6 +321,20 @@ the TTL for the items's instance is returned.  Other formats supported include:
 								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
 						}
 					}
+					else if (cnt>0 && k=="label"){
+						sb.append """<tr height="50"><td><i>$k</i></td>"""
+						if (v instanceof List) {
+							def v2=[]
+							v.each{
+								v2+= it.replaceAll("\n","<br>")
+							}
+							printHtml(v2,sb,cnt)
+						} else {
+							v = v.replaceAll("\n","<br>")
+							//printHtml(v,sb,cnt)
+							sb.append """<td><a href="${nsLookup(m["tag"])}">$v</a></td></tr>\n"""
+						}
+					}
 					else {
 //						if (k=="skos:Collection")
 //							println "here"
@@ -300,10 +344,10 @@ the TTL for the items's instance is returned.  Other formats supported include:
 							v.each{
 								v2+= it.replaceAll("\n","<br>")
 							}
-							printHtml(v2,sb)
+							printHtml(v2,sb,cnt)
 						} else {
 							v = v.replaceAll("\n","<br>")
-							printHtml(v,sb)
+							printHtml(v,sb,cnt)
 						}
 					}
 				}
@@ -314,12 +358,19 @@ the TTL for the items's instance is returned.  Other formats supported include:
 			m.each {
 				if (i++)
 					sb.append """<tr height="50"><td></td>"""
-				printHtml(it,sb)
+				printHtml(it,sb,cnt)
 			}
 		}
 		else 
 			sb.append "<td>$m</td></tr>\n"
 		
+	}
+	
+	def getLabel(uri) {
+		def label = qs.queryOnePropertyFromInstance(uri, "rdfs:label")
+		if (!label)label = qs.queryOnePropertyFromInstance(uri, "skos:prefLabel")
+		if (!label) label = uri
+		label
 	}
 	
 	def do3d(fs,bkgnd,work) {
