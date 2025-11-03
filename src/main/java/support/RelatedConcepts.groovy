@@ -34,7 +34,7 @@ select distinct ?s ?label ?alt {
 		optional {
 			?s 	schema:brand/skos:altLabel ?alt .
 			}
-		filter (?cp = $type)
+		filter (?cp in ($type))
 } order by ?s
 """)
 		l.each{
@@ -113,7 +113,7 @@ copy and paste in keep notes, e.g,
 <a href="${cwva.Server.getInstance().cfg.host}">Home</a>
 <br>
 <h3>Watercolor Concepts</h3>
-Select related paints and techniques to include in the note for the work.
+Select related concepts to include in the note for the work.
 
 <button onclick="myFunction2()">Copy</button><br/>
 Place "relateds" string in textarea to auto-check boxes.
@@ -136,9 +136,8 @@ $selected
 		for (type in [
 			"the:WatercolorPaint", 
 			"the:watercolorTechnique", 
-			"the:watercolorTextureTechnique",
-			"the:watercolorMaterial",
-			"the:brushingPaint"
+			"the:watercolorTextureTechnique,the:watercolorMaterial,the:brushingPaint",
+			"the:GeometricAndSymmetryTerms"
 			]) {
 		def mc = qConcept(type)
 		html1 += """
