@@ -111,6 +111,13 @@ class Servlet extends ServletBase {
 				sendJpegFile(response,tmpFile)
 				break
 
+			case "/vocabTree":
+				if (!mq.containsKey("isMobile"))  // maybe redirected from other server
+					mq["isMobile"] = ""+isMobile
+ 				def s = new VocabTree().process(mq, cfg.host, dbm().vocab)
+				sendHtml(response,s)
+				break
+				
 			case ~/\/dist.*/:
 				sendJSFile(response,"$dir${path}")
 				break
@@ -125,12 +132,12 @@ class Servlet extends ServletBase {
 				def guid = jl2h.parseClass(path)
 
 				if (query) {
-					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
+					def fmt = (query =~ /^format=([a-zA-Z0-9-\/]+)[&]?.*$/)[0][1]
 					def qs = new QuerySupport(dbm().rdfs)
 					def m = qs.getOneInstanceModel("vad",guid)
 
 					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
-					else sendModel(response, m, fmt.toLowerCase())
+					else sendModel(response, m, fmt)
 				} else {
 					def s = jl2h.process(dbm().rdfs,domain,relPath,"vad",guid,cfg.host)
 					sendHtml(response,s)
@@ -151,12 +158,12 @@ class Servlet extends ServletBase {
 				def guid = jl2h.parseGuid(path)
 
 				if (query) {
-					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
+					def fmt = (query =~ /^format=([a-zA-Z0-9-\/]+)[&]?.*$/)[0][1]
 					def qs = new QuerySupport(dbm().rdfs)
 					def m = qs.getOneInstanceModel("work",guid)
 
 					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
-					else sendModel(response, m, fmt.toLowerCase())
+					else sendModel(response, m, fmt)
 				} else {
 					def s = jl2h.process(dbm().rdfs,domain,relPath,ns,guid,cfg.host)
 					sendHtml(response,s)
@@ -169,12 +176,12 @@ class Servlet extends ServletBase {
 				def guid = jl2h.parseConcept(path)
 
 				if (query) {
-					def fmt = (query =~ /^format=([a-zA-Z-\/]+)[&]?.*$/)[0][1]
+					def fmt = (query =~ /^format=([a-zA-Z0-9-\/]+)[&]?.*$/)[0][1]
 					def qs = new QuerySupport(dbm().rdfs)
-					def m = qs.getOneInstanceModel("work",guid)
+					def m = qs.getOneInstanceModel("the",guid)
 					
 					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
-					else sendModel(response, m, fmt.toLowerCase())
+					else sendModel(response, m, fmt)
 				} else {
 					def s = jl2h.process(dbm().rdfs,domain,relPath,"the",guid,cfg.host)
 					sendHtml(response,s)
