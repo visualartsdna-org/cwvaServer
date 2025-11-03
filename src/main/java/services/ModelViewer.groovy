@@ -16,7 +16,7 @@ class ModelViewer {
 		if (!qs) qs = new QuerySupport(rdfs)
 		this.host = host
 		sb.append HtmlTemplate.head(host) //, "#757575")
-		printHtml(sb,mq.work,mq.site,mq.selectBkgnd)
+		printHtml(sb,mq.work,mq.selectBkgnd)
 		sb.append HtmlTemplate.tail
 		"$sb"
 		
@@ -28,7 +28,7 @@ class ModelViewer {
 	}
 	
 
-	def printHtml(sb,work,site,bkgVal) {
+	def printHtml(sb,work,bkgVal) {
 		
 		// model-viewer
 		sb.append """
@@ -75,6 +75,8 @@ function setAction(x) {
 </script>
 """
 	
+		//def siteName = removeProtocol(site)
+		def site = qs.queryOnePropertyFromInstance(work, "vad:hasArtistProfile/vad:artist/foaf:homepage")
 		def siteName = removeProtocol(site)
 		def label = qs.queryOnePropertyFromInstance(work, "rdfs:label")
 		def descr = qs.queryOnePropertyFromInstance(work, "schema:description")
@@ -222,7 +224,7 @@ $optionStr
 	}
 	
 	def removeProtocol(site) {
-		site.replaceAll("http://","").replaceAll("https://","").replaceAll("/","")
+		site.replaceAll("http://","").replaceAll("https://","").replaceAll("/","").replaceAll("www.","")
 	}
 	
 }
