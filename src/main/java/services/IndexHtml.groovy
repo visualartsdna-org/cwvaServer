@@ -63,8 +63,7 @@ and in an
 View the <a href="https://w3id.org/lode/owlapi/http://visualartsdna.org/model/">ontology documentation via LODE server</a>.</br>
 <p>
 <p/>
-A vocabulary (thesaurus) of visual arts terms is available 
-in
+A thesaurus of visual arts terms is available in
 <a href="${cfg.host}/vocab.graph">graphical form&#42;</a>
 and in an 
 <a href="${cfg.host}/vocab">RDF file (TTL/text)</a>.
