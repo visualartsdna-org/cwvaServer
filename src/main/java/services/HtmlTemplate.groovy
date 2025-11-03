@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat
 class HtmlTemplate {
 	// http://clipart-library.com/clipart/dna-cliparts_4.htm
 	static def head(host) {
+		head(host, "#FFFFFF")
+	}
+	static def head(host, bgColor) {
 		"""
 <html>
 <head>
@@ -22,29 +25,47 @@ class HtmlTemplate {
 <title>VisualArtsDNA</title>
 <link href='https://fonts.googleapis.com/css?family=Krub' rel='stylesheet'>
 <style>
-ul {
-  list-style-type: none;
+<!-- -->
+    body {
+        background-color: $bgColor
+    }
+
+
+/* scope EVERYTHING to .top-nav */
+.top-nav {
+  background-color: #eee;
+  font-family: 'Krub', sans-serif;
+  /* optional: make it full width + fixed height */
+  /* padding: 0 .5rem; */
+}
+
+.top-nav__list {
+  list-style: none;
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  background-color: #eee;
+  display: flex;           /* modern way instead of float */
+  gap: 1.5rem;             /* space between items */
+  align-items: center;
+  height: 3.2rem;
 }
 
-li {
-  float: left;
+.top-nav__item {
+  /* we don't need float anymore */
 }
 
-li a {
+.top-nav__item a {
   display: block;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
+  font-size: 1.4rem;       /* similar visual size to your old 22px on body */
+  color: steelblue;
   text-decoration: none;
+  padding: 0.5rem 0;       /* vertical centering */
 }
 
-li a:hover {
-  background-color: #eee;
+.top-nav__item a:hover {
+  color: navy;
+  text-decoration: underline;
 }
+
 a:link {
   color: steelblue;
   background-color: transparent;
@@ -69,12 +90,6 @@ body {
     font-family: 'Krub';font-size: 22px;
 }
 tr:nth-child(even) {background-color: #f8f8f8;}
-div {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-right: 150px;
-  margin-left: 40px;
-}
 </style>
 	<meta charset="UTF-8">
 	<meta name="description" content="An ontology for the visual arts. VisualArtsDNA organizes the details of the visual arts creative process into an information model expressed in OWL.">
@@ -86,11 +101,16 @@ div {
 	<!--<meta name="robots" content="Noindex, Nofollow, Noarchive">-->
 </head>
 <body>
-<small><ul>
-  <li><a class="active" href="$host">VisualArtsDNA</a></li>
-  <li><a href="$host/browse">Browse</a></li>
-  <li><a href="$host/otherStuff">More</a></li>
-</ul></small>
+<small>
+<nav class="top-nav">
+  <ul class="top-nav__list">
+  <li><a class="top-nav__item" href="$host">VisualArtsDNA</a></li>
+  <li><a class="top-nav__item"href="$host/browse">Browse</a></li>
+  <li><a class="top-nav__item"href="$host/vocabTree">Thesaurus</a></li>
+  <li><a class="top-nav__item"href="$host/otherStuff">More</a></li>
+  </ul>
+</nav>
+</small>
 """
 //		${getSparql(host)}
 		
