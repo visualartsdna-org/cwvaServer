@@ -18,6 +18,10 @@ class QuerySupport {
 		else this.mdl = mdl
 	}
 	
+	def queryGeneric(sql) {
+		ju.queryListMap1(mdl, prefixes,sql)
+	}
+	
 	def queryCollections() {
 		
 		ju.queryListMap1(mdl, prefixes,
