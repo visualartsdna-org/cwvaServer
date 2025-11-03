@@ -32,7 +32,7 @@ class FileLoader {
 	}
 	
 	static def loadAny(fs) {
-		//detectInvalidCharsFile(fs)
+		detectInvalidCharsFile(fs)
 		switch ((fs =~ /.*\.([a-z]+)$/)[0][1]) {
 			case "json":
 				loadJson(fs)
@@ -85,14 +85,21 @@ class FileLoader {
 	static detectInvalidCharsFile(fs) {
 		def s = ""
 		def i=0
-		new File(fs).eachLine{
-			i++
-			if (!isValidASCII(it)) {
-				s += "$i: $it"
+		new File(fs).eachLine{content->
+		content.eachWithIndex { c ,index ->
+			// ASCII characters have a value between 0 and 127 (inclusive).
+			// Groovy/Java characters are 16-bit, so we cast to int to check the value.
+			if ((int)c > 127) {
+				// Found a non-ASCII character
+				s += "Non-ASCII character found: '${c}' (value: U+${Integer.toHexString((int)c).toUpperCase()}) at index ${index}\n"
+				s +=  "\t$content\n"
 			}
 		}
-		if (s != "")
+		}
+		if (s != "") {
+			println s
 			throw new RuntimeException("$fs, $s")
+		}
 	}
 	
 	// standard is ASCII
