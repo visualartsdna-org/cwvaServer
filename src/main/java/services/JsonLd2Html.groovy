@@ -136,6 +136,12 @@ model-viewer {
   width: 100%;
   height: 100%;
 }
+div {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 150px;
+  margin-left: 40px;
+}
 </style>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 """
@@ -165,8 +171,8 @@ model-viewer {
 <br/>
 <p style="font-size:12px">
 <i>*If you add the query "?format=ttl" to the URL for this page 
-the TTL for the items's instance is returned.  Other formats supported include: 
-"RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3"</i>
+the TTL for the items's instance is returned.  Other formats supported include: "RDF/XML", 
+"RDF/XML-ABBREV", "N-TRIPLES", "TURTLE", (and "TTL") and "N3" with lower case supported</i>
 </p>
 """)
 				
@@ -375,7 +381,7 @@ the TTL for the items's instance is returned.  Other formats supported include:
 	
 	def do3d(fs,bkgnd,work) {
 		
-		def site = qs.queryOnePropertyFromInstance(work, "vad:workOnSite")
+		//def site = qs.queryOnePropertyFromInstance(work, "vad:workOnSite")
 		
 		def bg = """
 	environment-image=$bkgnd
@@ -394,7 +400,7 @@ the TTL for the items's instance is returned.  Other formats supported include:
      </model-viewer>
      </div>
 	<table><tr><td>
-	<a href="${rehost("http://visualartsdna.org/modelviewer?work=$work&site=$site")}">3D Viewer</a>
+	<a href="${rehost("http://visualartsdna.org/modelviewer?work=$work")}">3D Viewer</a>
 	</td><td style="width:50%">
 	<img style='display:inline;' src="images/left-click.png" width="20px" height="20px">drag
 	<img style='display:inline;' src="images/right-click.png" width="20px" height="20px">pan
