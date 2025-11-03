@@ -248,8 +248,26 @@ class ServletBase extends HttpServlet {
 	// supported types: ttl rdf/xml jsonld json-ld nt nq trig trix rt trdf
 	// TODO: add: rdfa microdata
 	def sendModel(response, m, type) {
-		response.setContentType("text/plain")
 		def s = ju.saveModelString(m, type)
+		def mimetype = "text/turtle"
+		switch(type.toLowerCase()) {
+			case "rdf/xml":
+			case "rdf/xml-abbrev":
+			mimetype = "application/rdf+xml"
+			break
+			
+			case "n-triples":
+			mimetype = "application/n-triples"
+			break
+			
+			case "n3":
+			mimetype = "text/n3"
+			break
+			
+			default:
+			break
+		}
+		response.setContentType(mimetype);
 		response.getWriter().println("$s")
 	}
 
