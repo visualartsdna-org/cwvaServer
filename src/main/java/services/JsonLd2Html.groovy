@@ -56,7 +56,11 @@ class JsonLd2Html {
 	}
 	
 	def parseConcept(path) {
-		(path =~ /^\/thesaurus\/([0-9A-Za-z\-_]+)$/)[0][1]
+		try {
+			(path =~ /^\/thesaurus\/([0-9A-Za-z\-_]+)$/)[0][1]
+		} catch (java.lang.IndexOutOfBoundsException ex) {
+			"thesaurus"
+		}
 	}
 
 	def parseClass(path) {
@@ -73,17 +77,7 @@ class JsonLd2Html {
 			|| sl[0]=="mailto"
 			) return s
 		def r="${pfxNsMap[sl[0]]}${sl[1]}"
-		rehost(r)
-	}
-	def rehost(r) {
-		if (r instanceof List) {
-			def r2 = []
-			r.each{
-				r2 += it.replaceAll("http://visualartsdna.org",host)
-			}
-			return r2
-		} else
-		r.replaceAll("http://visualartsdna.org",host)
+		cwva.Server.rehost(r)
 	}
 	
 	def isUri(s) {
@@ -151,7 +145,7 @@ div {
 		<a href="${domain}/${path}">$label</a>
 		</h3>
 		"""
-		buildAI(ljld[0],sb)
+		//buildAI(ljld[0],sb)
 			
 			int i=0
 			ljld.each{map->
@@ -193,7 +187,7 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 					}
 					return
 				}
-				def m2=defs[k]
+				def m2=defs[k]?: [:]
 				if (k=="@id") {
 					if (v =~ /_:b[0-9]+/) {
 						//sb.append """<tr height="50"></tr>\n"""
@@ -258,9 +252,9 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 				else if (k=="image") {
 					if (v instanceof List) {
 						v.each{
-								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(it)}"><img src="${rehost(it)}" width="500"></a></td></tr>\n"""
+								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${cwva.Server.rehost(it)}"><img src="${cwva.Server.rehost(it)}" width="500"></a></td></tr>\n"""
 							}
-					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="500"></a></td></tr>\n"""
+					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${cwva.Server.rehost(v)}"><img src="${cwva.Server.rehost(v)}" width="500"></a></td></tr>\n"""
 
 				}
 				else if (k=="image3d") {
@@ -270,13 +264,13 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 					}
 					if (v instanceof List) {
 						v.each{
-								sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v),rehost(bkgndImage),work)}</td></tr>\n"""
+								sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(cwva.Server.rehost(v),cwva.Server.rehost(bkgndImage),work)}</td></tr>\n"""
 							}
-					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(rehost(v),rehost(bkgndImage),work)}</td></tr>\n"""
+					} else 	sb.append """<tr height="50"><td><i>$k</i></td><td>${do3d(cwva.Server.rehost(v),cwva.Server.rehost(bkgndImage),work)}</td></tr>\n"""
 
 				}
 				else if (k=="qrcode") {
-					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${rehost(v)}"><img src="${rehost(v)}" width="100"></a></td></tr>\n"""
+					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${cwva.Server.rehost(v)}"><img src="${cwva.Server.rehost(v)}" width="100"></a></td></tr>\n"""
 				}
 				else if (k=="hasArtistProfile"
 					|| k=="artist"
@@ -312,7 +306,7 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 						l.each{map->
 							if (v =~ /_:b[0-9]+/) {
 							} else {
-								def uri=rehost(nsLookup(map.s))
+								def uri=cwva.Server.rehost(nsLookup(map.s))
 								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${uri}">${map.l}</a></td></tr>\n"""
 							}
 						}
@@ -352,7 +346,7 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 							}
 							printHtml(v2,sb,cnt)
 						} else {
-							v = v.replaceAll("\n","<br>")
+							v = (""+v).replaceAll("\n","<br>")
 							printHtml(v,sb,cnt)
 						}
 					}
@@ -400,7 +394,7 @@ the TTL for the items's instance is returned.  Other formats supported include: 
      </model-viewer>
      </div>
 	<table><tr><td>
-	<a href="${rehost("http://visualartsdna.org/modelviewer?work=$work")}">3D Viewer</a>
+	<a href="${cwva.Server.rehost("http://visualartsdna.org/modelviewer?work=$work")}">3D Viewer</a>
 	</td><td style="width:50%">
 	<img style='display:inline;' src="images/left-click.png" width="20px" height="20px">drag
 	<img style='display:inline;' src="images/right-click.png" width="20px" height="20px">pan
