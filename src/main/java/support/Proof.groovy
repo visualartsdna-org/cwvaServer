@@ -38,11 +38,6 @@ class Proof {
 		m
 	}
 	
-	def rehost(r) {
-		r.replaceAll("http://visualartsdna.org",
-		cwva.Server.getInstance().cfg.host)
-	}
-	
 	def extractGuid(s) {
 		// http://visualartsdna.org/work/12345
 		s.substring("http://visualartsdna.org/work/".length())
@@ -75,7 +70,7 @@ work:$guid vad:asset ?a
 }
 """)
 			def asset = lm[0].a
-			def hash = calculateSHA256FromURL("${rehost(asset)}") 
+			def hash = calculateSHA256FromURL("${cwva.Server.rehost(asset)}") 
 			ju.queryExecUpdate(m2,prefixes, """
 			insert data {
 				<${m.selectIncipient}> vad:timestamp "${convertTS(rm.Timestamp)}"^^xs:dateTime .
@@ -156,6 +151,7 @@ $prefixes
 
 work:${guid}
 	a vad:Proof ;
+	rdfs:label "Proof" ;
 	vad:assetOf work:$workGuid ;
 	vad:asset <$imagesUrl/$asset> ;
 	vad:created	"${getNow()}"^^xsd:dateTime ;

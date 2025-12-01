@@ -87,10 +87,7 @@ class CertAuthenticity {
 			|| sl[0]=="mailto"
 			) return s
 		def r="${pfxNsMap[sl[0]]}${sl[1]}"
-		rehost(r)
-	}
-	def rehost(r) {
-		r.replaceAll("http://visualartsdna.org",host)
+		cwva.Server.rehost(r)
 	}
 	
 	def isUri(s) {

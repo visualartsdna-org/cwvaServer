@@ -571,8 +571,6 @@ where {
 
 	}
 	
-	def rehost(s) {s}
-	
 	def printTopic(topCpt, l, sb, n) {
 		
 		def topic = l.find{
@@ -601,10 +599,10 @@ where {
 			if (cpt.image instanceof List) {
 				image = ""
 				cpt.image.each {
-					image += """<img src="${rehost(it)}" $size><br/><br/>"""
+					image += """<img src="${cwva.Server.rehost(it)}" $size><br/><br/>"""
 				}
 			} else {
-				image = """<img src="${rehost(cpt.image)}" $size><br/><br/>"""
+				image = """<img src="${cwva.Server.rehost(cpt.image)}" $size><br/><br/>"""
 			}
 		}
 		sb.append """
