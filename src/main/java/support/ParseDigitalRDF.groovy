@@ -20,17 +20,21 @@ class ParseDigitalRDF {
 		
 		verify(m)
 		def filename = ""
-		if (m.sig in ["right","left"]) {
-			
-			filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
-		}
-		else {
-			filename = ImageMgt2.makeStampedFile(
-			m.guid,
-			m.fileupload,
-			m.label,
-			m.dir,
-			m.sig)
+		try {
+			if (m.sig in ["right","left"]) {
+				
+				filename = ImageMgt.makeStampedFile(m.guid,m.fileupload,m.label,m.dir,m.sig)
+			}
+			else {
+				filename = ImageMgt2.makeStampedFile(
+				m.guid,
+				m.fileupload,
+				m.label,
+				m.dir,
+				m.sig)
+			}
+		} catch (Exception ex) {
+			throw new RuntimeException("Is the file in the right folder.  Making a stamped file: ${m.fileupload}, $ex")
 		}
 		// move original jpg file to IMG_* for cleanup
 		new File("$dir/${m.fileupload}").renameTo("$dir/IMG_${m.fileupload}")
