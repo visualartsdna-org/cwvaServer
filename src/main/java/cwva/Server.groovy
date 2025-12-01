@@ -52,6 +52,18 @@ class Server {
 		server.start();
 		server.join();
 	}
+	
+	static def rehost(r) {
+		if (r instanceof List) {
+			def r2 = []
+			r.each{
+				r2 += it.replaceAll("http://visualartsdna.org",getInstance().cfg.host)
+			}
+			return r2
+		} else
+		r.replaceAll("http://visualartsdna.org",getInstance().cfg.host)
+	}
+
 
 	def logOut(s) {
 		def time = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date())
