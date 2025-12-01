@@ -34,17 +34,6 @@ class VocabTree {
 	}
 	
 	
-	def rehost(r) {
-		if (r instanceof List) {
-			def r2 = []
-			r.each{
-				r2 += it.replaceAll("http://visualartsdna.org",host)
-			}
-			return r2
-		} else
-		r.replaceAll("http://visualartsdna.org",host)
-	}
-	
 	/**
 	 * Recursively builds a tree node for the given URI
 	 * @param uri The URI of the current node
@@ -63,7 +52,7 @@ class VocabTree {
 		}
 		
 		return [(label): [
-			uri: rehost(uri),              // This line adds the uri
+			uri: cwva.Server.rehost(uri),              // This line adds the uri
 			definition: definition,
 			children: children
 		]]
