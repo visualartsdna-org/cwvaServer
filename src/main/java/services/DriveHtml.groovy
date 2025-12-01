@@ -35,7 +35,7 @@ Usage, services.Driver ...
 		["browse", "work", "index"])) {
 			switch (cmd) {
 				case "index":
-					def s = new IndexHtml().get()
+					def s = new About().get()
 					println s
 					break;
 
