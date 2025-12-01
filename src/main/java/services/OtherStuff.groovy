@@ -4,6 +4,7 @@ import org.junit.Test
 import util.Gcp
 import groovy.json.JsonSlurper
 import rdf.JenaUtils
+import rdf.QuerySupport
 
 class OtherStuff {
 	
@@ -32,7 +33,7 @@ class OtherStuff {
 	def graphTables = """
 """
 
-	def get() {
+	def get(host) {
 		
 	def grafTblArrangement = "</tr><tr></tr><tr>" // stacked
 	//def grafTblArrangement = "" // side-by-side
@@ -44,27 +45,38 @@ class OtherStuff {
 <style>
 p {
   margin-left: 4%;
+ font-size: 18px;
 }
 table {
-  margin-left: 10%;
+  margin-left: 4%;
 }
 </style>
 <center><h2>
-More
+Utility
 </h2></center>
 <p/>
-<a href="https://w3id.org/lode/owlapi/http://visualartsdna.org/model/">Ontology Documentation (via LODE server)</a><br/>
-<a href="${cfg.host}/html/AICWVAReview.html">Ontology and Thesaurus AI Reviews by OpenAI, MetaAI, Gemini and Perplexity</a><br/>
-<!--
-See the Ontology, "Information Model for the Visual Arts," on <a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/model/">Archivo</a><br/>
--->
 <a href="${cfg.host}/sparql">SPARQL Browser</a><br/>
 <a href="${cfg.host}/metricTables">Metrics</a><br/>
-<a href="${cfg.host}/html/references.html">References</a><br/>
 <p/>
 <p/>
 <p/>
-The data in the instance model can be viewed with:
+<h4>Concept Collections</h4>
+<p/>
+"""
+	
+	def lc = new QuerySupport().queryCollections()
+	lc.each{
+		sb.append """
+<a href="${it.s.replaceAll("http://visualartsdna.org",host)}">${it.l}</a><br>
+"""
+	}
+		sb.append """
+<p/>
+<p/>
+<p/>
+<h4>Graphics</h4>
+<p/>
+View instance data graphics.
 <p>
 <table><tr><td>
 <table cellspacing="3" cellpadding="3" style="white-space: nowrap">
