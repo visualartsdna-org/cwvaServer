@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cwvaServer</groupId>
 	<artifactId>cwvaServer</artifactId>
-	<version>2.4.15</version>
+	<version>3.0.0</version>
 	<name>server</name>
 	<packaging>jar</packaging>
 	<description>cwva project</description>
@@ -14,7 +14,22 @@
 	     <app.version>${pom.version}</app.version>
     </properties>	
 	<dependencies>
+<dependency>
+    <groupId>com.madgag</groupId>
+    <artifactId>animated-gif-lib</artifactId>
+    <version>1.0</version>
+</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+<dependency>
+    <groupId>org.jcodec</groupId>
+    <artifactId>jcodec</artifactId>
+    <version>0.2.5</version>
+</dependency>
+<dependency>
+    <groupId>org.jcodec</groupId>
+    <artifactId>jcodec-javase</artifactId>
+    <version>0.2.5</version>
+</dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-math3</artifactId>
