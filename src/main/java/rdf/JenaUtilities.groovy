@@ -241,8 +241,8 @@ class JenaUtilities extends JenaUtils {
 					//println "Model loaded successfully with UTF-16 fallback."
 					return model
 	
-				} catch (Exception finalEx) {
-					throw new RuntimeException("Loading with all fallbacks failed. $finalEx")
+				} catch (Exception finalEx) { // report original exception
+						throw new RuntimeException("Loading failed. $e")
 				}
 			} catch (Exception ex) {
 				throw new RuntimeException( "An unexpected error occurred during Windows-1252 fallback.")
