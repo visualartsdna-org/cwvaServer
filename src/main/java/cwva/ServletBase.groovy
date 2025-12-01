@@ -151,6 +151,10 @@ class ServletBase extends HttpServlet {
 				sendIconFile(response,"$images/favicon.ico")
 				break
 
+			case "/favicon.png":
+				sendIconFile(response,"$images/favicon.png")
+				break
+
 			default:
 				state = "unknownPath"
 				logOut "unknown path $path, ${query?:""}"
@@ -240,10 +244,10 @@ class ServletBase extends HttpServlet {
 	}
 	def sendModelFile(response, fileSpec) {
 		def m = ju.loadFiles(fileSpec)
-		sendModel(response, m, "TTL")
+		sendModel(response, m, "text/turtle")
 	}
 	def sendModel(response, model) {
-		sendModel(response, model, "TTL")
+		sendModel(response, model, "text/turtle")
 	}
 	// supported types: ttl rdf/xml jsonld json-ld nt nq trig trix rt trdf
 	// TODO: add: rdfa microdata
@@ -312,7 +316,8 @@ class ServletBase extends HttpServlet {
 		def path = request._uri._path
 		def ip = getIP(request)
 		
-		if (path == "/favicon.ico") 
+		if (path == "/favicon.ico" 
+			|| path == "/favicon.png") 
 			return
 		if (path.contains("/images/"))
 			path = "/images"
