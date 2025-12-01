@@ -35,6 +35,12 @@ class ModelViewer {
 <!--required-->
    <script src="https://cdn.tailwindcss.com"></script>
 <style> 
+<!--    body {
+        background-color: #DDDDDD;
+    }-->
+table {
+  margin-left: 5%;
+}
 .mvDiv {
   border: 1px solid;
   margin-left: 0;
@@ -96,13 +102,14 @@ function setAction(x) {
 		bkgndImage = qs.queryOnePropertyFromInstance(bkgVal, "schema:image")
 		
 					
-		sb.append """${do3d(rehost(model),rehost(bkgndImage),site, optionStr, work, siteName)}"""
+		sb.append """${do3d(cwva.Server.rehost(model),cwva.Server.rehost(bkgndImage),site, optionStr, work, siteName)}"""
 		
 	def uri = work.substring("http://".length())
 	sb.append """
 <table><tr><td>
-	<a href="${rehost(parseUrl(work))}">$label</a>. $descr
+	<a href="${cwva.Server.rehost(parseUrl(work))}">$label</a>. $descr
 	</td></tr><tr><td>
+<!--	</td></tr><tr><td> -->
 	Visit <a href="$site">$siteName</a>.
 	</td></tr></table>
 """
@@ -212,17 +219,6 @@ $optionStr
 """
 	}
 
-	def rehost(r) {
-		if (r instanceof List) {
-			def r2 = []
-			r.each{
-				r2 += it.replaceAll("http://visualartsdna.org",host)
-			}
-			return r2
-		} else
-		r.replaceAll("http://visualartsdna.org",host)
-	}
-	
 	def removeProtocol(site) {
 		site.replaceAll("http://","").replaceAll("https://","").replaceAll("/","").replaceAll("www.","")
 	}
