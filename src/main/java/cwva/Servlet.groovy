@@ -188,12 +188,16 @@ class Servlet extends ServletBase {
 				}
 				break
 
-			case "/browse":
+			case "/":
 				if (query)
 					query += "&isMobile=$isMobile"
 				else query = "isMobile=$isMobile"
 				mq=parse(query)
 				mq.order="Date"
+				mq.artist="all"
+				mq.offset="0"
+				mq.limit="20"
+				mq.page="1"
  				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs, mq)
 				sendHtml(response,s)
 				break
@@ -207,17 +211,26 @@ class Servlet extends ServletBase {
 				sendHtml(response,s)
 				break
 
+			case "/browseFilter":
+				if (query)
+					query += "&isMobile=$isMobile"
+				else query = "isMobile=$isMobile"
+				mq=parse(query)
+				def s = new BrowseWorks().browse(cfg.host,dbm().rdfs, mq)
+				sendHtml(response,s)
+				break
+
 			case "/browse2":
 				sendHtmlFile(response,"$dir/browse.html")
 				break
 
-			case "/":
-				def s = new IndexHtml(cfg).get()
+			case "/about":
+				def s = new About(cfg).get()
 				sendHtml(response,s)
 				break
 
 			case "/otherStuff":
-				def s = new OtherStuff().get()
+				def s = new OtherStuff().get(cfg.host)
 				sendHtml(response,s)
 				break
 
