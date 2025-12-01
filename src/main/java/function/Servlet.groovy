@@ -176,7 +176,7 @@ class Servlet extends ServletBase {
 
 			case "/statsChart":
 				def h = new StatsReport().driver(
-					"http://visualartsdna.org/metrics",
+					"https://visualartsdna.org/metrics",
 			"C:/work/stats/metricsSummary.sparql",
 			"C:/work/stats/log.zip")
 				sendHtml(response, "$h")
