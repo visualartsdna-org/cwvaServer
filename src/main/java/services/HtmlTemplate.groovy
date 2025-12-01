@@ -104,10 +104,10 @@ tr:nth-child(even) {background-color: #f8f8f8;}
 <small>
 <nav class="top-nav">
   <ul class="top-nav__list">
-  <li><a class="top-nav__item" href="$host">VisualArtsDNA</a></li>
-  <li><a class="top-nav__item"href="$host/browse">Browse</a></li>
-  <li><a class="top-nav__item"href="$host/vocabTree">Thesaurus</a></li>
-  <li><a class="top-nav__item"href="$host/otherStuff">More</a></li>
+  <li><a class="top-nav__item" href="$host">Home</a></li>
+  <li><a class="top-nav__item"href="$host/vocabTree">Concepts</a></li>
+  <li><a class="top-nav__item"href="$host/otherStuff">Utility</a></li>
+  <li><a class="top-nav__item"href="$host/about">About</a></li>
   </ul>
 </nav>
 </small>
