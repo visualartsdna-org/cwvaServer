@@ -56,3 +56,5 @@ scripts/
 
 # STS (Spring Tool Suite)
 .springBeans
+cwvaServer-dependencies.txt
+dependency-reduced-pom.xml
