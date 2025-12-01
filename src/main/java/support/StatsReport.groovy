@@ -27,7 +27,7 @@ prefix st:    <http://example.com/>
 
 	def handleQueryParams(m) {
 		
-		def site = "http://${m.tgt}/metrics"
+		def site = "${m.tgt}/metrics"
 		def stats = new URL(site).text
 		def model = getStats(stats)
 		loadQueries("${cwva.Server.getInstance().cfg.dir}/res/metrics.sparql")
@@ -301,7 +301,7 @@ new Chart("myChart$i", {
 
 		def map = util.Args.get(args)
 		def sr = new StatsReport()
-		def html = sr.driver("http://visualartsdna.org/metrics",
+		def html = sr.driver("https://visualartsdna.org/metrics",
 			"C:/work/stats/metricsSummary.sparql",
 			"C:/work/stats/log.zip"
 			)
@@ -322,7 +322,7 @@ new Chart("myChart$i", {
 	@Test
 	void test() {
 		long ctms = System.currentTimeMillis()
-		def html = driver("http://visualartsdna.org/metrics",
+		def html = driver("https://visualartsdna.org/metrics",
 			"C:/work/stats/metricsSummary.sparql",
 			"C:/work/stats/log.zip"
 //			"C:/work/stats/log"
