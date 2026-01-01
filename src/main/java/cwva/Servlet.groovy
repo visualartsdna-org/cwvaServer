@@ -8,11 +8,24 @@ import java.text.SimpleDateFormat
 import rdf.JenaUtils
 import rdf.QuerySupport
 import services.*
-import util.Tmp
 import java.nio.charset.StandardCharsets
+import org.apache.jena.query.*
+import util.Tmp
 
 class Servlet extends ServletBase {
 
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	throws ServletException, IOException {
+
+		try {
+			handler(request._uri._path,request._uri._query,response,request)
+		} catch (Exception e) {
+			logOut e.printStackTrace()
+			throw new RuntimeException("Something went wrong")
+		}
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -64,9 +77,10 @@ class Servlet extends ServletBase {
 				def n = path.lastIndexOf(".")
 				def kind="all"
 				if (n>=0) kind = path.substring(n+1)
-				tmpFile = tmp.getTemp("d3f",".html")
+				tmpFile = Tmp.getTemp("d3f",".html")
 				new D3Driver().doGet(data,kind,tmpFile)
 				sendHtmlFile(response,tmpFile)
+				Tmp.delTemp(tmpFile)
 				break
 				
 			case "/modelviewer":
@@ -85,36 +99,47 @@ class Servlet extends ServletBase {
 				break
 
 			case "/model.graph":
-				tmpFile = tmp.getTemp("dot",".html")
+				tmpFile = Tmp.getTemp("dot",".html")
 				new DotDriver().doGet(model,"svg",tmpFile)
 				sendHtmlFile(response,tmpFile)
+				Tmp.delTemp(tmpFile)
 				break
 
 			case "/vocab.graph":
-				tmpFile = tmp.getTemp("dot",".html")
+				tmpFile = Tmp.getTemp("dot",".html")
 				new DotDriver().doGet(vocab,"svgVocab",tmpFile)
 				sendHtmlFile(response,tmpFile)
+				Tmp.delTemp(tmpFile)
 				break
 
 			case "/dataModel.graph":
-				tmpFile = tmp.getTemp("dot",".html")
+				tmpFile = Tmp.getTemp("dot",".html")
 				new DotDriver().doGet(data,"svgImpOnto",tmpFile)
 				sendHtmlFile(response,tmpFile)
+				Tmp.delTemp(tmpFile)
 				break
 
 			case ~/\/lsys\..*/:
 				def n = path.lastIndexOf(".")
 				def kind="all"
 				if (n>=0) kind = path.substring(n+1)
-				tmpFile = tmp.getTemp("lsys",".jpg")
+				tmpFile = Tmp.getTemp("lsys",".jpg")
 				new LsysDriver().doGet(data,kind,tmpFile)
 				sendJpegFile(response,tmpFile)
+				Tmp.delTemp(tmpFile)
 				break
 
 			case "/vocabTree":
 				if (!mq.containsKey("isMobile"))  // maybe redirected from other server
 					mq["isMobile"] = ""+isMobile
  				def s = new VocabTree().process(mq, cfg.host, dbm().vocab)
+				sendHtml(response,s)
+				break
+				
+			case "/agentClient":
+				if (!mq.containsKey("isMobile"))  // maybe redirected from other server
+					mq["isMobile"] = ""+isMobile
+ 				def s = new AgentClient().process(mq, cfg.agentUrl, cfg.host)
 				sendHtml(response,s)
 				break
 				
@@ -275,7 +300,6 @@ class Servlet extends ServletBase {
 		}
 		if (state) setState(request)
 		response.setStatus(HttpServletResponse.SC_OK);
-		tmp.rmTemps()
 	}	
 
 }
