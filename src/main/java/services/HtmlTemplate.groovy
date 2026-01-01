@@ -3,11 +3,13 @@ package services
 import java.text.SimpleDateFormat
 
 class HtmlTemplate {
-	// http://clipart-library.com/clipart/dna-cliparts_4.htm
+	
 	static def head(host) {
 		head(host, "#FFFFFF")
 	}
 	static def head(host, bgColor) {
+		
+		def html =
 		"""
 <html>
 <head>
@@ -105,18 +107,21 @@ tr:nth-child(even) {background-color: #f8f8f8;}
 <nav class="top-nav">
   <ul class="top-nav__list">
   <li><a class="top-nav__item" href="$host">Home</a></li>
+""" 
+		html += 
+(cwva.Server.getInstance().cfg.agentUrl ? """<li><a class="top-nav__item"href="$host/agentClient">Ask</a></li>\n""" : "")
+
+html +=
+"""
+  
   <li><a class="top-nav__item"href="$host/vocabTree">Concepts</a></li>
   <li><a class="top-nav__item"href="$host/otherStuff">Utility</a></li>
   <li><a class="top-nav__item"href="$host/about">About</a></li>
   </ul>
 </nav>
 </small>
-"""
-//		${getSparql(host)}
-		
-//	<!--  <li><a href="#contact">Contact</a></li>
-//	<li><a href="#about">About</a></li>
-//	-->
+""" 
+		html
 	}
 	
 	static def getSparql(host) {
