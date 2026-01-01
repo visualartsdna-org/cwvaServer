@@ -70,7 +70,7 @@ select ?image ?label ?uri ?artist ?site {
 	def html(data, host, mq) {
 
 		def html = HtmlTemplate.head(host, "white")
-		
+		int pages=1
 		if (isMobile) {
 			html += """
 <style>
@@ -169,6 +169,7 @@ select ?image ?label ?uri ?artist ?site {
 """
 		}
 		
+		//def page = 1
 		
 		html += """
 <table style="width: 100%;">
@@ -194,6 +195,7 @@ Order:
 <input type="radio" id="title" name="order" onclick="orderFunction()" value="Title" ${mq.order=="Title" ? "checked" : ""}>
 <label for="title">Title</label>
 <input type="hidden" name="artist" value="${mq.artist}">
+<input type="hidden" id="page" name="page" value="$pages">
 </form>
 """
 		html += """
@@ -205,6 +207,7 @@ Order:
     <option value="rspates" ${mq.artist=="rspates" ? "selected" : ""}>rspates</option>
   </select>
 	<input type="hidden" name="order" value="${mq.order}">
+	<input type="hidden" id="page" name="page" value="$pages">
 </form>
 </h4>
 
@@ -324,7 +327,7 @@ ${m.artist}
 			def lp=[]
 			// figure out all the page params first
 			int l=0 // recalls last value of i, for offset last page
-			int j=1 // count of the pages
+//			int pages=1 // count of the pages
 			int k=0 // for limit last page
 			int dataSize = dsize[0].cnt as int
 			// i is the increment by page size of works
@@ -332,9 +335,9 @@ ${m.artist}
 			for (int i= 0; i<dataSize; i+=page) {
 				k = Math.min(i + page,dataSize)
 				l = i
-				def mp=[pg:j,oset:i,lim:k]
+				def mp=[pg:pages,oset:i,lim:k]
 				lp += mp
-				j++
+				pages++
 				l=i
 			}
 			
@@ -365,7 +368,7 @@ limit=${lp[pg-1].lim}&
 page=${lp[pg-1].pg}">
 $pg</a></li>
 """
-			if (pg==j-1) {
+			if (pg==pages-1) {
 				html += """
    <li class="prev-next">
 <a class="disabled" href="#">Next &raquo;</a>
@@ -391,7 +394,7 @@ page=${lp[pg].pg}">Next &raquo;</a>
   <li><a href="$host/browseFilter?artist=${mq.artist}&order=${mq.order}&offset=0&limit=$page&page=1">&laquo;</a></li>
 
 """
-		int j=1
+//		int pages=1
 		int k=0
 		int l=0
 		int dataSize = dsize[0].cnt as int
@@ -399,13 +402,13 @@ page=${lp[pg].pg}">Next &raquo;</a>
 			k = Math.min(i + page,dataSize)
 			l = i
 			html += """
-  <li><a ${mq.page == ""+j ? "class=\"active\"": ""} href="$host/browseFilter?artist=${mq.artist}&order=${mq.order}&offset=${i}&limit=${k}&page=$j">$j</a></li>
+  <li><a ${mq.page == ""+pages ? "class=\"active\"": ""} href="$host/browseFilter?artist=${mq.artist}&order=${mq.order}&offset=${i}&limit=${k}&page=$pages">$pages</a></li>
 """
-			j++
+			pages++
 		}
 
 		html += """
-  <li><a href="$host/browseFilter?artist=${mq.artist}&order=${mq.order}&offset=${l}&limit=${k}&page=${j-1}">&raquo;</a></li>
+  <li><a href="$host/browseFilter?artist=${mq.artist}&order=${mq.order}&offset=${l}&limit=${k}&page=${pages-1}">&raquo;</a></li>
 </ul>
 """
 		}
