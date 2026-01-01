@@ -101,7 +101,7 @@ st:${getGuid()}
 		new File(qf).eachLine{
 			s += "$it\n"
 		}
-		def fs = s.split(/\n\n/)
+		def fs = s.split(/\n[\n]+/)  // two+ newlines between queries
 		fs.each{
 			int i=0
 			def key
