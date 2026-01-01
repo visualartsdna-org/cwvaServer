@@ -106,44 +106,25 @@ VADNA RDF Entry
 </td></tr><tr><td>
   <br><label for="hasPaper">hasPaper:</label><br>
   <select id="hasPaper" name="hasPaper"> 
-<option value="Fabriano Artistico Grana Fina" >Fabriano Artistico Grana Fina</option>
-<option value="Canson Mix Media" >Canson Mix Media</option>
-<option value="Strathmore Mixed Media" >Strathmore Mixed Media</option>
-<option value="Strathmore Toned Gray" >Strathmore Toned Gray</option>
-<option value="Strathmore Watercolor cold press, block" >Strathmore Watercolor cold press, block</option>
-<option value="Strathmore Watercolor" >Strathmore Watercolor</option>
-<option value="Strathmore heavyweight mixed media vellum finish" >Strathmore heavyweight mixed media vellum finish</option>
-<option value="Arteza Sketchbook" >Arteza Sketchbook</option>
+<option value="the:FabrianoArtisticoGranaFinaColdPress" >Fabriano Artistico Grana Fina cold press</option>
+<option value="the:FabrianoArtisticoGranaFinaHotPress" >Fabriano Artistico Grana Fina hot press</option>
+<option value="the:StrathmoreWatercolorColdPressBlock" >Strathmore Watercolor cold press, block</option>
+<option value="the:StrathmoreMixedMedia" >Strathmore Mixed Media</option>
+<option value="the:StrathmoreTonedGray" >Strathmore Toned Gray</option>
+<option value="the:CansonMixedMedia" >Canson Mixed Media</option>
+<option value="the:ArtezaSketchbook" >Arteza Sketchbook</option>
   </select>
-</td><td>
-  <br><label for="hasPaperFinish">hasPaperFinish:</label><br>
-  <select id="hasPaperFinish" name="hasPaperFinish"> 
-<option value="Cold press" >Cold press</option>
-<option value="Hot press" >Hot press</option>
-<option value="Smooth" >Smooth</option>
-<option value="Vellum surface" >Vellum surface</option>
-<option value="medium surface" >medium surface</option>
-<option value="smooth" >smooth</option>
-  </select>
-</td></tr><tr><td>
+</td>
+<td>
+  <br><label for="location">location:</label><br>
+  <input type="text" id="location" name="location" size="$inSize" value=""> 
+</td>
+</tr><tr><td>
   <br><label for="height">height:</label><br>
   <input type="text" id="height" name="height" size="$inSize" value=""> 
 </td><td>
-  <br><label for="hasPaperWeight">hasPaperWeight:</label><br>
-  <select id="hasPaperWeight" name="hasPaperWeight"> 
-<option value="300" >300</option>
-<option value="140" >140</option>
-<option value="350" >350</option>
-<option value="80" >80</option>
-<option value="90" >90</option>
-<option value="98" >98</option>
-  </select>
-</td></tr><tr><td>
   <br><label for="width">width:</label><br>
   <input type="text" id="width" name="width" size="$inSize" value=""> 
-</td><td>
-  <br><label for="location">location:</label><br>
-  <input type="text" id="location" name="location" size="$inSize" value=""> 
 </td></tr><tr><td>
   <br><label for="label">label:</label><br>
   <input type="text" id="label" name="label" size="$inSize" value=""> 

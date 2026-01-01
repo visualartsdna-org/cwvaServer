@@ -49,7 +49,7 @@ class ParseRDF {
 	}
 
 	def printTtl(m) {
-		"""
+		def s = """
 # Generated ${new Date()}
 ${rdf.Prefixes.forFile}
 ${m.id}
@@ -59,20 +59,27 @@ ${m.id}
 	schema:height      "${m.height}"^^xs:float ;
 	schema:width       "${m.width}"^^xs:float ;
 	schema:identifier        "${m.guid}" ;
-	schema:location "${m.location}" ;
 	schema:description \"\"\"${m.description}\"\"\" ;
-	skos:note \"\"\"${m.note}\"\"\" ;
-	schema:datePublished "${m.recordedDateTime}"^^xs:dateTime ;
+"""
+	if (m.location) {
+		s += """	schema:location "${m.location}" ;\n"""
+	} 
+	else s += """#	no schema:location\n"""
+	if (m.note) {
+		s += """	skos:note "\"\"\"${m.note}\"\"\" ;\n"""
+	} 
+	else s += """#	no skos:note\n"""
+	
+	s += """\tschema:datePublished "${m.recordedDateTime}"^^xs:dateTime ;
 	schema:dateCreated "${m.completedDateTime}"^^xs:dateTime ;
-	vad:hasPaper "${m.hasPaper}" ;
-	vad:hasPaperFinish "${m.hasPaperFinish}" ;
-	vad:hasPaperWeight "${m.hasPaperWeight}"^^xs:int ;
+	vad:hasPaper ${m.hasPaper} ;
 	vad:workOnSite <${m.workOnSite}> ;
 	vad:hasArtistProfile ${m.hasArtistProfile} ;
 	vad:qrcode <${m.qrcode}> ;
 	schema:image <http://visualartsdna.org/images/${m.fileupload}> ;
 	.
 """
+	s
 	}
 	
 	def verify(m) {
@@ -90,8 +97,6 @@ ${m.id}
 	assert m.recordedDateTime   , "no m.recordedDateTime "
 	assert m.completedDateTime  , "no m.completedDateTime"
 	assert m.hasPaper           , "no m.hasPaper         "
-	assert m.hasPaperFinish     , "no m.hasPaperFinish   "
-	assert m.hasPaperWeight     , "no m.hasPaperWeight   "
 	assert m.workOnSite         , "no m.workOnSite       "
 	assert m.hasArtistProfile   , "no m.hasArtistProfile "
 	assert m.qrcode             , "no m.qrcode           "
