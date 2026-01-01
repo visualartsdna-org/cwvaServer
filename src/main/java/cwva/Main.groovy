@@ -25,6 +25,7 @@ class Main {
 			ns: "work",
 			host: "http://192.168.1.71:$port",
 			twinHost: "http://192.168.1.71:8082",
+			agentUrl: "http://localhost:8090",
 			verbose: true,
 			clobber: false,
 			multithreaded: false,
