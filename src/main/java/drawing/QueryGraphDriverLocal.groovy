@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test
 
 class QueryGraphDriverLocal extends QueryGraphDriver{
 	
-	def tmp = new Tmp()
 	
 	def queryC = """
 # Watercolors
@@ -109,8 +108,8 @@ construct {
 	def translate(infile,ruleFile,query,size) {
 		def trans = new Translate()
 		
-		def jsonld = tmp.getTemp("jsonld",".txt")
-		def tree = tmp.getTemp("tree",".txt")
+		def jsonld = Tmp.getTemp("jsonld",".txt")
+		def tree = Tmp.getTemp("tree",".txt")
 		def root = "query"
 		
 		def jena = new JenaUtils()
@@ -133,7 +132,8 @@ construct {
 		
 		new GenConfig().write(ruleFile, ts, desc, size, "X=X", "realtime", "VisualArtsDNA.org")
 		//write(ruleFile,ts,desc,size)
-		tmp.rmTemps()
+		Tmp.delTemp(jsonld)
+		Tmp.delTemp(tree)
 	}
 	
 	def getQueryDesc(q) {
