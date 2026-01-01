@@ -97,7 +97,7 @@ Themes, concepts, and relationships among works
 Supporting documentation such as reference images, notes, and provenance
 </li>
 </ul>
-
+<p/>
 This structure allows the system to reflect not just what a work is, but how it relates to other works, influences, and artistic choices.
 
 <h3>Instances and Knowledge Graph</h3>
@@ -134,6 +134,9 @@ The ontology is available in
 <a href="${cfg.host}/model.graph">graphical form&#42;</a>
 and in an 
 <a href="${cfg.host}/model/">RDF file (text/turtle)</a>.
+<p/>
+See the <a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/model/">ontology on DBpedia Archivo</a>.  
+[Note: check <a href="https://archivo.dbpedia.org/">DBpedia Archivo</a> for site availability.]
 <p/>
 A thesaurus of visual arts terms is available in
 <a href="${cfg.host}/vocab.graph">graphical form&#42;</a>
