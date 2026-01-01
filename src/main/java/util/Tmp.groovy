@@ -3,20 +3,20 @@ package util
 class Tmp {
 	
 	// local temp files
-	def temps=[]
+//	def temps=[]
 	
-	def getTemp(pre,suf) {
+	static def getTemp(pre,suf) {
 		File tempFile = File.createTempFile(pre, suf)
 		tempFile.deleteOnExit()
-		temps << tempFile
+//		temps << tempFile
 		tempFile.absolutePath
 	}
 	
-	def rmTemps() {
-		temps.each{
-			it.delete()
-		}
-	}
+//	def rmTemps() {
+//		temps.each{
+//			it.delete()
+//		}
+//	}
 	
 	static def delTemp(tmp) {
 		new File(tmp).delete()
