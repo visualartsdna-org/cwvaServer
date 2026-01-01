@@ -97,7 +97,7 @@ Usage,
 		def qgdrive = new QueryGraphDriverLocal()
 
 		if (!ruleFile) 
-			ruleFile = tmp.getTemp("rule",".json")
+			ruleFile = Tmp.getTemp("rule",".json")
 
 		switch(scope) {
 			case "onto":
@@ -147,6 +147,6 @@ Usage,
 				println "$scope is not a valid scope"
 				return
 		}
-		tmp.rmTemps()
+		Tmp.delTemp(ruleFile)
 	}
 }
