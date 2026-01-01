@@ -117,7 +117,7 @@ ${htmlEpilog}
   </head>
   <body>
     <h1>$title</h1>
-    <div id="container" style="width: 1500px; height: 1000px; border:1px solid black; ">
+    <div id="container" style="width: 100%; height: 100%; border:1px solid black; ">
 """
 		def parser=new XmlSlurper()
 		parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
