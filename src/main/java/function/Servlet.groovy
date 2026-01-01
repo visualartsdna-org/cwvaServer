@@ -6,7 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import cwva.ServletBase
 import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
 import java.text.SimpleDateFormat
+import org.apache.jena.query.ResultSet
 import rdf.JenaUtilities
 import rdf.tools.SparqlConsole
 import rdf.util.DBMgr
@@ -14,7 +16,7 @@ import rdf.util.ViaToTtl
 import support.*
 import support.util.*
 import util.Guid
-import util.Tmp
+import org.apache.jena.query.*
 
 class Servlet extends ServletBase {
 
@@ -354,8 +356,6 @@ class Servlet extends ServletBase {
 		}
 		if (state) setState(request)
 		response.setStatus(HttpServletResponse.SC_OK);
-		//if (tmp) Tmp.delTemp(tmp)
-		tmp.rmTemps()
 	}
 		
 }
