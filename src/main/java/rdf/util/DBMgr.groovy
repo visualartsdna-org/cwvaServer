@@ -92,9 +92,10 @@ class DBMgr {
 
 		schema = ju.loadFiles(cfg.model)
 		//rdfs = ModelFactory.createRDFSModel(schema, data)
-		rdfs = getReasoner("owlmicro", schema, data)
+		//rdfs = getReasoner("owlmicro", schema, data)
+		rdfs = skosInfer(data,"${cwva.Server.getInstance().cfg.dir}/res/rdfs.rules")
 		rdfs = skosInfer(rdfs,"${cwva.Server.getInstance().cfg.dir}/res/skos.rules")
-		//rdfs = ModelFactory.createRDFSModel(schema, data)
+		rdfs = ModelFactory.createRDFSModel(schema, data)
 		Policy.exec(rdfs)
 		validate(rdfs)
 	}
@@ -192,12 +193,12 @@ class DBMgr {
 		}
 	}
 	
-	def skosInfer(df,rules) {
-		
-		Model data = ju.loadFiles(df)
-		skosInfer( data, rules)
-		
-	}
+//	def skosInfer(df,rules) {
+//		
+//		Model data = ju.loadFiles(df)
+//		skosInfer( data, rules)
+//		
+//	}
 	
 	def skosInfer(Model data,rules) {
 		//def ju = new JenaUtilities()
