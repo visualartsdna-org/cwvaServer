@@ -161,14 +161,21 @@ class Servlet extends ServletBase {
 				sendHtml(response, "$s")
 				break
 
+            case "/related-concepts.html":
+            case "/related.entry":
 			case ~/\/related/:
-				def s = rm.process()
-				sendHtml(response, "$s")
+				def m = rm.handleHtmlPage()
+				sendHtml(response, "${m.body}")
 				break
 
-			case "/related.entry":
-				def s = rm.handleQueryParams(mq)
-				sendHtml(response, "$s")
+           case "/api/related-concepts":
+				def m = rm.handleConceptsApi()
+                sendJson(response, "${m.body}")
+				break
+
+            case "/api/config":
+ 				def m = rm.handleConfigApi()
+                sendJson(response, "${m.body}")
 				break
 
 			case "/statsReport":
@@ -190,6 +197,18 @@ class Servlet extends ServletBase {
 
 			case "/":
 				sendHtmlFile(response,"$dir/html/function.html")
+				break
+				
+			case "/conceptImport":
+				def src = "/stage/conceptQueue"
+				def tgt = "/stage/metadata/vocab"
+				def vm = cwva.Server.getInstance().dbm.vocab
+				def lcm = new LoadConceptMatch(vm)
+				def lcq = new LoadConceptQueue(vm, lcm)
+				def s = lcm.formatHeader()
+				s += lcq.load(src,tgt)
+				s += lcq.loadTtl(src,tgt)
+				sendText(response, s)
 				break
 
 			case "/vocab":
