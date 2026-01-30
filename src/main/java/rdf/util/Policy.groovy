@@ -33,7 +33,7 @@ class Policy {
 			l = load()
 			l.each{
 				try {
-					ju.queryExecUpdate( model,"", it)
+					ju.queryExecUpdate( model,rdf.Prefixes.forQuery, it)
 					n++
 				} catch (Exception ex) {
 					println "ERROR in policy update:\n$it"
