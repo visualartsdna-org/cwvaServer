@@ -1,12 +1,18 @@
 package cwva
 
 import rdf.JenaUtilities
+import rdf.tools.SparqlConsole
 import util.Tmp
 import services.Svg2Html
 
 class DotDriver extends BaseDriver {
-
+	
 	def doGet(ttl,kind,html) {
+		doGet(ttl,kind,html,[:])
+	}
+	def ju = new JenaUtilities()
+	
+	def doGet(ttl,kind,html,mq) {
 
 		switch(kind) {
 			case "svg":
@@ -19,7 +25,6 @@ class DotDriver extends BaseDriver {
 				break
 
 			case "svgVocab":
-				def ju = new JenaUtilities()
 				def svg = Tmp.getTemp(".svg")
 				def dot = Tmp.getTemp(".dot")
 				def ttlTmp = Tmp.getTemp(".ttl")
@@ -27,6 +32,36 @@ class DotDriver extends BaseDriver {
 				ju.saveModelFile(m, ttlTmp, "TTL")
 				services.VocabToDotDef.driver(ttl,dot)
 				drive(ttl, dot, html, svg,"VisualArtsDNA Thesaurus")
+				Tmp.delTemp(svg)
+				Tmp.delTemp(dot)
+				Tmp.delTemp(ttlTmp)
+				break
+
+			case "svgVocab2":
+				def svg = Tmp.getTemp(".svg")
+				def dot = Tmp.getTemp(".dot")
+				def ttlTmp = Tmp.getTemp(".ttl")
+				def m = ju.loadFiles(ttl)
+				ju.saveModelFile(m, ttlTmp, "TTL")
+				def schemes = makeSchemeList(m,mq)
+				def includeDefs = mq.defn
+				services.VocabToDotDef.driver(ttl,dot,schemes,includeDefs)
+				drive(ttl, dot, html, svg,"Schemes: $schemes")
+				Tmp.delTemp(svg)
+				Tmp.delTemp(dot)
+				Tmp.delTemp(ttlTmp)
+				break
+
+			case "svgModel2":
+				def svg = Tmp.getTemp(".svg")
+				def dot = Tmp.getTemp(".dot")
+				def ttlTmp = Tmp.getTemp(".ttl")
+				def m = ju.loadFiles(ttl)
+				ju.saveModelFile(m, ttlTmp, "TTL")
+				def schemes = makeSchemeList(m,mq)
+				def includeDefs = mq.defn
+				services.OntoToDotDef.driver(ttl,dot,schemes,includeDefs)
+				drive(ttl, dot, html, svg,"Schemes: $schemes")
 				Tmp.delTemp(svg)
 				Tmp.delTemp(dot)
 				Tmp.delTemp(ttlTmp)
@@ -63,4 +98,26 @@ class DotDriver extends BaseDriver {
 
 	}
 	
+	def makeCuri(m,s) {
+		def list = ju.getPrefix(m,s)
+		def prefix = list[0]
+		if (prefix == "cwva:") prefix = "vad:"
+		"$prefix${list[1]}"
+	}
+	
+	def makeSchemeList(m,mq) {
+		
+		def lvg = mq.vocabGraph
+		def schemeList = ""
+		if (lvg instanceof List) {
+			int i=0
+			lvg.each{
+				if (i++) schemeList += ", "
+				schemeList += "${makeCuri(m,it)}"
+			}
+		} else {
+			schemeList = makeCuri(m,lvg)
+		}
+		schemeList
+	}	
 }
