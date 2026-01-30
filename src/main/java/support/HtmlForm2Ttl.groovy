@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Model
 
 import groovy.json.JsonSlurper
 import java.text.SimpleDateFormat
+import rdf.JenaUtilities
 import rdf.JenaUtils
 
 import org.junit.Test
@@ -22,6 +23,7 @@ class HtmlForm2Ttl {
 	
 
 	def artistSite = "http://rickspates.art"
+	def ju = new JenaUtilities()
 	/*
 	 * Some thoughts:
 	 * Make hasPaper, hasPaperFinish dropdowns, ensure inclusive
@@ -53,7 +55,7 @@ VADNA RDF Entry
   <label for="type1">Watercolor</label><br>
   <input type="radio" id="type2" name="type" value="Drawing">
   <label for="type2">Drawing</label><br>
-  <input type="radio" id="type2" name="type" value="Egg Tempera">
+  <input type="radio" id="type2" name="type" value="EggTempera">
   <label for="type2">Egg Tempera</label><br>
   <input type="radio" id="type2" name="type" value="Sculpture">
   <label for="type2">Sculpture</label><br>
@@ -106,13 +108,31 @@ VADNA RDF Entry
 </td></tr><tr><td>
   <br><label for="hasPaper">hasPaper:</label><br>
   <select id="hasPaper" name="hasPaper"> 
-<option value="the:FabrianoArtisticoGranaFinaColdPress" >Fabriano Artistico Grana Fina cold press</option>
-<option value="the:FabrianoArtisticoGranaFinaHotPress" >Fabriano Artistico Grana Fina hot press</option>
-<option value="the:StrathmoreWatercolorColdPressBlock" >Strathmore Watercolor cold press, block</option>
-<option value="the:StrathmoreMixedMedia" >Strathmore Mixed Media</option>
-<option value="the:StrathmoreTonedGray" >Strathmore Toned Gray</option>
-<option value="the:CansonMixedMedia" >Canson Mixed Media</option>
-<option value="the:ArtezaSketchbook" >Arteza Sketchbook</option>
+"""
+		
+		def lm = ju.queryListMap1(
+			cwva.Server.getInstance().dbm.vocab,
+			rdf.Prefixes.forQuery, """
+		select ?s ?l {
+			?s a vad:Paper ;
+				rdfs:label ?l ;
+				schema:position ?pos .
+		} order by asc(?pos)
+	""")
+			
+		lm.each {map->
+			page += """<option value="${map.s}">${map.l}</option>
+	"""
+		}
+//<option value="the:FabrianoArtisticoGranaFinaColdPress" >Fabriano Artistico Grana Fina cold press</option>
+//<option value="the:FabrianoArtisticoGranaFinaHotPress" >Fabriano Artistico Grana Fina hot press</option>
+//<option value="the:StrathmoreWatercolorColdPressBlock" >Strathmore Watercolor cold press, block</option>
+//<option value="the:StrathmoreMixedMedia" >Strathmore Mixed Media</option>
+//<option value="the:StrathmoreTonedGray" >Strathmore Toned Gray</option>
+//<option value="the:CansonMixedMedia" >Canson Mixed Media</option>
+//<option value="the:ArtezaSketchbook" >Arteza Sketchbook</option>
+
+		page += """
   </select>
 </td>
 <td>
@@ -170,6 +190,7 @@ function myFunction() {
 </body>
 </html>
 """
+		page
 	}
 	
 	static def getNow() {
