@@ -2,6 +2,7 @@ package services
 import org.apache.commons.text.WordUtils
 
 import rdf.JenaUtils
+import rdf.tools.SparqlConsole
 
 class OntoToDotDef {
 
@@ -17,6 +18,7 @@ class OntoToDotDef {
 
 	OntoToDotDef(ttl){
 		model = ju.loadFiles(ttl)
+		updConceptSchemes(model)
 	}
 
 	static def driver(ttl,dot) {
@@ -45,6 +47,36 @@ class OntoToDotDef {
 		listProp[1].each{
 			s += "$it\n"
 		}
+		s += "${otd.getEnd()}"
+		new File(dot).text = s
+	}
+
+	static def driver(ttl,dot,schemes, inclDefns) {
+
+		def otd = new OntoToDotDef(ttl)
+		def s = "${otd.getProlog()}"
+		def l = otd.getNodes(schemes, inclDefns)
+		l.each{
+			s += "$it\n"
+		}
+//		def lp = otd.getPropNodes()
+//		lp.each{
+//			s += "$it\n"
+//		}
+		def list = otd.getLabels(schemes, inclDefns)
+		list[0].each{
+			s += "$it\n"
+		}
+		list[1].each{
+			s += "$it\n"
+		}
+//		def listProp = otd.getPropLabels()
+//		listProp[0].each{
+//			s += "$it\n"
+//		}
+//		listProp[1].each{
+//			s += "$it\n"
+//		}
 		s += "${otd.getEnd()}"
 		new File(dot).text = s
 	}
@@ -117,6 +149,45 @@ SELECT ?s ?sc ?l ?c {
 		} order by ?s
 """)
 
+		def list=[]
+		list0.each{
+				def m=[:]
+				m.s = getPrefixedLabel(it.s)
+				m.sc = getPrefixedLabel(it.sc)
+				m.l = it.l
+				m.c = it.c
+				list += m
+		}
+		def l = []
+		list.each{
+			def label = it.s
+			def color = classColor
+			def notLeaf = list.find{c->
+				c.sc == it.s
+			}
+			if (notLeaf) color = classColor
+			def s= """"${it.s}" [fillcolor="$color" color="$color" label="${label}"]"""
+			l.add s
+		}
+		l
+	}
+
+	def getNodes(schemeList, includeDefs) {
+		
+		def q = """
+SELECT ?s ?sc ?l ?c {
+  { ?s a owl:Class } UNION
+  { ?s owl:subClassOf+ ?o . ?o a owl:Class . }
+ ?s skos:inScheme ?csh .
+ optional { ?s rdfs:subClassOf ?sc }
+ #optional { ?s rdfs:label ?l }
+ ${includeDefs?"":"#"}optional { ?s rdfs:comment ?c }
+ #optional { ?s rdfs:label ?pl }
+ filter (?csh in ($schemeList))
+		} order by ?s
+"""
+
+		def list0 = ju.queryListMap1(model,rdf.Prefixes.forQuery,q)
 		def list=[]
 		list0.each{
 				def m=[:]
@@ -248,6 +319,63 @@ SELECT ?s ?sc ?l ?c ?pl {
 		[l, g]
 	}
 
+	def getLabels(schemeList, includeDefs) {
+
+		def list0 = ju.queryListMap1(model,"","""
+${rdf.Prefixes.forQuery}
+SELECT ?s ?sc ?l ?c ?pl {
+  { ?s a owl:Class } UNION
+  { ?s owl:subClassOf+ ?o . ?o a owl:Class . }
+  ?s skos:inScheme ?csh .
+ optional { ?s rdfs:subClassOf ?sc }
+ #optional { ?s rdfs:label ?l }
+ ${includeDefs?"":"#"}optional { ?s rdfs:comment ?c }
+ #optional { ?s rdfs:label ?pl }
+ filter (?csh in ($schemeList))
+		} order by ?s
+""")
+
+		def list = []
+		list0.each{
+			def m=[:]
+			m.s = getPrefixedLabel(it.s)
+			m.sc = getPrefixedLabel(it.sc)
+			m.c = it.c
+			m.l = it.l
+			m.pl = it.pl
+			list += m
+		}
+
+		def l = []
+		def g = []
+		list.each{
+			if (it.l) {
+				def s = it.l
+				def id = s.hashCode()
+				l.add """"$id" [fillcolor="$literalColor" color="$literalColor" label="${fixLabel(s)}" shape="rect"]"""
+				g.add """"${it.s}" -> "$id" [label="rdfs:label"]"""
+			}
+			if (it.c) {
+				def s = it.c
+				def id = s.hashCode()
+				l.add """"$id" [fillcolor="$literalColor" color="$literalColor" label="${fixLabel(s)}" shape="rect"]"""
+				g.add """"${it.s}" -> "$id" [label="rdfs:comment"]"""
+			}
+			if (it.pl) {
+				def s = it.pl
+				def id = s.hashCode()
+				l.add """"$id" [fillcolor="$literalColor" color="$literalColor" label="${fixLabel(s)}" shape="rect"]"""
+				g.add """"${it.s}" -> "$id" [label="rdfs:label"]"""
+			}
+			if (it.sc) {
+				def s = it.sc
+				l.add """"$s" [fillcolor="$classColor" color="$classColor" label="${fixLabel(s)}"]"""
+				g.add """"${it.s}" -> "$s" [label="rdfs:subClassOf"]"""
+			}
+		}
+		[l, g]
+	}
+
 	def fixLabel(s) {
 		def s0 = fixQuotes(s)
 		//s0.replaceAll(/[ ]+/,"\\\\n")
@@ -259,4 +387,63 @@ SELECT ?s ?sc ?l ?c ?pl {
 		def s1 = s.replaceAll(/"/,"\\\\\"")
 		s1
 	}
+	
+	/*
+	 * The filter list of concept scheme
+	 * candidate classes must align with 
+	 * the same list in the res/Policy.upd
+	 */
+	def updConceptSchemes(model) {
+		
+		ju.queryExecUpdate( model,rdf.Prefixes.forQuery, """
+# builds a concept scheme instance for
+# classes in the ontology below a set of
+# designated classes.
+insert {
+  ?sch a skos:ConceptScheme ;   
+    rdfs:label ?label ;
+	the:tag the:forOntology ;
+. 
+} where {
+ ?t a owl:Class ;
+  rdfs:label ?l ;
+.
+filter(?t in (
+vad:ArtMaterial, vad:VisualArtForms, vad:ArtElements,
+vad:ArtPrinciples, vad:ArtProduction, vad:Process, 
+vad:VisualArts, vad:ArtRealization, vad:vocabulary,
+vad:CreativeWork, vad:Art, vad:ArtHistory, vad:ArtsPersonRole,
+the:Entity, vad:ArtworkCollection
+))
+bind(iri(str(?t) + "Scheme" ) as ?sch)
+bind(str(?l) + " scheme" as ?label)
+}
+""")
+		
+		ju.queryExecUpdate( model,rdf.Prefixes.forQuery, """
+# builds a concept scheme membership from
+# classes in the ontology below a set of
+# designated classes.
+insert {
+ ?tn skos:inScheme ?sch .
+} where {
+ ?t a owl:Class ;
+  rdfs:label ?l ;
+.
+ ?tn rdfs:subClassOf* ?t 
+
+filter(?t in (
+vad:ArtMaterial, vad:VisualArtForms, vad:ArtElements,
+vad:ArtPrinciples, vad:ArtProduction, vad:Process, 
+vad:VisualArts, vad:ArtRealization, vad:vocabulary,
+vad:CreativeWork, vad:Art, vad:ArtHistory, vad:ArtsPersonRole,
+the:Entity, vad:ArtworkCollection
+))
+bind(iri(str(?t) + "Scheme" ) as ?sch)
+bind(str(?t) + "Scheme" as ?label)
+}
+""")
+		
+	}
+
 }
