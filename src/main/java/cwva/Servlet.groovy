@@ -105,9 +105,23 @@ class Servlet extends ServletBase {
 				Tmp.delTemp(tmpFile)
 				break
 
+			case "/model.graph2":
+				tmpFile = Tmp.getTemp("dot",".html")
+				new DotDriver().doGet(model,"svgModel2",tmpFile, mq)
+				sendHtmlFile(response,tmpFile)
+				Tmp.delTemp(tmpFile)
+				break
+
 			case "/vocab.graph":
 				tmpFile = Tmp.getTemp("dot",".html")
 				new DotDriver().doGet(vocab,"svgVocab",tmpFile)
+				sendHtmlFile(response,tmpFile)
+				Tmp.delTemp(tmpFile)
+				break
+
+			case "/vocab.graph2":
+				tmpFile = Tmp.getTemp("dot",".html")
+				new DotDriver().doGet(vocab,"svgVocab2",tmpFile, mq)
 				sendHtmlFile(response,tmpFile)
 				Tmp.delTemp(tmpFile)
 				break
