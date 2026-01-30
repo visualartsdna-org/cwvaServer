@@ -22,6 +22,17 @@ class QuerySupport {
 		ju.queryListMap1(mdl, prefixes,sql)
 	}
 	
+	def queryConceptSchemes(type) {
+		
+		ju.queryListMap1(mdl, prefixes,
+		"""select ?s ?l {
+?s a skos:ConceptScheme;
+		the:tag $type .
+	{?s skos:prefLabel ?l} union {?s rdfs:label ?l}
+} order by ?l
+""")
+	}
+	
 	def queryCollections() {
 		
 		ju.queryListMap1(mdl, prefixes,
