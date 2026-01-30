@@ -57,7 +57,7 @@ class HtmlTemplate {
 
 .top-nav__item a {
   display: block;
-  font-size: 1.4rem;       /* similar visual size to your old 22px on body */
+  font-size: 22px;       /* similar visual size to your old 22px on body */
   color: steelblue;
   text-decoration: none;
   padding: 0.5rem 0;       /* vertical centering */
@@ -115,7 +115,7 @@ html +=
 """
   
   <li><a class="top-nav__item"href="$host/vocabTree">Concepts</a></li>
-  <li><a class="top-nav__item"href="$host/otherStuff">Utility</a></li>
+  <li><a class="top-nav__item"href="$host/otherStuff">Explore</a></li>
   <li><a class="top-nav__item"href="$host/about">About</a></li>
   </ul>
 </nav>
