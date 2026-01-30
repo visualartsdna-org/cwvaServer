@@ -31,5 +31,17 @@ class TestJunk3 {
 		println Tmp.temps
 	}
 
+	@Test
+	void testHost() {
+		println containsHost("r=http://192.168.1.71/thesaurus/visualArtsProcess")
+	}
+	def ip="192.168.1.119"
+	def host="http://192.168.1.71:80"
+	def containsHost(s) {
+		def h0 = new URL(host)
+		s.contains(h0.getHost()) || s.contains(ip)
+		
+	}
+		
 
 }

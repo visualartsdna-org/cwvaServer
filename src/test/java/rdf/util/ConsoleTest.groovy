@@ -20,18 +20,24 @@ class ConsoleTest {
 	def ju = new JenaUtils()
 	
 	@Test
+	void testMetrics() {
+		def m = ju.loadFiles("C:/Users/ricks/AppData/Local/Temp/tmp6299589535918580627.ttl")
+		new SparqlConsole().show(m)
+	}
+	
+	@Test
 	void testSPARQL() {
 		def l = [
 			//"C:/work/stats/artpal/artPal.ttl",
 			"C:/work/stats/logMetric.ttl",
 			]
 		def m2 = ju.loadListFilespec(l)
-		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl")
+		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl/model")
 		m.add m2
 		new SparqlConsole().show(m)
 	}
 	
-	
+
 	@Test
 	void test() {
 		def ju = new JenaUtils()

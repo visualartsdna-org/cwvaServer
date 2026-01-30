@@ -121,6 +121,13 @@ WHERE {
 	}
 	
 	@Test
+	void testWhatItLooksLike() {
+		def dataFile = "C:/work/stats/ttl/out_202503121559.ttl"
+		Model data = ju.loadFiles(dataFile);
+		println ju.saveModelString(data,"ttl")
+	}
+
+	@Test
 	void testLoad() {
 		def dataFile = "C:/stage/metadata/vocab/palette.ttl"
 		Model data = ju.loadFiles(dataFile);
