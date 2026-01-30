@@ -24,6 +24,15 @@ ${rdf.Prefixes.forQuery}
 prefix st:    <http://example.com/>
 """
 	
+	// potentially useful
+    static boolean isLikelyHuman(String uaClass) {
+        uaClass in ['chrome', 'firefox', 'safari', 'edge', 'other-browser']
+    }
+    
+	// potentially useful
+    static boolean isSearchEngine(String uaClass) {
+        uaClass in ['googlebot', 'bingbot', 'applebot', 'yandexbot', 'baidubot', 'duckduckbot']
+    }
 
 	def handleQueryParams(m) {
 		
@@ -78,11 +87,25 @@ st:${getGuid()}
 """
 					}
 					else if (k3 == "count") { // ip hits
-						ttl += """st:count $v3 ;"""
+						ttl += """st:count $v3 ;
+"""
 					}
 					else if (k3 == "unknownPath") {
-							
 						ttl += """st:unknown	${v3.count} ;
+"""
+					}
+					else if (k3.startsWith("u=")) {
+						ttl += """st:uaClass	[
+								st:link "${k3.substring(2)}" ;
+								st:count	${v3.count}  
+								] ;
+"""
+					}
+					else if (k3.startsWith("r=")) {
+						ttl += """st:referer	[
+								st:link "${k3.substring(2)}" ;
+								st:count	${v3.count}  
+								] ;
 """
 					}
 				}
@@ -90,7 +113,7 @@ st:${getGuid()}
 				ttl += """
 .
 """
-
+println ttl
 			}
 		}
 		ju.saveStringModel(ttl,"TTL")
@@ -501,7 +524,8 @@ $k
 	@Test
 	void testSparql() {
 		long ctms = System.currentTimeMillis()
-		def site = "http://visualartsdna.org/metrics"
+		def site = "https://visualartsdna.org/metrics"
+		//def site = "http://localhost/metrics"
 		def logFiles ="C:/work/stats/log.zip"
 		
 		// load current metric data to model
@@ -512,7 +536,7 @@ $k
 		ju.saveModelFile(mod,"/work/stats/testMetricsNow.ttl","ttl")
 		
 		// add all archived log-metric data to model
-		mod.add loadLogZip(logFiles)
+		//mod.add loadLogZip(logFiles)
 		new SparqlConsole().show(mod)
 		
 	}
