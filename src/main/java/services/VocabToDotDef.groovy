@@ -49,6 +49,36 @@ class VocabToDotDef {
 		new File(dot).text = s
 	}
 
+	static def driver(ttl,dot,schemes, inclDefns) {
+
+		def otd = new VocabToDotDef(ttl)
+		def s = "${otd.getProlog()}"
+		def l = otd.getNodes(schemes, inclDefns)
+		l.each{
+			s += "$it\n"
+		}
+//		def lp = otd.getPropNodes()
+//		lp.each{
+//			s += "$it\n"
+//		}
+		def list = otd.getLabels(schemes, inclDefns)
+		list[0].each{
+			s += "$it\n"
+		}
+		list[1].each{
+			s += "$it\n"
+		}
+//		def listProp = otd.getPropLabels()
+//		listProp[0].each{
+//			s += "$it\n"
+//		}
+//		listProp[1].each{
+//			s += "$it\n"
+//		}
+		s += "${otd.getEnd()}"
+		new File(dot).text = s
+	}
+
 	def getProlog() {
 		"""digraph G {
   rankdir=BT
@@ -140,6 +170,44 @@ SELECT ?s ?sc ?l ?c {
 		}
 		l
 	}
+	
+	def getNodes(schemeList, includeDefs) {
+
+		def list0 = ju.queryListMap1(model,rdf.Prefixes.forQuery,"""
+SELECT ?s ?sc ?l ?c {
+  { ?s a skos:Concept ; skos:inScheme ?csh} 
+#  { ?s a skos:Concept } UNION
+#  { ?s skos:broader+ ?o . ?o a skos:Concept . }
+ optional { ?s skos:broader ?sc }
+ #optional { ?s rdfs:label ?l }
+ ${includeDefs?"":"#"}optional { ?s skos:definition ?c }
+ #optional { ?s rdfs:label ?pl }
+ filter (?csh in ($schemeList))
+		} order by ?s
+""")
+
+		def list=[]
+		list0.each{
+				def m=[:]
+				m.s = getPrefixedLabel(it.s)
+				m.sc = getPrefixedLabel(it.sc)
+				m.l = it.l
+				m.c = it.c
+				list += m
+		}
+		def l = []
+		list.each{
+			def label = it.s
+			def color = classColor
+			def notLeaf = list.find{c->
+				c.sc == it.s
+			}
+			if (notLeaf) color = classColor
+			def s= """"${it.s}" [fillcolor="$color" color="$color" label="${label}"]"""
+			l.add s
+		}
+		l
+	}
 
 	def getPropLabels() {
 
@@ -206,6 +274,64 @@ SELECT ?s ?sc ?l ?c ?pl {
  #optional { ?s rdfs:label ?l }
  optional { ?s skos:definition ?c }
  #optional { ?s rdfs:label ?pl }
+		} order by ?s
+
+""")
+
+		def list = []
+		list0.each{
+			def m=[:]
+			m.s = getPrefixedLabel(it.s)
+			m.sc = getPrefixedLabel(it.sc)
+			m.c = it.c
+			m.l = it.l
+			m.pl = it.pl
+			list += m
+		}
+
+		def l = []
+		def g = []
+		list.each{
+			if (it.l) {
+				def s = it.l
+				def id = s.hashCode()
+				l.add """"$id" [fillcolor="$literalColor" color="$literalColor" label="${fixLabel(s)}" shape="rect"]"""
+				g.add """"${it.s}" -> "$id" [label="rdfs:label"]"""
+			}
+			if (it.c) {
+				def s = it.c
+				def id = s.hashCode()
+				l.add """"$id" [fillcolor="$literalColor" color="$literalColor" label="${fixLabel(s)}" shape="rect"]"""
+				g.add """"${it.s}" -> "$id" [label="skos:definition"]"""
+			}
+			if (it.pl) {
+				def s = it.pl
+				def id = s.hashCode()
+				l.add """"$id" [fillcolor="$literalColor" color="$literalColor" label="${fixLabel(s)}" shape="rect"]"""
+				g.add """"${it.s}" -> "$id" [label="rdfs:label"]"""
+			}
+			if (it.sc) {
+				def s = it.sc
+				l.add """"$s" [fillcolor="$classColor" color="$classColor" label="${fixLabel(s)}"]"""
+				g.add """"${it.s}" -> "$s" [label="skos:broader"]"""
+			}
+		}
+		[l, g]
+	}
+
+	def getLabels(schemeList,includeDefs) {
+
+		def list0 = ju.queryListMap1(model,"","""
+${rdf.Prefixes.forQuery}
+SELECT ?s ?sc ?l ?c ?pl {
+  { ?s a skos:Concept ; skos:inScheme ?csh } 
+#  { ?s a skos:Concept } UNION
+#  { ?s skos:broader+ ?o . ?o a skos:Concept . }
+ optional { ?s skos:broader ?sc }
+ #optional { ?s rdfs:label ?l }
+ ${includeDefs?"":"#"}optional { ?s skos:definition ?c }
+ #optional { ?s rdfs:label ?pl }
+ filter (?csh in ($schemeList))
 		} order by ?s
 
 """)
