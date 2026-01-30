@@ -458,7 +458,7 @@ class ServletBase extends HttpServlet {
 		response.getWriter().println("$s")
 	}
 
-	static def parse(query) {
+	static def parse0(query) {
 		def m=[:]
 		if (!query) return m
 		def al = query.split(/&/)
@@ -468,6 +468,32 @@ class ServletBase extends HttpServlet {
 			if (av.size()==2)
 				m[av[0]]=java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
 			 }
+		m
+
+	}
+	// expanded to handle query param lists
+	static def parse(query) {
+		def m=[:]
+		if (!query) return m
+		def al = query.split(/&/)
+		al.each {
+			def av = it.split(/=/)
+			av[0] = av[0].replaceAll("%3A",":")
+			if (av.size()==2) {
+				def k = av[0]
+				def v = java.net.URLDecoder.decode(av[1], StandardCharsets.UTF_8.name())
+				if (m[k]) { // multiple
+					if (!(m[k] instanceof List)) {
+						def t = m[k]
+						m[k] = []
+						m[k] += t
+					}
+					m[k] += v
+				} else {
+					m[k]=v
+				}
+			}
+		}
 		m
 
 	}
@@ -491,22 +517,33 @@ class ServletBase extends HttpServlet {
 		s
 	}
 	
+	def host = new URL(cfg.host).getHost()
+	
 	def setState(request) {
 		setState(request,null)
 	}
 	
 	def setState(request, facet) {
 		def path = request._uri._path
-		def ip = getIP(request)
 		
 		if (path == "/favicon.ico" 
 			|| path == "/favicon.png") 
 			return
-		if (path.contains("/images/"))
-			path = "/images"
+			// removing images from metrics
+			// they are inflating the numbers
+			// /images access is not tracked
+		if (path.contains("/images")) 
+			//path = "/images"
+			return
 		if (facet == "unknownPath")
 			path = facet
 		
+		def ip = getIP(request)
+		def uaClass = """u=${classify(request.getHeader('User-Agent') ?: 'unknown')}"""
+		def referer = """r=${request.getHeader('Referer') ?: 'direct'}"""
+		if (referer.contains(host) || referer.contains(ip)) 
+			referer = "r=same"
+
 		def date = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
 		if (!metrics[date]) {
 			metrics[date]= new TreeMap()
@@ -530,17 +567,82 @@ class ServletBase extends HttpServlet {
 			metrics[date][ip][path] = new TreeMap()
 			metrics[date][ip][path].count = 0
 		}
+		
+		// Enhanced metrics
+		if (!metrics[date][ip][uaClass]) {
+			metrics[date][ip][uaClass] = new TreeMap()
+			metrics[date][ip][uaClass].count = 0
+		}
+		
+		if (!metrics[date][ip][referer]) {
+			metrics[date][ip][referer] = new TreeMap()
+			metrics[date][ip][referer].count = 0
+		}
 println "date:$date, ip:$ip, path:$path, metrics:${metrics[date][ip][path]}"
 		metrics[date][ip][path].count++; 
+		metrics[date][ip][uaClass].count++; 
+		metrics[date][ip][referer].count++; 
 	}
 	
-//	def getIP(request) {
-//		String ipAddress = request.getHeader("X-FORWARDED-FOR");
-//		if (ipAddress == null) {
-//			ipAddress = request.getRemoteAddr();
-//		}
-//		ipAddress
-//	}
+    def classify(String ua) {
+        if (!ua) return 'unknown'
+        
+        def uaLower = ua.toLowerCase()
+        
+        // Search engine bots
+        if (uaLower.contains('googlebot')) return 'googlebot'
+        if (uaLower.contains('bingbot')) return 'bingbot'
+        if (uaLower.contains('applebot')) return 'applebot'
+        if (uaLower.contains('yandex')) return 'yandexbot'
+        if (uaLower.contains('baiduspider')) return 'baidubot'
+        if (uaLower.contains('duckduckbot')) return 'duckduckbot'
+        
+        // SEO/Analytics crawlers
+        if (uaLower.contains('semrush')) return 'semrush'
+        if (uaLower.contains('ahrefs')) return 'ahrefs'
+        if (uaLower.contains('mj12bot')) return 'majestic'
+        if (uaLower.contains('dotbot')) return 'moz'
+        if (uaLower.contains('petalbot')) return 'huawei'
+        if (uaLower.contains('bytespider')) return 'bytedance'
+        
+        // Social media
+        if (uaLower.contains('facebookexternalhit')) return 'facebook'
+        if (uaLower.contains('twitterbot')) return 'twitter'
+        if (uaLower.contains('linkedinbot')) return 'linkedin'
+        
+        // AI/LLM crawlers
+        if (uaLower.contains('gptbot')) return 'openai'
+        if (uaLower.contains('claudebot')) return 'anthropic'
+        if (uaLower.contains('ccbot')) return 'commoncrawl'
+        
+        // Browsers (check order matters - be specific first)
+        if (uaLower.contains('edg/')) return 'edge'
+        if (uaLower.contains('firefox')) return 'firefox'
+		if (uaLower.contains('android') || uaLower.contains('iphone')) {
+			String browser = "other-browser"
+			//println uaLower
+			if (uaLower.contains('chrome')) browser = 'chrome-mobile'
+			else if (uaLower.contains('safari')) browser = 'safari-mobile'
+			return browser
+		}
+        if (uaLower.contains('chrome') && !uaLower.contains('chromium')) return 'chrome'
+        if (uaLower.contains('safari') && !uaLower.contains('chrome')) return 'safari'
+        
+        // Generic bot indicators
+        if (uaLower.contains('bot')) return 'other-bot'
+        if (uaLower.contains('crawler')) return 'other-bot'
+        if (uaLower.contains('spider')) return 'other-bot'
+        if (uaLower.contains('http://') || uaLower.contains('https://')) return 'other-bot'
+        
+        // Command-line tools / scripts
+        if (uaLower.contains('curl')) return 'curl'
+        if (uaLower.contains('wget')) return 'wget'
+        if (uaLower.contains('python')) return 'python-script'
+        if (uaLower.contains('java/') || uaLower.contains('java ')) return 'java-client'
+        if (uaLower.contains('go-http')) return 'go-client'
+        
+        return 'other-browser'
+    }
 	
 	/**
 	 * Get client IP from request, handling proxies
