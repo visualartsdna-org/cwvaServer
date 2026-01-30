@@ -131,26 +131,26 @@ VisualArtsDNA is an evolving project. The ontology continues to expand as new ar
 <a href="${cfg.host}/html/AICWVAReview.html">Ontology and Thesaurus AI Reviews by OpenAI, MetaAI, Gemini and Perplexity</a>
 <p/>
 The ontology is available in
-<a href="${cfg.host}/model.graph">graphical form&#42;</a>
-and in an 
+an 
 <a href="${cfg.host}/model/">RDF file (text/turtle)</a>.
 <p/>
 See the <a href="https://archivo.dbpedia.org/info?o=http://visualartsdna.org/model/">ontology on DBpedia Archivo</a>.  
 [Note: check <a href="https://archivo.dbpedia.org/">DBpedia Archivo</a> for site availability.]
 <p/>
 A thesaurus of visual arts terms is available in
-<a href="${cfg.host}/vocab.graph">graphical form&#42;</a>
-and in an 
+an 
 <a href="${cfg.host}/vocab">RDF file (text/turtle)</a>.
 <p/>
 <a href="${cfg.host}/html/references.html">References</a>
 <p/>
 <p/>
 <p/>
+<!--
 <font size="3">
 &#42;See  
 <a href="${cfg.host}/html/graphInstructions.html">pan and zoom SVG</a> for more information.
 </font>
+-->
 """
 //	The SVG graph is generated following this <a href="http://visualartsdna.org/graphInstructions.html">process</a>.
 //	<p/>
