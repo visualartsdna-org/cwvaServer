@@ -1,5 +1,6 @@
 package rdf
 import groovy.io.FileType
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import java.nio.charset.CharacterCodingException
 import org.apache.jena.rdf.model.*
@@ -253,4 +254,28 @@ class JenaUtilities extends JenaUtils {
 		return null
 	}
 	
+	
+	// this is a pattern for
+	// managing model data replacements
+	// in JSON collection rather than with SPARQL
+	// ttl->json collection
+	// TTL to JSON-LD as Collection
+	def fromTtl2JsonldCol(path) {
+		def ju = new JenaUtils()
+		def m = ju.loadFiles(path)
+		def js = ju.saveModelString(m,"json-ld")
+		def jc = new JsonSlurper().parseText(js)
+		//println jc.media ? jc.media : "n/a"
+		jc
+	}
+	
+	// JSON-LD as Collection to TTL
+	def fromJsonldCol2Ttl(jc, filename) {
+		def ju = new JenaUtils()
+		def js2 = JsonOutput.prettyPrint(new JsonOutput().toJson(jc))
+		//println js2
+		def m2 = ju.saveStringModel(js2, "json-ld")
+		ju.saveModelFile(m2, filename,"ttl")
+	}
+
 }
