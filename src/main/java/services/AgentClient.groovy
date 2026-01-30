@@ -25,7 +25,7 @@ class AgentClient {
 	def printHtml(sb,mq, agentUrl, host) {
 		
 		sb.append """
-    <title>Watercolor Art Query</title>
+    <title>Visual Art Query</title>
     <style>
         /* === CUSTOMIZABLE STYLES === */
         :root {
