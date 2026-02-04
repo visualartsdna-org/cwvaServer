@@ -350,6 +350,13 @@ class Servlet extends ServletBase {
 				
 				break
 
+			case "/updateWorkOnSite":
+
+				def s = new UpdateWorkOnSite().process(mq)
+				sendText(response,"$s")
+
+				break
+
 			case "/translate":
 
 				def base = "${Server.getInstance().cfg.data}/study"
