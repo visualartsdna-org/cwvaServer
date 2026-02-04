@@ -82,7 +82,7 @@ ${m.id}
 	vad:fileFormat "${m.fileFormat}" ;
 #	vad:hasPaperFinish "${m.hasPaperFinish}" ;
 #	vad:hasPaperWeight "${m.hasPaperWeight}"^^xs:int ;
-	vad:workOnSite <${m.workOnSite}> ;
+#	vad:workOnSite <${m.workOnSite}> ;
 	vad:hasArtistProfile ${m.hasArtistProfile} ;
 	vad:qrcode <${m.qrcode}> ;
 	schema:image <http://visualartsdna.org/images/${m.fileupload}> ;

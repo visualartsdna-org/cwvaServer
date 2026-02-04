@@ -73,7 +73,7 @@ ${m.id}
 	s += """\tschema:datePublished "${m.recordedDateTime}"^^xs:dateTime ;
 	schema:dateCreated "${m.completedDateTime}"^^xs:dateTime ;
 	vad:hasPaper ${m.hasPaper} ;
-	vad:workOnSite <${m.workOnSite}> ;
+	#vad:workOnSite <${m.workOnSite}> ;
 	vad:hasArtistProfile ${m.hasArtistProfile} ;
 	vad:qrcode <${m.qrcode}> ;
 	schema:image <http://visualartsdna.org/images/${m.fileupload}> ;
