@@ -345,7 +345,8 @@ class ServletBase extends HttpServlet {
 
 	}
 	def sendHtmlFile(response, file) {
-		response.setContentType("text/html");
+		response.setContentType("text/html; charset=UTF-8")
+		response.setCharacterEncoding("UTF-8")
 		response.getWriter().println(new File(file).text)
 
 	}
