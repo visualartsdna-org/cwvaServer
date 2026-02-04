@@ -33,10 +33,12 @@ select (count(*) as ?cnt) {
 		?uri a vad:CreativeWork ;
 			schema:image ?image ;
 			rdfs:label ?label ;
-			vad:workOnSite ?site ;
 			schema:dateCreated ?dt ;
 			vad:hasArtistProfile/vad:artist/rdfs:label ?artist ;
 			.
+		optional {
+			?uri vad:workOnSite ?site ;
+			}
 		${filter}
 }
 """)
@@ -46,10 +48,12 @@ select ?image ?label ?uri ?artist ?site {
 		?uri a vad:CreativeWork ;
 			schema:image ?image ;
 			rdfs:label ?label ;
-			vad:workOnSite ?site ;
 			schema:dateCreated ?dt ;
 			vad:hasArtistProfile/vad:artist/rdfs:label ?artist ;
 			.
+		optional {
+			?uri vad:workOnSite ?site ;
+			}
 		${filter}
 } order by $sort
 	offset $offset
@@ -307,9 +311,15 @@ you to enjoy the artwork directly.</p>
 ${m.label}
 </a>
 </br>
-<a href="${m.site}">
+"""
+			if (m.site) {
+				html += """
+<a href="${m.site?:""}">
 ${m.artist}
 </a>
+"""
+			}
+				html += """
 </center>
 </td></tr></table>
       `;
