@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
-import rdf.util.BackupFiles
+//import rdf.util.BackupFiles
 import rdf.util.Transaction
 import org.apache.jena.rdf.model.InfModel
 import org.apache.jena.rdf.model.Model

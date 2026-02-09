@@ -41,8 +41,7 @@ class UpdateWorkOnSite {
 				case "Linked data for the work.":
 				case "Linked data for this work.":
 				case "Linked data for this work. ":
-				case "View in 3D":
-				case "View in 3D.":
+				case "See the complete work in 3D":
 				case "Fun Graphics":
 				case "Details":
 				case "Ontologies Represented in Lindenmeyer-System Graphics":

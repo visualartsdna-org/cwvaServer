@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
 import rdf.Prefixes
-import rdf.util.BackupFiles
+//import rdf.util.BackupFiles
 import rdf.util.Transaction
 
 class ConceptModel {

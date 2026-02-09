@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*
 
 import org.junit.jupiter.api.Test
 
+import rdf.JenaUtilities
+
 class JenaUtilitiesTest {
 
 	def ju = new JenaUtilities()

@@ -2,7 +2,7 @@ package rdf.util
 
 import rdf.JenaUtilities
 
-class SparqlConsole {
+class SparqlConsoleDriver {
 	
 	/**
 	 * Run a cwva server

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.junit.jupiter.api.Test
-import rdf.util.RCode
+//import rdf.util.RCode
 
 class QueryRewrite {
 	def prefixes ="""
@@ -54,7 +54,7 @@ filter (?type in (vad:Query,vad:QueryCollection))
 		}.each { m->
 			def oldid = m["identifier"]
 			def dc = m["query"].hashCode()
-			def hc = new RCode().dec2hex2(dc )
+			def hc = "${Integer.toHexString(dc)}" //new RCode().dec2hex2(dc )
 			if (oldid != hc) 
 				println "identifier/hc mismatch old=$oldid, new=$hc"
 			hl += hc
