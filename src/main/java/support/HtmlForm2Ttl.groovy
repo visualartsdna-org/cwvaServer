@@ -109,28 +109,23 @@ VADNA RDF Entry
   <br><label for="hasPaper">hasPaper:</label><br>
   <select id="hasPaper" name="hasPaper"> 
 """
-		
-		def lm = ju.queryListMap1(
-			cwva.Server.getInstance().dbm.vocab,
+		def mod = cwva.Server.getInstance().dbm.vocab
+		def lm = ju.queryListMap1(mod,
 			rdf.Prefixes.forQuery, """
 		select ?s ?l {
 			?s a vad:Paper ;
 				rdfs:label ?l ;
-				schema:position ?pos .
-		} order by asc(?pos)
+				.
+			optional {
+			  ?s schema:position ?pos .
+			}
+		} order by ASC(COALESCE(?pos, 999999))
 	""")
 			
 		lm.each {map->
-			page += """<option value="${map.s}">${map.l}</option>
+			page += """<option value="${mod.qnameFor(map.s)}">${map.l}</option>
 	"""
 		}
-//<option value="the:FabrianoArtisticoGranaFinaColdPress" >Fabriano Artistico Grana Fina cold press</option>
-//<option value="the:FabrianoArtisticoGranaFinaHotPress" >Fabriano Artistico Grana Fina hot press</option>
-//<option value="the:StrathmoreWatercolorColdPressBlock" >Strathmore Watercolor cold press, block</option>
-//<option value="the:StrathmoreMixedMedia" >Strathmore Mixed Media</option>
-//<option value="the:StrathmoreTonedGray" >Strathmore Toned Gray</option>
-//<option value="the:CansonMixedMedia" >Canson Mixed Media</option>
-//<option value="the:ArtezaSketchbook" >Arteza Sketchbook</option>
 
 		page += """
   </select>
