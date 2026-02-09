@@ -35,10 +35,10 @@ class OtherStuff {
 	sb.append HtmlTemplate.head(cfg.host)
 	sb.append """
 <style>
-/* ═══════════════════════════════════════════════════════════════
+/* 
    VisualArtsDNA Utility Page Styles
    Aesthetic: Refined gallery/museum editorial with warm accents
-   ═══════════════════════════════════════════════════════════════ */
+*/
 
 :root {
   --color-bg: #faf9f7;
@@ -425,9 +425,10 @@ body {
           <label for="ontologySelect">Select concept schemes:</label>
           <select name="vocabGraph" id="ontologySelect" multiple size="6">
 """
+	int i=0
 	def lc = new QuerySupport().queryConceptSchemes("the:forOntology")
 	lc.each{
-			sb.append """            <option value="${it.s}">${it.l}</option>
+			sb.append """            <option value="${it.s}" ${i++==0?"selected":""}>${it.l}</option>
 """
 		}
 		
@@ -454,9 +455,10 @@ body {
           <label for="thesaurusSelect">Select concept schemes:</label>
           <select name="vocabGraph" id="thesaurusSelect" multiple size="6">
 """
+	i=0
 	lc = new QuerySupport().queryConceptSchemes("the:forThesaurus")
 	lc.each{
-			sb.append """            <option value="${it.s}">${it.l}</option>
+			sb.append """            <option value="${it.s}" ${i++==0?"selected":""}>${it.l}</option>
 """
 		}
 		
