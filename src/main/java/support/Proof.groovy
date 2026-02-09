@@ -29,13 +29,13 @@ class Proof {
 		process(m)
 	}
 	
-	def extractResults(s) {
-		def m=[:]
-		s.eachLine{
-			def fs = it.split("\t")
-			m[fs[0]] = fs[1]
-		}
-		m
+	def extractResults(m) {
+		def rm=[:]
+		rm.Transaction = m.blockchainTransactionLink
+		rm.Timestamp = m.timestamp
+		rm.DataHash = m.dataHash
+		rm.RootHash = m.rootHash
+		rm
 	}
 	
 	def extractGuid(s) {
@@ -45,8 +45,10 @@ class Proof {
 	
 	def convertTS(ts) {
 		// "10/2/2025, 8:27:04 PM"
-		def formatPattern = "MM/dd/yyyy, HH:mm:ss a"
-		
+//		def formatPattern = "MM/dd/yyyy, HH:mm:ss a"
+		// "Feb 4, 2026, 07:12:03 PM"
+		def formatPattern = "MMM dd, yyyy, HH:mm:ss a"
+
 		// Parse the string into a Date object
 		def newDate = new SimpleDateFormat(formatPattern).parse(ts)
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX").format(newDate)
@@ -63,7 +65,7 @@ class Proof {
 			def m2 = ju.loadFiles("$base/${guid}.ttl")
 			
 			// process result into ttl
-			def rm = extractResults(m.results)
+			def rm = extractResults(m)
 			def lm = ju.queryListMap1(m2,prefixes,"""
 select ?a{
 work:$guid vad:asset ?a
@@ -75,7 +77,8 @@ work:$guid vad:asset ?a
 			insert data {
 				<${m.selectIncipient}> vad:timestamp "${convertTS(rm.Timestamp)}"^^xs:dateTime .
 				<${m.selectIncipient}> vad:transaction "${rm.Transaction}" .
-				<${m.selectIncipient}> vad:rootHash "${rm["Root Hash"]}" .
+				<${m.selectIncipient}> vad:rootHash "${rm.RootHash}" .
+				<${m.selectIncipient}> vad:dataHash "${rm.DataHash}" .
 				<${m.selectIncipient}> vad:sha256 "$hash" .
 			}
 """)
@@ -108,7 +111,9 @@ select ?s ?a {
 <h3>Proof</h3>
 <br>
 <br>
-<label for="myForm">Select incipient:</label><br>
+<b>
+<label for="myForm">SELECT INCIPIENT (Carefully!)</label><br>
+</b>
  <form id="myForm" action="/proof" method="get">
 <select name="selectIncipient" id="selectIncipient">
 $opts
@@ -119,14 +124,29 @@ For generated proof, drop asset into proof site,
 <a href="https://originstamp.com/solutions/timestamp/en">OriginStamp</a>
 <br>
 <br>
-Copy result to results window and hit process.<br/>
+Copy result to results fields and hit process.<br/>
 
 
 <br/>
 <br/>
-         Results: <br/>
-         <textarea rows = "5" cols = "80" id="results" name = "results"></textarea>
-<br/>
+         Results<br/><br/>
+<!--
+<select name="certificate" size="1">
+  <option selected>Bitcoin</option>
+  <option>Eth</option>
+  <option>Dogecoin</option>
+</select>
+-->
+<table><tr><td>
+		 <label for="dataHash">Data Hash:</label></td><td>
+		 <input type="text" id="dataHash" name="dataHash" size="70" value=""></td></tr><tr><td>
+		 <label for="timestamp">Timestamp:</label></td><td>
+		 <input type="text" id="timestamp" name="timestamp" size="30" value=""></td></tr><tr><td>
+		 <label for="blockchainTransactionLink">Transaction:</label></td><td>
+		 <input type="text" id="blockchainTransactionLink" name="blockchainTransactionLink" size="70" value=""></td></tr><tr><td>
+		 <label for="rootHash">Root Hash:</label></td><td>
+		 <input type="text" id="rootHash" name="rootHash" size="70" value=""></td></tr>
+</table>
 <br/>
 
 <input type = "submit" name="process" id="process" value="Process" />
@@ -143,11 +163,11 @@ Copy result to results window and hit process.<br/>
 	static def blockchain = "Bitcoin"
 	static def imagesUrl = "http://visualartsdna.org/images"
 	
-	static def createIncipientProof(workGuid,asset) {
+	static def createProof(workGuid,asset) {
 		
 		def guid = new Guid().get()
 		def ttl = """
-$prefixes
+${rdf.Prefixes.forFile}
 
 work:${guid}
 	a vad:Proof ;
