@@ -27,13 +27,8 @@ class DBMgr {
 	def ju = new JenaUtilities()
 
 
-	// needs work and direction!
-	DBMgr(List loads) {
-		this.cfg = cfg
-		def m = load(loads)
-		//		new Thread().start{
-		//			new SparqlConsole().show(m)
-		//		}
+	// for testing
+	DBMgr() {
 	}
 
 	DBMgr(Map cfg) {
@@ -45,21 +40,13 @@ class DBMgr {
 //				}
 	}
 
-	def load(model,l) {
-
-
-		def data = ju.newModel()
-		l.each{
-			data.add ju.loadFiles(it)
-		}
-
-		// TODO: fix reload exception
-
-		schema = ju.loadFiles(model);
-		rdfs = ModelFactory.createRDFSModel(schema, data);
-	}
 
 	def load() {
+		loadData()
+		loadDb()
+	}
+	
+	def loadData() {
 
 		while (readLoadLock()) {
 			print "."
@@ -79,6 +66,9 @@ class DBMgr {
 		}
 		
 		deleteLoadLock()
+	}
+	
+	def loadDb() {
 
 		instances = ju.loadFiles(cfg.data)
 		tags = ju.loadFiles(cfg.tags)
@@ -91,11 +81,10 @@ class DBMgr {
 		data.add( vocab )
 
 		schema = ju.loadFiles(cfg.model)
-		//rdfs = ModelFactory.createRDFSModel(schema, data)
-		//rdfs = getReasoner("owlmicro", schema, data)
-		rdfs = skosInfer(data,"${cwva.Server.getInstance().cfg.dir}/res/rdfs.rules")
-		rdfs = skosInfer(rdfs,"${cwva.Server.getInstance().cfg.dir}/res/skos.rules")
 		rdfs = ModelFactory.createRDFSModel(schema, data)
+//		rdfs = skosInfer(rdfs,"${cwva.Server.getInstance().cfg.dir}/res/rdfs.rules")
+//		rdfs = skosInfer(rdfs,"${cwva.Server.getInstance().cfg.dir}/res/skos.rules")
+		rdfs = skosInfer(rdfs,"${cfg.dir}/res/skos.rules")
 		Policy.exec(rdfs)
 		validate(rdfs)
 	}
@@ -111,7 +100,8 @@ class DBMgr {
 		} else println "Inference model valid"
 		
 		// shacl validation
-		def dir = new File("${cwva.Server.getInstance().cfg.dir}/res")
+		//def dir = new File("${cwva.Server.getInstance().cfg.dir}/res")
+		def dir = new File("${cfg.dir}/res")
 		dir.eachFileRecurse (FileType.FILES) { file ->
 			if(file.name.endsWith('.shacl')) {
 				println "$file"
