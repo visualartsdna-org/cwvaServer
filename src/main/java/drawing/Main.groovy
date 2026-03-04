@@ -10,61 +10,11 @@ import util.Tmp
 class Main {
 
 	def tmp = new Tmp()
-	@Test
-	void testQuery() {
-		//draw("basic",
-		//draw("physical",
-		draw("NFT",
-			"vad:Watercolor, vad:Drawing", 
-			"http://visualartsdna.org/data", 
-			null, 
-			null, 
-			"C:/stage/march2022/node/ttl/art.ttl", 
-			null, 
-			"lsys.jpg", 
-			null)
-	}
-
-	@Test
-	void testInst() {
-		draw("inst",
-			"vad:Watercolor", 
-			"http://visualartsdna.org/data", 
-			null, 
-			null, 
-			"C:/stage/march2022/node/ttl/art.ttl", 
-			null, 
-			"lsys.jpg", 
-			null)
-	}
-
-	//-ruleFile lsys.json -imgFile lsys.jpg
-	@Test
-	void testOnto() {
-		draw("onto",
-			null, 
-			"http://visualartsdna.org/data", 
-			"owl:Thing", 
-			null, 
-			"C:/stage/plannedSeptember/node/ttl/cwva.ttl", 
-			null, 
-			"lsys.jpg", 
-			null)
-	}
-
 	/**
 	 * Run an L-System
 	 * @param args
 	 */
 	public static void main(String[] args){
-		/*
-		 -scope inst -path http://visualartsdna.org/data -inFile C:/stage/march2022/node/ttl/art.ttl -ruleFile lsys.json -imgFile lsys.jpg
-		 -scope onto -path http://visualartsdna.org/data -inFile C:/stage/plannedSeptember/node/ttl/cwva.ttl -ruleFile lsys.json -imgFile lsys.jpg -base owl:Thing
-		 -scope onto -path http://mc.movielabs.com/omc -inFile "C:/temp/CreativeWorksOnt/omc_v1.1.ttl -ruleFile lsys.json -imgFile lsys.jpg -base owl:Thing
-		 -scope onto -path https://spec.edmcouncil.org/fibo/ontology/LOAN/AllLOAN/AllLOAN.rdf -inFile https://spec.edmcouncil.org/fibo/ontology/LOAN/AllLOAN/AllLOAN.rdf -ruleFile lsys.json -imgFile lsys.jpg -base owl:Thing
-		 
-		 -scope basic -types "vad:Drawing" -path http://visualartsdna.org/data -inFile C:/stage/march2022/node/ttl/art.ttl -ruleFile lsys.json -imgFile lsys.jpg
-		 */
 
 		def map = Args.get(args)
 		if (map.isEmpty()) {
