@@ -63,5 +63,11 @@ class Text {
 			s = s += " "
 		s
 	}
-	
+	@Test
+	public void testFixQuote() {
+		def s = "This is a sentence ending in a \"quote\""
+		println "|${fixQuote(s)}|"
+	}
+
+
 }
