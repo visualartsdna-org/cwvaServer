@@ -113,9 +113,10 @@ st:${getGuid()}
 				ttl += """
 .
 """
-println ttl
 			}
 		}
+		new File("/work/tmp/test.ttl").text = ttl
+		
 		ju.saveStringModel(ttl,"TTL")
 	}
 	
@@ -435,6 +436,7 @@ $k
 				.replaceAll("log/","${ttlDir}/")
 				if (!new File(tfn).exists()) {
 					def s = loadFromLog(zipFile.getInputStream(file).text)
+					if (!s || s.trim() == "") return
 					def c = new JsonSlurper().parseText(s)
 					def m = getStats(c)
 					ju.saveModelFile(m,tfn,"ttl")
@@ -462,7 +464,7 @@ $k
 		zipFile.entries().each {file->
 			if (file.name.startsWith("log/out")) {
 				def s = loadFromLog(zipFile.getInputStream(file).text)
-				def c = new JsonSlurper().parseText(s)
+				def c = s ? new JsonSlurper().parseText(s) : "n/a"
 				m += c
 			}
 		}
@@ -537,6 +539,26 @@ $k
 		
 		// add all archived log-metric data to model
 		//mod.add loadLogZip(logFiles)
+		new SparqlConsole().show(mod)
+		
+	}
+
+	@Test
+	void testSparqlSiteNLogs() {
+		long ctms = System.currentTimeMillis()
+		def site = "https://visualartsdna.org/metrics"
+		//def site = "http://localhost/metrics"
+		def logFiles ="C:/work/stats/log.zip"
+		
+		// load current metric data to model
+		def stats = new URL(site).text
+		def c = new JsonSlurper().parseText(stats)
+		def mod = getStats(c)
+		
+		//ju.saveModelFile(mod,"/work/stats/testMetricsNow.ttl","ttl")
+		
+		// add all archived log-metric data to model
+		mod.add loadLogZipTtl(logFiles)
 		new SparqlConsole().show(mod)
 		
 	}
