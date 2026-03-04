@@ -383,7 +383,7 @@ void testWorksOnSite() {
 		}
 		def query = """
 select * {
-	?s a vad:Watercolor ;
+	?s a vad:WatercolorWork ;
 		rdfs:label ?label ;
 		vad:workOnSite ?site ;
 .
@@ -400,7 +400,7 @@ select * {
 //		}
 		def lm = ju.queryListMap1(m,rdf.Prefixes.forQuery,"""
 select ?s {
- ?s 	a vad:Watercolor ;
+ ?s 	a vad:WatercolorWork ;
 		vad:workOnSite ?site 
 }
 
@@ -409,7 +409,7 @@ select ?s {
 		ju.queryExecUpdate(m,rdf.Prefixes.forQuery,"""
 delete { ?s vad:workOnSite ?site }
 where {
-	?s a vad:Watercolor ;
+	?s a vad:WatercolorWork ;
 		rdfs:label ?label ;
 		vad:workOnSite ?site ;
 .

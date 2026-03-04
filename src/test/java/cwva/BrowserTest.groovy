@@ -47,7 +47,7 @@ select ?image ?label ?uri ?artist ?site {
 			vad:hasArtistProfile/vad:artist/rdfs:label ?artist ;
 			.
 		# temporary filter
-		filter (?type in (vad:Watercolor, vad:BlenderComposition))
+		filter (?type in (vad:WatercolorWork, vad:BlenderComposition))
 		${filter}
 } order by $sort
 	offset $offset

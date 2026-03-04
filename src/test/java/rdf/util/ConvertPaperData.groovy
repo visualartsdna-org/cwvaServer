@@ -61,7 +61,7 @@ select ?s ?p ?w ?f {
 			vad:hasPaperFinish ?f ;
 			vad:hasPaperWeight ?w ;
 			.
-filter (?t in (	vad:Watercolor, vad:Drawing))
+filter (?t in (	vad:WatercolorWork, vad:DrawingWork))
 }
 """)
 			c.each{ 
@@ -92,7 +92,7 @@ WHERE
 	filter (?f = ?cf)
 	filter (?w = ?cw)
 			
-filter (?t in (	vad:Watercolor, vad:Drawing))
+filter (?t in (	vad:WatercolorWork, vad:DrawingWork))
   } 
 """)
 				
@@ -120,7 +120,7 @@ select ?s ?p ?w ?f {
 			vad:hasPaperFinish ?f ;
 			vad:hasPaperWeight ?w ;
 			.
-filter (?t in (	vad:Watercolor, vad:Drawing))
+filter (?t in (	vad:WatercolorWork, vad:DrawingWork))
 }
 """)
 			c.each{ 
@@ -149,7 +149,7 @@ select ?s ?p ?w ?f {
 			vad:hasPaperWeight ?w ;
 			.
 			}
-filter (?t in (	vad:Watercolor, vad:Drawing))
+filter (?t in (	vad:WatercolorWork, vad:DrawingWork))
 }
 """)
 			c.each{ 
@@ -172,7 +172,7 @@ select ?s ?p {
 	?s a 	?t ;
 			vad:hasPaper ?p ;
 			.
-filter (?t in (	vad:Watercolor, vad:Drawing))
+filter (?t in (	vad:WatercolorWork, vad:DrawingWork))
 }
 """)
 			c.each{ 

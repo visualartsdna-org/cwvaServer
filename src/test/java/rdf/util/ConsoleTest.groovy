@@ -26,6 +26,12 @@ class ConsoleTest {
 	}
 	
 	@Test
+	void testData() {
+		def m = ju.loadFiles("/stage/data")
+		new SparqlConsole().show(m)
+	}
+	
+	@Test
 	void testSPARQL() {
 		def l = [
 			//"C:/work/stats/artpal/artPal.ttl",
@@ -66,7 +72,27 @@ class ConsoleTest {
 		
 	}
 
-	
+	@Test
+	void testLoadData() {
+//	def content = "C:/stage/cwvaContent"
+	def content = "C:/temp/git/cwvaContent"
+		def map = [
+			data: "$content/ttl/data",
+			vocab: "$content/ttl/vocab",
+			tags: "$content/ttl/tags",
+			model: "$content/ttl/model",
+			dir: "/temp/git/cwva"
+			]
+		
+		def dbm = new DBMgr()
+		dbm.cfg = map
+		dbm.loadDb()
+		dbm.print()
+		new SparqlConsole().show(dbm.rdfs)
+		
+	}
+
+
 //	def skosInfer(df,rules) {
 //		
 //		Model data = ju.loadFiles(df)
