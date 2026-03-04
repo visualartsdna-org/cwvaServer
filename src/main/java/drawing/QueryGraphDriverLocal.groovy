@@ -28,10 +28,10 @@ construct {
 }{
 	#bind (work:da79b4be-3442-4b6b-bdb4-107b2682c560 as ?w)
 	?w ?p ?s .
-	?w a vad:Watercolor .
-	#?w a vad:Drawing .
+	?w a vad:WatercolorWork .
+	#?w a vad:DrawingWork .
 	#?w vad:hasNFT ?bn .
-	#filter(?s="pencil" || ?s=vad:Drawing)
+	#filter(?s="pencil" || ?s=vad:DrawingWork)
 }
 """
 	
@@ -42,10 +42,10 @@ describe ?w
 {
 	#bind (work:da79b4be-3442-4b6b-bdb4-107b2682c560 as ?w)
 	?w ?p ?s .
-	#?w a vad:Watercolor .
-	?w a vad:Drawing .
+	#?w a vad:WatercolorWork .
+	?w a vad:DrawingWork .
 	#?w vad:hasNFT ?bn .
-	#filter(?s="pencil" || ?s=vad:Drawing)
+	#filter(?s="pencil" || ?s=vad:DrawingWork)
 }
 """
 	
