@@ -224,17 +224,27 @@ $inst $prop ?o
 		lm[0] ? lm[0]["o"] : null
 	}
 
-	def queryBackgrounds() {
+	def queryBackgrounds(inst) {
 		
 		def lm = ju.queryListMap1(mdl, prefixes,
 """
-select ?s ?l {
-?s a the:Background ;
-	rdfs:label ?l
+		select ?s ?l {
+		bind($inst as ?w)
+		?series the:tag ?w .
+		?series the:tag ?col .
+		?col a the:Collection ;
+			the:topic "Background" ;
+			the:tag ?s .
+		?s a the:Image ;
+			rdfs:label ?l
 }"""
 )
 		lm
 	}
-	
+//	select ?s ?l { # old
+//		?s a the:Background ;
+//			rdfs:label ?l
+//		}
+		
 
 }
