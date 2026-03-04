@@ -458,6 +458,9 @@ body {
 	i=0
 	lc = new QuerySupport().queryConceptSchemes("the:forThesaurus")
 	lc.each{
+		if (it.s.endsWith("/digitalNotes")
+			|| it.s.endsWith("/paintingNotes"))
+			return
 			sb.append """            <option value="${it.s}" ${i++==0?"selected":""}>${it.l}</option>
 """
 		}
