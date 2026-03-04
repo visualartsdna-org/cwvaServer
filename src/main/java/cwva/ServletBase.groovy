@@ -378,7 +378,11 @@ class ServletBase extends HttpServlet {
 	def sendJson(response, s) {
 		response.setContentType("application/json");
 		response.getWriter().println("$s")
-
+	}
+	def sendResponse(response, m) {
+		response.status = m.status
+		response.setContentType("application/json");
+		response.writer << m.body
 	}
 	def sendImageFile(response, String file) {
 		sendImageFile(response, new File(file))
