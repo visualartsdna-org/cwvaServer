@@ -128,8 +128,10 @@ VisualArtsDNA is an evolving project. The ontology continues to expand as new ar
 <p/>
 <a href="https://w3id.org/lode/owlapi/https://visualartsdna.org/model/">Ontology Documentation (via LODE server)</a>
 <p/>
+<!--
 <a href="${cfg.host}/html/AICWVAReview.html">Ontology and Thesaurus AI Reviews by OpenAI, MetaAI, Gemini and Perplexity</a>
 <p/>
+-->
 The ontology is available in
 an 
 <a href="${cfg.host}/model/">RDF file (text/turtle)</a>.
@@ -142,6 +144,8 @@ an
 <a href="${cfg.host}/vocab">RDF file (text/turtle)</a>.
 <p/>
 <a href="${cfg.host}/html/references.html">References</a>
+<p/>
+<a href="${cfg.host}/thesaurus/OperationalCollection">System Documentation</a>
 <p/>
 <p/>
 <p/>
