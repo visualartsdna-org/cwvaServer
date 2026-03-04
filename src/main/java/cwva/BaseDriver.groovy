@@ -31,26 +31,4 @@ class BaseDriver {
 		l  as String[]
 	}
 	
-	@Test
-	void test() {
-		def ttl = "art.ttl"
-		def img = "temp.jpg"
-		def html = "temp.html"
-		
-		[
-"""
-				   -inFile $ttl -types "vad:Drawing, vad:Watercolor" -scope basic -imgFile $img
-""",
-"""
-				   -ttl $ttl -html $html -types "vad:Drawing" -scope basic"""
-			].each{
-			println it
-		toArgs( it
-			).each { s->
-				println s
-			}
-		}
-			
-	}
-
 }
