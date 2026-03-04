@@ -7,25 +7,6 @@ import org.junit.jupiter.api.Test
 
 class GeminiInterface {
 
-	@Test
-	void test() {
-		def col = submit([
-type:"vad:Painting",
-kind:"Gallery Description",
-media:"watercolor",
-image:"http://visualartsdna.org/images/RhinoStudy.jpg",
-label:"Rhino Study",
-hasPaperWeight:"300",
-hasPaperFinish:"cold press",
-height:"12",
-width:"9",
-description:"A white rhino visits a watering hole."
-])
-		println col
-		println col.candidates[0].content.parts[0].text
-		
-	}
-	
 	def submit(m) {
 		def key = util.Secrets.get("geminiKey")
 		def gemini_image_url_working = false
