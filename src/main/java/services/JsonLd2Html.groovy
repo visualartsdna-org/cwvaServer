@@ -187,6 +187,9 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 					}
 					return
 				}
+//						if (k=="member") {
+//							println "here"
+//						}
 				def m2=defs[k]?: [:]
 				if (k=="@id") {
 					if (v =~ /_:b[0-9]+/) {
@@ -290,7 +293,8 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 						sb.append """<td><a href="${nsLookup(v)}">$label</a></td></tr>\n"""
 					}
 				}
-				else if (isUri(nsLookup(v))) { 
+				else if (isUri(nsLookup(v))
+					&& k != "member") { // TODO: this is a hack so single member collections don't go here!!
 					sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(v)}">$v</a></td></tr>\n"""
 				}
 				else {
@@ -315,11 +319,20 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 						&& k != "mailto") {
 						def id=m2["@id"]
 						def vc = v instanceof List ? v : [v]
-						vc.each{ 
-							if (v =~ /_:b[0-9]+/) {
-							} else 
-								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
+						
+						def s=""
+						int i=0
+						vc.each{
+							if (i++>0)	s += ", "
+							s += """<a href="${nsLookup(it)}">$it</a>"""
 						}
+						sb.append """<tr height="50"><td><i>$k</i></td><td>$s</td></tr>\n"""
+	// switched to all members displayed in one field
+//						vc.each{ 
+//							if (v =~ /_:b[0-9]+/) {
+//							} else 
+//								sb.append """<tr height="50"><td><i>$k</i></td><td><a href="${nsLookup(it)}">$it</a></td></tr>\n"""
+//						}
 					}
 					else if (cnt>0 && k=="label"){
 						sb.append """<tr height="50"><td><i>$k</i></td>"""
@@ -336,8 +349,6 @@ the TTL for the items's instance is returned.  Other formats supported include: 
 						}
 					}
 					else {
-//						if (k=="skos:Collection")
-//							println "here"
 						sb.append """<tr height="50"><td><i>$k</i></td>"""
 						if (v instanceof List) {
 							def v2=[]
