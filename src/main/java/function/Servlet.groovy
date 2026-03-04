@@ -20,8 +20,9 @@ import org.apache.jena.query.*
 
 class Servlet extends ServletBase {
 
-	def vm = new ConceptModel(vocab)  // causes model reload
+	//def vm = new ConceptModel(vocab)  // causes model reload
 	def rm = new RelatedConcepts()
+	def aw = new AnnotateWork()
 	def im = new Interpretation()
 	def ib = new ImageBrand()
 	def qm = new QueryMgr(dir)
@@ -34,6 +35,7 @@ class Servlet extends ServletBase {
 	def artist = [:]
 
 	Servlet(){
+
 		cfg.artist.each{k,v->
 			artist[k] = new ArtistSite(v)
 		}
@@ -66,7 +68,8 @@ class Servlet extends ServletBase {
 	def handler(path,query,response,HttpServletRequest request) {
 		def state = 1
 		def mq = parse(query)
-		//setState(request)
+		response.setStatus(HttpServletResponse.SC_OK);
+
 		def lowLevelRequest = 
 		(request && request.getMethod() == "POST") || (path =~ /\/artist\/.*\.jpg/)
 		
@@ -161,22 +164,36 @@ class Servlet extends ServletBase {
 				sendHtml(response, "$s")
 				break
 
-            case "/related-concepts.html":
-            case "/related.entry":
-			case ~/\/related/:
-				def m = rm.handleHtmlPage()
+            case "/annotateWork.html":
+				def m = aw.handleHtmlPage()
 				sendHtml(response, "${m.body}")
 				break
 
-           case "/api/related-concepts":
-				def m = rm.handleConceptsApi()
+			case ~/\/annotateWork/:
+				def m = aw.handleAnnotateWork(
+				request.reader.text)
+                sendResponse(response, m)
+				break
+
+			case ~/\/annotateWork.html/:
+				def m = aw.handleHtmlPage()
+				sendHtml(response, "${m.body}")
+				break
+
+           case "/api/annotateWork":
+				def m = aw.handleConceptsApi()
                 sendJson(response, "${m.body}")
 				break
 
             case "/api/config":
- 				def m = rm.handleConfigApi()
+ 				def m = aw.handleConfigApi()
                 sendJson(response, "${m.body}")
 				break
+
+			case "/stageStatus":
+				def json = new StageStatus().getStatusAsJson()
+                sendJson(response, "${json}")
+				return //break
 
 			case "/statsReport":
 				def h = new StatsReport().handleQueryParams(mq)
@@ -381,7 +398,6 @@ class Servlet extends ServletBase {
 				break
 		}
 		if (state) setState(request)
-		response.setStatus(HttpServletResponse.SC_OK);
 	}
 		
 }
