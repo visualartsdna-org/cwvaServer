@@ -261,6 +261,19 @@ ${rdf.Prefixes.forFile}
 						$k $v ;
 """
 					}
+					// TODO: Under Construction
+					// deferred to using the
+					// related concepts directly 
+					// to populate stage/data
+					
+					// find the tag work and related references
+					// extract to work-specific instances
+					// attaching directly to work
+					
+					// get the type for the concept
+					// get the property with correct 
+					// domain and range
+					// create instance 
 
 					// annotations--urls
 					m2.annotations.each{
@@ -334,6 +347,7 @@ $k
 			?s  a tko:KeepConceptScheme .
 		}}
 """)
+		// save author-specific concepts only
 		ju.saveModelFile(m1, "$dest/${account}.ttl", "TTL")
 		
 		// painting/graphic notes can only come from the two accounts
@@ -344,6 +358,7 @@ $k
 			}
 	""")
 //			def dts = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
+			// save art-related concepts only
 			ju.saveModelFile(m2, "$notesTgt/tags/notes_${account}.ttl", "TTL")
 		}
 		
