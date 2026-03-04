@@ -123,9 +123,6 @@ class RelatedConcepts {
         def schemeList = queryConceptSchemes()
         
         schemeList.each { scheme ->
-//			if (scheme.label == "Watercolor Paints") {
-//				print "here"
-//			}
             def schemeConcepts = queryConceptsByScheme(scheme.uri)
             if (schemeConcepts) {
                 schemes << [
@@ -136,22 +133,6 @@ class RelatedConcepts {
             }
         }
         
-        // Add legacy scheme groupings for backward compatibility
-//        def legacySchemes = getLegacySchemes()
-//        legacySchemes.each { legacy ->
-//            def concepts = queryConcepts(legacy.broader)
-//            if (concepts) {
-//                // Check if already added via conceptScheme
-//                def exists = schemes.find { it.name == legacy.name }
-//                if (!exists) {
-//                    schemes << [
-//                        name: legacy.name,
-//                        label: legacy.label,
-//                        concepts: concepts
-//                    ]
-//                }
-//            }
-//        }
         
         cachedData = [schemes: schemes]
         cacheTimestamp = now
@@ -256,34 +237,6 @@ class RelatedConcepts {
         }
     }
     
-    /**
-     * Legacy scheme definitions for backward compatibility
-     * These map to the original broader concept types used in v2.0
-     */
-    List getLegacySchemes() {
-        [
-//            [
-//                name: "watercolorPaints",
-//                label: "Watercolor Paints",
-//                broader: "the:WatercolorPaint"
-//            ],
-//            [
-//                name: "watercolorTechniques",
-//                label: "Watercolor Techniques",
-//                broader: "the:watercolorTechnique"
-//            ],
-//            [
-//                name: "materialsAndTextures",
-//                label: "Materials & Textures",
-//                broader: "the:watercolorTextureTechnique,the:watercolorMaterial,the:brushingPaint"
-//            ],
-//            [
-//                name: "geometryAndSymmetry",
-//                label: "Geometry & Symmetry",
-//                broader: "the:GeometricAndSymmetryTerms"
-//            ]
-        ]
-    }
     
     /**
      * Clear the cache (useful for testing or when data changes)
@@ -300,116 +253,5 @@ class RelatedConcepts {
     String getHtmlContent() {
 		def dir = cwva.Server.getInstance().cfg.dir
 		new File("$dir/html/related-concepts.html").text
-        // The HTML is served from the static file related-concepts.html
-        // This method provides a fallback or can be used for embedded deployment
-//        """<!DOCTYPE html>
-//<html><head><meta http-equiv="refresh" content="0;url=/static/related-concepts.html"></head></html>"""
     }
-    
-    // ============================================================
-    // Legacy support methods for backward compatibility
-    // These methods maintain the original API for existing code
-    // ============================================================
-    
-//    /**
-//     * Legacy method: Query concepts by type
-//     * Maintained for backward compatibility
-//     */
-//    def qConcept(type) {
-//        def m = getConceptModel()
-//        def ms = [:]
-//        def l = ju.queryListMap1(m, prefixes, """
-//            SELECT DISTINCT ?s ?label ?alt {
-//                ?s a skos:Concept ;
-//                   rdfs:label ?label ;
-//                   skos:broader ?cp .
-//                OPTIONAL {
-//                    ?s schema:brand/skos:altLabel ?alt .
-//                }
-//                FILTER (?cp IN ($type))
-//            } ORDER BY ?s
-//        """)
-//        l.each {
-//            def s = it.s
-//                .replaceAll(/[<>]/, "")
-//                .replaceAll("http://visualartsdna.org/thesaurus/", "the:")
-//            ms[s] = it.label
-//            if (type == "the:WatercolorPaint")
-//                ms[s] += it.alt ? ", ${it.alt}" : ""
-//        }
-//        ms
-//    }
-//    
-//    /**
-//     * Legacy method: Handle query parameters from form submission
-//     * Maintained for backward compatibility - redirects to new UI
-//     */
-//    def handleQueryParams(m) {
-//        // For legacy support, redirect to the new static page
-//        // The new page handles all state client-side
-//        def selected = []
-//        
-//        m.each { k, v ->
-//            if (k.startsWith("the:") && v == "on") {
-//                selected += k
-//            } else if (k == "relateds" && v) {
-//                def parts = v.split(/[=\]]/)
-//                if (parts.length > 1) {
-//                    parts[1].split(",").each { 
-//                        def trimmed = it.trim()
-//                        if (trimmed) selected += trimmed
-//                    }
-//                }
-//            }
-//        }
-//        
-//        // Return redirect to new page with selected concepts as URL parameter
-//        if (selected) {
-//            def encoded = URLEncoder.encode("[related=${selected.join(', ')}]", "UTF-8")
-//            return [
-//                status: 302,
-//                headers: [Location: "/related-concepts.html?init=${encoded}"],
-//                body: ""
-//            ]
-//        }
-//        
-//        return [
-//            status: 302,
-//            headers: [Location: "/related-concepts.html"],
-//            body: ""
-//        ]
-//    }
-//    
-//    /**
-//     * Legacy method: Process selections
-//     * Maintained for backward compatibility
-//     */
-//    def process() {
-//        process([], [])
-//    }
-//    
-//    /**
-//     * Legacy method: Process selections with existing selections
-//     * Returns redirect to new static page
-//     */
-//    def process(lr, lagain) {
-//        def selected = new HashSet()
-//        lagain.each { if (it) selected.add(it) }
-//        lr.each { if (it) selected.add(it) }
-//        
-//        if (selected) {
-//            def encoded = URLEncoder.encode("[related=${selected.join(', ')}]", "UTF-8")
-//            return [
-//                status: 302,
-//                headers: [Location: "/related-concepts.html?init=${encoded}"],
-//                body: ""
-//            ]
-//        }
-//        
-//        return [
-//            status: 302,
-//            headers: [Location: "/related-concepts.html"],
-//            body: ""
-//        ]
-//    }
 }
