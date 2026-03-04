@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cwvaServer</groupId>
 	<artifactId>cwvaServer</artifactId>
-	<version>3.1.4</version>
+	<version>4.0.1</version>
 	<name>server</name>
 	<packaging>jar</packaging>
 	<description>cwva project</description>
@@ -109,6 +109,11 @@
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<version>11.0.16</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.eclipse.jetty</groupId>
+		    <artifactId>jetty-servlets</artifactId>
+		    <version>11.0.16</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
