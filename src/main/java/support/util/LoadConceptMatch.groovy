@@ -18,32 +18,6 @@ class LoadConceptMatch {
 	}
 	
 	
-	// search for selected list of conepts
-//	@Test
-//	void test() {
-//		def cptList = [
-//			"Watercolor technical",
-//			"WATERCOLOR technical",
-//			"facture",
-//			"factur",
-//			"factures",
-//			"watercolor",
-//			"WATERCOLOR",
-//			"watercolor tools",
-//
-//			]
-//
-//		loadVocab()
-//		
-//		println formatHeader()
-//		cptList.each{concept->
-////			println "findMatchingConcepts"
-//			def lm = findMatchingConcepts(concept)
-////			println concept
-//			println formatDups(concept, lm)
-//		}
-//	}
-	
 	def formatHeader() {
 		"""	Duplicate Detection Threshold = $cfgTHold
 	Less Significant  =======>
