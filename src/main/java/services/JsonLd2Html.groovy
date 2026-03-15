@@ -57,7 +57,7 @@ class JsonLd2Html {
 	
 	def parseConcept(path) {
 		try {
-			(path =~ /^\/thesaurus\/([0-9A-Za-z\-_]+)$/)[0][1]
+			(path =~ /^\/thesaurus\/([0-9A-Za-z\-_\.]+)$/)[0][1]
 		} catch (java.lang.IndexOutOfBoundsException ex) {
 			"thesaurus"
 		}
@@ -85,7 +85,7 @@ class JsonLd2Html {
 		s.startsWith("http://") || s.startsWith("https://")
 	}
 
-	def process(rdfs, domain,path, ns, guid, host) {
+	def process(rdfs, domain,path, ns, guid, host,isMobile) {
 		pfxNsMap = rdfs.getNsPrefixMap()
 		if (!qs) qs = new QuerySupport(rdfs)
 		this.host = host
@@ -105,14 +105,15 @@ class JsonLd2Html {
 		}
 		def tm = new TreeMap<>(ljld[0])
 		ljld[0] = new LinkedHashMap(tm)
-		def s = printHtml(ljld, desc, domain,path, ns, guid, label)
+		def s = printHtml(ljld, desc, domain,path, ns, guid, label,isMobile)
 	}
 
 	// Under the About: title, add any label, e.g., scos:label
-	def printHtml(ljld, desc, domain,path, ns, guid, label) {
+	def printHtml(ljld, desc, domain,path, ns, guid, label,isMobile) {
 		def sb = new StringBuilder()
 		sb.append HtmlTemplate.head(host)
-		
+		def margRt = isMobile ? "10" : "20"
+		def margLt = isMobile ? "10" : "20"
 		// model-viewer
 		sb.append """
 <!--required-->
@@ -133,8 +134,8 @@ model-viewer {
 div {
   margin-top: 10px;
   margin-bottom: 10px;
-  margin-right: 150px;
-  margin-left: 40px;
+  margin-right: ${margRt}px;
+  margin-left: ${margLt}px;
 }
 </style>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
