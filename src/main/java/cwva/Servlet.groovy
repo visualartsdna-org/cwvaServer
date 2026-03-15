@@ -178,7 +178,7 @@ class Servlet extends ServletBase {
 					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
 					else sendModel(response, m, fmt)
 				} else {
-					def s = jl2h.process(dbm().rdfs,domain,relPath,"vad",guid,cfg.host)
+					def s = jl2h.process(dbm().rdfs,domain,relPath,"vad",guid,cfg.host,isMobile)
 					sendHtml(response,s)
 				}
 				break
@@ -204,7 +204,7 @@ class Servlet extends ServletBase {
 					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
 					else sendModel(response, m, fmt)
 				} else {
-					def s = jl2h.process(dbm().rdfs,domain,relPath,ns,guid,cfg.host)
+					def s = jl2h.process(dbm().rdfs,domain,relPath,ns,guid,cfg.host,isMobile)
 					sendHtml(response,s)
 				}
 				break
@@ -222,7 +222,7 @@ class Servlet extends ServletBase {
 					if (m.size()==0) status = HttpServletResponse.SC_NOT_FOUND
 					else sendModel(response, m, fmt)
 				} else {
-					def s = jl2h.process(dbm().rdfs,domain,relPath,"the",guid,cfg.host)
+					def s = jl2h.process(dbm().rdfs,domain,relPath,"the",guid,cfg.host,isMobile)
 					sendHtml(response,s)
 				}
 				break
