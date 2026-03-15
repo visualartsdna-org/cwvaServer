@@ -1,5 +1,6 @@
 package function
 import jakarta.servlet.ServletException;
+
 import cwva.Server
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,11 +14,12 @@ import rdf.JenaUtilities
 import rdf.tools.SparqlConsole
 import rdf.util.DBMgr
 import rdf.util.ViaToTtl
+import services.AIInterpretation
 import support.*
 import support.util.*
 import util.Guid
 import org.apache.jena.query.*
-
+import jakarta.servlet.MultipartConfigElement
 class Servlet extends ServletBase {
 
 	//def vm = new ConceptModel(vocab)  // causes model reload
@@ -267,8 +269,30 @@ class Servlet extends ServletBase {
 				}
 				break
 				
-			case "/loadFile":
-				def s = support.util.FileLoader.loadAny("${mq.directory}/${mq.fileupload}")
+//			case "/loadFile":
+//				def s = support.util.FileLoader.loadAny("${mq.directory}/${mq.fileupload}")
+//				sendText(response,"$s")
+//				break
+//
+			case "/diffBlobs":
+				request.setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"))
+				def filePart1 = request.getPart("modelFile1")
+				def filePart2 = request.getPart("modelFile2")
+				def s = Difference.difference(filePart1,filePart2)
+				sendText(response,"$s")
+				break
+
+			case "/loadTtlBlob":
+				request.setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"))
+				def filePart = request.getPart("fileupload")
+				def s = support.util.FileLoader.loadTtlBlob(filePart)
+				sendText(response,"$s")
+				break
+
+			case "/loadJsonBlob":
+				request.setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"))
+				def filePart = request.getPart("fileupload")
+				def s = support.util.FileLoader.loadJsonBlob(filePart)
 				sendText(response,"$s")
 				break
 
@@ -281,7 +305,7 @@ class Servlet extends ServletBase {
 
 			case "/queryTtl":
 				//def command = "java -cp C:/stage/bin/cwvaServer-2.4.3.jar rdf.util.SparqlConsole -path ${mq.directory}/${mq.fileupload?:""}"
-				def command = "C:/stage/bin/queryConsole.bat ${mq.directory}/${mq.fileupload?:""}"
+				def command = "C:/stage/bin/queryConsole.bat ${mq.pathname?:""}"
 				Thread.start('query') {
 					new util.Exec().exec(command)
 				}
@@ -289,6 +313,18 @@ class Servlet extends ServletBase {
 				
 				break
 		
+//			case "/md2html":
+//				def html = new MarkdownToHtml().handleQueryParams(mq)
+//				sendHtml(response,html)
+//				break
+//				
+			case "/md2htmlBlob":
+				request.setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"))
+				def filePart = request.getPart("fileupload")
+				def html = new MarkdownToHtml().handleBlob(filePart)
+				sendHtml(response,html)
+				break
+				
 			case "/imageBrand":
 				def s = ib.printHtml()
 				sendHtml(response,s)
