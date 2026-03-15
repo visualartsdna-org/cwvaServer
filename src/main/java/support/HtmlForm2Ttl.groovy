@@ -113,7 +113,7 @@ VADNA RDF Entry
 		def lm = ju.queryListMap1(mod,
 			rdf.Prefixes.forQuery, """
 		select ?s ?l {
-			?s a vad:Paper ;
+			?s a vad:WatercolorPaper ;
 				rdfs:label ?l ;
 				.
 			optional {
