@@ -90,7 +90,7 @@ construct {
 		bind (${ns}:${guid} as ?s)
 		{
 		?s the:tag ?c .
-		?c a skos:Concept ;
+		#?c a skos:Concept ;
 		{?c rdfs:label ?l} union {?c skos:prefLabel ?l} 
 		{?c skos:definition ?d} union {?c schema:description ?d} 
 		} union {
