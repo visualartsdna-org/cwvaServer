@@ -1,6 +1,7 @@
 package support.util
 
 import static org.junit.jupiter.api.Assertions.*
+import util.Tmp
 
 import groovy.json.JsonSlurper
 import org.junit.jupiter.api.Test
@@ -12,23 +13,41 @@ import java.nio.charset.StandardCharsets;
 
 class FileLoader {
 
-	@Test
-	void test() {
-		def fs = "C:/test/topics.ttl"
-		def fs2 = "C:/test/copse1.json"
-		//def fs = " "
-//		println loadTtl(fs)
-//		println loadJson(fs2)
-		println loadAny(fs2)
+
+	static def loadTtlBlob(filePart) {
+		def tf = Tmp.getTemp(".ttl")
+		try {
+			if (filePart != null) {
+				InputStream inputStream = filePart.inputStream
+				def text = inputStream.text
+				new File(tf).text = text
+				loadTtl(tf)
+			} else {
+				throw new Exception("Part 'markdownFile' not found")
+			}
+		} catch (Exception e) {
+			throw new RuntimeException( e.message)
+		} finally {
+			Tmp.delTemp(tf)
+		}
 	}
 	
-	@Test
-	void test2() {
-		def fs = "C:/test"
-		//def fs = " "
-//		println loadTtl(fs)
-//		println loadJson(fs2)
-		println assertTtl(fs)
+	static def loadJsonBlob(filePart) {
+		def tf = Tmp.getTemp(".json")
+		try {
+			if (filePart != null) {
+				InputStream inputStream = filePart.inputStream
+				def text = inputStream.text
+				new File(tf).text = text
+				loadJson(tf)
+			} else {
+				throw new Exception("Part 'markdownFile' not found")
+			}
+		} catch (Exception e) {
+			throw new RuntimeException( e.message)
+		} finally {
+			Tmp.delTemp(tf)
+		}
 	}
 	
 	static def loadAny(fs) {
