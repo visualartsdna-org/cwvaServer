@@ -19,8 +19,7 @@ class LoadConceptMatch {
 	
 	
 	def formatHeader() {
-		"""	Duplicate Detection Threshold = $cfgTHold
-	Less Significant  =======>
+		"""Duplicate Detection Threshold = $cfgTHold
 """
 			
 	}
