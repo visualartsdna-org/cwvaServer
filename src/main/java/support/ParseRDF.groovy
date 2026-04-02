@@ -55,7 +55,6 @@ ${rdf.Prefixes.forFile}
 ${m.id}
 	a vad:${m.type} ;
 	rdfs:label "${m.label}" ;
-	vad:media	${getList(m,"media")} ;
 	schema:height      "${m.height}"^^xs:float ;
 	schema:width       "${m.width}"^^xs:float ;
 	schema:identifier        "${m.guid}" ;
@@ -86,8 +85,7 @@ ${m.id}
 	assert m.type				, "no m.type			 "	
 	assert m.label				, "no m.label			 "	
 	m.label = m.label.trim()
-	assert m.media1|| m.media2|| m.media3|| m.media4            , 
-	"no m.media            "
+//	assert m.media1|| m.media2|| m.media3|| m.media4, "no m.media"
 	assert m.height             , "no m.height           "
 	assert m.width              , "no m.width            "
 	assert m.guid               , "no m.guid             "
