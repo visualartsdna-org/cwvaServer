@@ -14,10 +14,11 @@ class EntityEntry {
 	
 	static def dir="/stage/metadata/tags"
 	def prefixes = Prefixes.forQuery
-
+	def model
 	def ju = new JenaUtilities()
 	
 	EntityEntry(){
+		model = cwva.Server.getInstance().dbm.rdfs
 	}
 	
 	def validate(m) {
@@ -40,14 +41,14 @@ class EntityEntry {
 			
 			
 		// collect media
-			m.media
+			//m.media
 			int i=0
 			for (int j=1;j<=30;j++) { // limit leaves room for growth
 				def k = "media$j"
 				if (m[k]) {
 					if (!m.media) m.media = ""
 					if (i++) m.media += ","
-					m.media += "\"${m[k]}\""
+					m.media += "${m[k]}"
 				}
 			}
 			
@@ -84,7 +85,6 @@ work:${m.guid}
 		rdfs:label "${m.label}" ;
 		the:topic	${m.media} ;
 		skos:definition  \"\"\"${m.definition}\"\"\" ;
-${m.keywords?"":"#"}		schema:keywords "${m.keywords}" ;
 ${m.document?"":"#"}		the:document <${m.document}> ;
 ${m.primarySite?"":"#"}		schema:sameAs <${m.primarySite}> ;
 ${m.wikipedia?"":"#"}		the:wikipedia	<${m.wikipedia}> ;
@@ -101,9 +101,18 @@ ${notesTtl}		schema:datePublished "${m.recordedDateTime}"^^xs:date ;
 	}
 		
 	def printHtml(m) {
+		
+		def lm = ju.queryListMap1(model,
+			rdf.Prefixes.forQuery,"""
+select ?s ?l {
+?s a skos:Concept ;
+	rdfs:label ?l ;
+	skos:inScheme the:TopicScheme ;
+.
+} order by ?l
+""")
 				
-		 """
-
+		 def html = """
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 <body style="margin:100;padding:0">
@@ -147,49 +156,23 @@ Type:
   <label for="type2">Work</label>
 </td></tr><tr><td><br>
  Topics:
-<table><tr><td>
-  <input type="checkbox" id="media1" name="media1" value="Architecture">
-  <label for="media1">Architecture</label><br>
-  <input type="checkbox" id="media2" name="media2" value="Background">
-  <label for="media2">Background</label><br>
-  <input type="checkbox" id="media3" name="media3" value="Digital">
-  <label for="media3">Digital</label><br>
- </td><td>
-  <input type="checkbox" id="media4" name="media4" value="Drawing">
-  <label for="media4">Drawing</label><br>
-  <input type="checkbox" id="media5" name="media5" value="EggTempera">
-  <label for="media5">Egg Tempera</label><br>
-  <input type="checkbox" id="media6" name="media6" value="Historical">
-  <label for="media6">Historical</label><br>
-</td><td>
- <input type="checkbox" id="media17" name="media7" value="Interpretation">
-  <label for="media17">Interpretation</label><br>
-  <input type="checkbox" id="media8" name="media8" value="MixedMedia">
-  <label for="media8">Mixed Media</label><br>
-  <input type="checkbox" id="media9" name="media9" value="Oil">
-  <label for="media9">Oil</label><br>
-</td><td>
-  <input type="checkbox" id="media10" name="media10" value="Ontology">
-  <label for="media10">Ontology</label><br>
-  <input type="checkbox" id="media11" name="media11" value="Photography">
-  <label for="media11">Photography</label><br>
-  <input type="checkbox" id="media12" name="media12" value="PrintMaking">
-  <label for="media12">PrintMaking</label><br>
-</td><td>
-  <input type="checkbox" id="media13" name="media13" value="Reference">
-  <label for="media13">Reference</label><br>
-  <input type="checkbox" id="media14" name="media14" value="Sculpture">
-  <label for="media14">Sculpture</label><br>
-  <input type="checkbox" id="media15" name="media15" value="System">
-  <label for="media15">System</label><br>
-</td><td>
-  <input type="checkbox" id="media16" name="media16" value="Thesaurus">
-  <label for="media16">Thesaurus</label><br>
-  <input type="checkbox" id="media17" name="media17" value="Watercolor">
-  <label for="media17">Watercolor</label><br>
-  <input type="checkbox" id="media18" name="media18" value="3D">
-  <label for="media18">3D</label><br>
-</td></tr></table>
+<table><tr>
+"""
+		int i=0
+		lm.each{
+			html += """
+				${i!=0 && !(i%5) ? "</tr><tr>":""}
+				<td>
+			<input type="checkbox" id="media$i" name="media$i" value=${ju.getCuri(model,it.s)}>
+			<label for="media$i">${it.l}</label>
+			</td>
+
+"""
+		  i++
+		}
+		html += "</tr></table>"
+
+		html += """
 </td></tr><tr><td><br>
          Definition : <br>
          <textarea rows="5" cols="70" id="definition" name="definition"></textarea>
@@ -216,8 +199,6 @@ Type:
   </div>
   <button type="button" onclick="addNote()">+ Add Note</button>
 </td></tr><tr><td align="right">
-  <label for="keywords">Keywords:<br>w/commas</label></td><td>
-  <input type="text" id="keywords" name="keywords" size="60" value=""> 
 </td></tr><tr><td align="right">
   <label for="document">Document:<br>single</label></td><td>
   <input type="text" id="document" name="document" size="60" value=""> 
@@ -227,9 +208,6 @@ Type:
 </td></tr><tr><td align="right">
   <label for="wikipedia">Wikipedia:<br>single</label></td><td>
   <input type="text" id="wikipedia" name="wikipedia" size="60" value=""> 
-</td></tr><tr><td align="right">
-  <label for="dbpedia">Dbpedia:<br>single</label></td><td>
-  <input type="text" id="dbpedia" name="dbpedia" size="60" value=""> 
 </td></tr><tr><td align="right">
   <label for="image">Image Files:</label><br>filenames<br>w/commas
 </td><td>
@@ -294,6 +272,7 @@ function myFunction() {
 
 </body></html>
 """
+		html
 	}
 	
 	
