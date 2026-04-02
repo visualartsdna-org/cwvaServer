@@ -7,11 +7,12 @@ import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
 import rdf.JenaUtils
 import rdf.tools.SparqlConsole
+import rdf.util.PreserveCmtTtlLoad
+import support.util.CriticalConcepts
+import support.util.LoadConceptMatch
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.text.SimpleDateFormat
-
 import static java.nio.file.StandardCopyOption.*
 
 class LoadConceptQueue {
@@ -23,28 +24,59 @@ class LoadConceptQueue {
 	def vm
 	def lcm
 	def ju = new JenaUtilities()
+	def pcl = new PreserveCmtTtlLoad()
 	
-	LoadConceptQueue(vm, lcm){
+	LoadConceptQueue(vm){
 		this.vm = vm
-		this.lcm = lcm
+		lcm = new LoadConceptMatch(vm)
+	}
+	
+	LoadConceptQueue(){
+	}
+	
+	def promote() {
+		// consolidate files into one
+		def m = ju.newModel()
+		new File(src).eachFile{file->
+			if (!(file.name.endsWith(".ttl"))) return
+			m.add ju.loadFiles(file.absolutePath)
+		}
+		def dt = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
+		def name = "concepts${dt}.ttl"
+		ju.saveModelFile(m,"$tgt/$name","ttl")
+		
+		def s = "processed\n"
+		// move files to processed
+		new File(src).eachFile{file->
+			if (!(file.name.endsWith(".ttl"))) return
+			s+= "  ${file.name}\n"
+			def srcPath = Paths.get("${file.path}")
+			def tgtPath = Paths.get("$src/processed/${file.name}")
+			Files.move(srcPath, tgtPath, REPLACE_EXISTING)
+		}
+		s
+	}
+	
+	// orchestrate queue loading
+	def process() {
+		def s = ""
+		// 1. derive new concepts from 
+		// markdown (md) and text files (txt)
+		def dcc = new CriticalConcepts()
+		s += dcc.derive()
+		
+		// 2. build concepts from TSV files 
+		s += lcm.formatHeader()
+		s += load(src,tgt)
+		
+		// 3. do distance matching on concepts
+		s += loadTtl(src,tgt)
+		s
 	}
 	
 	
 	def loadVocab() {
 		vm = ju.loadFiles(vocab)
-	}
-	
-	def getScheme(broader) {
-		if (!vm) loadVocab()
-		def lm = ju.queryListMap1(vm,rdf.Prefixes.forQuery,"""
-		select ?sch {
-			bind($broader as ?bc)
-			?bc skos:inScheme ?sch
-		}
-""")
-			if (lm.size())
-				return "<${lm[0].sch}>"
-		return "<http://visualartsdna.org/thesaurus/visualArtTerms>"
 	}
 	
 	def loadTtl(src,tgt) {
@@ -63,18 +95,25 @@ ${rdf.Prefixes.forFile}
 		}
 		
 		if (flist.isEmpty())
-			return """No concept import TTL files in conceptQueue
+			return """No concept import TTL files found
 
 """
 			
+			sb.append """Processing TTL
+"""
 		dir.eachFile{file->
 			//println file
 			if (!file.name.endsWith(".ttl")) return
-			sb.append """
-File: $file
+			sb.append """$file
 """
-			def m = ju.loadFiles("$file")
-			def clm = ju.queryListMap1(m,rdf.Prefixes.forQuery,"""
+			pcl.load(file.absolutePath,file.absolutePath, this.&callbackMatch)
+		}
+		""+sb
+	}
+	
+	def callbackMatch(m,s) {
+		def rs = "#\tMATCHES\n"
+		def clm = ju.queryListMap1(m,rdf.Prefixes.forQuery,"""
 	select ?l {
 		{
 		?s rdfs:label ?l
@@ -83,25 +122,25 @@ File: $file
 		}
 	}
 """)
-
-			clm.each {concept->
-				// check dups
-				def lm = lcm.findMatchingConcepts(concept.l)
-				sb.append lcm.formatDups(concept.l, lm)
-			}
-		println "${file.name} model size = ${m.size()}"
+	
+		clm.each {concept->
+			// check dups
+			def lm = lcm.findMatchingConcepts(concept.l)
 		
-		// move from queue to distribute
-		def srcPath = Paths.get("${file.path}")
-		def tgtPath = Paths.get("$tgt/${file.name}")
-		def chkPath = Paths.get("/stage/metadata/vocab/${file.name}")
-		if (Files.exists(chkPath)) sb.append """Target File ${file.name} ALREADY EXISTS 
+			if (lm.isEmpty()) {
+				rs+= """# ${concept.l} is unique
 """
-		Files.move(srcPath, tgtPath, REPLACE_EXISTING)
+			} else {
+				rs += """# ${concept.l}
+"""
+				lm.each{k,v->
+					rs += "#\t${ju.getCuri(m,k)} = ${v.score}\n"
+				}
+			}
 		}
-
-		""+sb
+		rs
 	}
+
 
 	
 	def load(src,tgt) {
@@ -115,20 +154,20 @@ ${rdf.Prefixes.forFile}
 		// check for available files first
 		def flist = []
 		dir.eachFile{file->
-			if (!file.name.endsWith(".txt")) return
+			if (!file.name.endsWith(".tsv")) return
 			flist += file.name
 		}
 		
 		if (flist.isEmpty()) 
-			return """No concept import Text files in conceptQueue
-
+			return """Processing TSV
+No concept import TSV files in conceptQueue
 """
+		else sb.append "Processing TSV for concept build\n"
 			
 		dir.eachFile{file->
 			//println file
 			if (!file.name.endsWith(".txt")) return
-			sb.append """
-File: $file
+			sb.append """$file
 """
 			file.text.eachLine{
 				if (!it) return
@@ -177,7 +216,7 @@ ttl += """
 	"""
 			}
 			def srcPath = Paths.get("${file.path}")
-			def tgtPath = Paths.get("$src/old/${file.name}")
+			def tgtPath = Paths.get("$src/processed/${file.name}")
 			Files.move(srcPath, tgtPath, REPLACE_EXISTING)
 			
 		}
@@ -185,6 +224,19 @@ ttl += """
 		println "model size = ${m.size()}"
 		ju.saveModelFile(m,"$tgt/concepts_${getDateStamp()}.ttl","ttl")
 		""+sb
+	}
+	
+	def getScheme(broader) {
+		if (!vm) loadVocab()
+		def lm = ju.queryListMap1(vm,rdf.Prefixes.forQuery,"""
+		select ?sch {
+			bind($broader as ?bc)
+			?bc skos:inScheme ?sch
+		}
+""")
+			if (lm.size())
+				return "<${lm[0].sch}>"
+		return "<http://visualartsdna.org/thesaurus/visualArtTerms>"
 	}
 	
 	def isCuri(s) {
@@ -208,8 +260,14 @@ ttl += """
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date())
 	}
 	
+	// test of loadTtl()
 	@Test
 	void test() {
+		def src = "/stage/server/cwvaContent/ttl/vocab"
+		def vm = ju.loadFiles(src)
+		lcm = new LoadConceptMatch(vm)
+		loadTtl("/stage/conceptQueue/ttl2", "/stage/conceptQueue")
 	}
+	
 	
 }
