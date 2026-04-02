@@ -1,4 +1,4 @@
-package rdf.util
+package rdf
 
 import static org.junit.jupiter.api.Assertions.*
 import org.apache.jena.reasoner.*
@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test
 import rdf.JenaUtilities
 import rdf.JenaUtils
 import rdf.tools.SparqlConsole
+import rdf.util.DBMgr
 
 class ConsoleTest {
 
@@ -31,6 +32,38 @@ class ConsoleTest {
 		new SparqlConsole().show(m)
 	}
 	
+	@Test
+	void testVocabDerivedOriginal() {
+		def m = ju.loadFiles("C:/stage/conceptQueue/ttl")
+		new SparqlConsole().show(m)
+	}
+	
+	@Test
+	void testVocabDerivedCurated() {
+		def m = ju.loadFiles("C:/stage/conceptQueue/processed/curatedTtl")
+		new SparqlConsole().show(m)
+	}
+	
+	@Test
+	void testVocab() {
+		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl/vocab")
+		new SparqlConsole().show(m)
+	}
+	
+	@Test
+	void testVocabLocal() {
+		def m = ju.loadFiles("C:/temp/git/cwvaContent/ttl/vocab/paintingTerms.ttl")
+		new SparqlConsole().show(m)
+	}
+	
+	@Test
+	void testDerivedTag() {
+		def m = ju.loadFiles("C:/stage/conceptQueue")
+		m.add ju.loadFiles("C:/stage/conceptQueue/processed/curatedTtl")
+		new SparqlConsole().show(m)
+	}
+	
+
 	@Test
 	void testSPARQL() {
 		def l = [
