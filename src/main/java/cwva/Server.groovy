@@ -6,7 +6,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHandler;
 import rdf.util.DBMgr
 import org.eclipse.jetty.servlets.CrossOriginFilter;
-import javax.servlet.DispatcherType;
+//import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType
 import java.util.EnumSet;
 
 // singleton
