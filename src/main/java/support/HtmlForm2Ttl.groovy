@@ -48,7 +48,7 @@ VADNA RDF Entry
 <table><tr><td>
   <br><label for="id">ID:</label><br>
   <input type="text" id="id" name="id"  size="$inSize" value="work:$guid" readonly>
-</td><td>
+</td></tr><tr><td>
   <br><label for="id">Type:</label><br>
 
   <input type="radio" id="type1" name="type" value="Watercolor" checked>
@@ -59,7 +59,7 @@ VADNA RDF Entry
   <label for="type2">Egg Tempera</label><br>
   <input type="radio" id="type2" name="type" value="Sculpture">
   <label for="type2">Sculpture</label><br>
-</td></tr><tr><td>
+</td><td>
          <input type = "file" name = "fileupload" id = "file" accept = "image/*" />
 <br>
   <input type="radio" id="sig1" name="sig" value="rickspates.art" checked>
@@ -71,6 +71,7 @@ VADNA RDF Entry
   <input type="radio" id="sig4" name="sig" value="right">
   <label for="type2">right</label><br>
 
+<!--
 </td><td>
   <label for="id">Media:</label><br>
   <input type="checkbox" id="media1" name="media1" value="Watercolor" checked>
@@ -87,6 +88,7 @@ VADNA RDF Entry
   <label for="media4">Limestone</label><br>
   <input type="checkbox" id="media4" name="media4" value="Steel">
   <label for="media4">Steel</label><br>
+-->
 </td></tr><tr><td>
   <br><label for="hasArtistProfile">hasArtistProfile:</label><br>
   <input type="text" id="hasArtistProfile" name="hasArtistProfile" size="$inSize" value="work:ebab5e0c-cc32-4928-b326-1ddb4dd62c22"> 
