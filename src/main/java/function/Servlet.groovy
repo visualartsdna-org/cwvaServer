@@ -219,14 +219,15 @@ class Servlet extends ServletBase {
 				break
 				
 			case "/conceptImport":
-				def src = "/stage/conceptQueue"
-				def tgt = "/stage/metadata/vocab"
 				def vm = cwva.Server.getInstance().dbm.vocab
-				def lcm = new LoadConceptMatch(vm)
-				def lcq = new LoadConceptQueue(vm, lcm)
-				def s = lcm.formatHeader()
-				s += lcq.load(src,tgt)
-				s += lcq.loadTtl(src,tgt)
+				def lcq = new LoadConceptQueue(vm)
+				def s = lcq.process()
+				sendText(response, s)
+				break
+
+			case "/conceptPromote":
+				def lcq = new LoadConceptQueue()
+				def s = lcq.promote()
 				sendText(response, s)
 				break
 
