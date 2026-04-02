@@ -145,9 +145,8 @@ class JenaUtilities extends JenaUtils {
 
 	/**
 	 * Load selectively and verbosely
-	 * Load a model from a dir of files of any model type
-	 * type is determined from file extension
-	 * or a single file of any model type
+	 * Load a model from a dir of ttl files
+	 * or a single file of ttl type
 	 * @param dirSpec or fileSpec
 	 * @return model
 	 */
@@ -156,6 +155,28 @@ class JenaUtilities extends JenaUtils {
 		if (new File(spec).isDirectory()) {
 			new File(spec).eachFileRecurse(FileType.FILES) {
 				if (!(""+it).toLowerCase().endsWith(".ttl")) return
+				println "loading $it"
+				model.add( loadTtlFile(it) )
+			}
+
+		} else {
+
+			model = loadTtlFile(spec)
+		}
+		model
+	}
+
+	/**
+	 * Load selectively and verbosely
+	 * Load a model from one dir of ttl files
+	 * or a single file of ttl type
+	 * @param dirSpec or fileSpec
+	 * @return model
+	 */
+	def loadFilesHere(spec){
+		def model = newModel()
+		if (new File(spec).isDirectory()) {
+			new File(spec).eachFileMatch(~/.*\.ttl/) {
 				println "loading $it"
 				model.add( loadTtlFile(it) )
 			}
@@ -276,6 +297,11 @@ class JenaUtilities extends JenaUtils {
 		//println js2
 		def m2 = ju.saveStringModel(js2, "json-ld")
 		ju.saveModelFile(m2, filename,"ttl")
+	}
+	
+	def getCuri(model,uri) {
+		def l = getPrefix(model,uri)
+		"${l[0]+l[1]}"
 	}
 
 }
