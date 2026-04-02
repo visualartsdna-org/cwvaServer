@@ -88,14 +88,15 @@ class VocabTree {
 		
 		qs.queryGeneric("""
 select ?s ?b ?l ?d {
-?s a skos:Concept ;
-	rdfs:label ?l ;
-	skos:definition ?d ;
-    .
-	optional {?s skos:broader ?b ;}
+	?s a skos:Concept ;
+		rdfs:label ?l ;
+		skos:definition ?d ;
+		.
+		optional {?s skos:broader ?b ;}
+		} order by ?l
 
-	} order by ?l
 """)
+	
 	}
 
 	def printHtml(sb,work,bkgVal, jsonOutput) {
