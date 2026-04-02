@@ -496,7 +496,7 @@ body {
 		sb.append """    </div>
   </section>
 
-  <!-- Data Graphics -->
+  <!-- Data Graphics 
   <section class="section-card">
     <h2>Data Visualizations</h2>
     <p>Interactive graphics powered by D3.js and L-systems.</p>
@@ -533,7 +533,7 @@ body {
       </div>
       
     </div>
-  </section>
+  </section> -->
 
 </div>
 """ 
