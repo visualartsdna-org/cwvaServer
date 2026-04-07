@@ -140,7 +140,7 @@ class AnnotateWork {
         }
 
         try {
-            linkConceptsToWork(workUri, curis)
+            linkConceptsToWork(workUri, curis, cwva.Server.getInstance().dbm.rdfs)
         } catch (Exception e) {
             return [
                 status: 500,
@@ -167,7 +167,7 @@ class AnnotateWork {
      * @param workUri  the CURI or full URI of the work (e.g. "work:abcd")
      * @param curis    list of thesaurus CURIs (e.g. ["the:tag", "the:draggingPaint"])
      */
-    def linkConceptsToWork(String workUri, List<String> curis) {
+    def linkConceptsToWork(String workUri, List<String> curis, rdfs) {
 
 		def model = ju.newModel()
 		curis.each{cpt->
@@ -182,6 +182,7 @@ CONSTRUCT {
     ?cpt a ?rt .
     FILTER (?rt NOT IN (skos:Concept, rdfs:Resource))
     ?op rdfs:range ?rt .
+    ?op a owl:ObjectProperty .
     
     FILTER NOT EXISTS {
       ?rt2 rdfs:subClassOf+ ?rt .
@@ -196,6 +197,7 @@ CONSTRUCT {
     ?rtc a ?rt .
     FILTER (?rt NOT IN (skos:Concept, rdfs:Resource))
     ?op rdfs:range ?rt .
+    ?op a owl:ObjectProperty .
     
     FILTER NOT EXISTS {
       ?rt2 rdfs:subClassOf+ ?rt .
@@ -232,7 +234,7 @@ CONSTRUCT {
 	"""
 			//println query
 			def m= ju.queryExecConstruct(
-				cwva.Server.getInstance().dbm.rdfs,
+				rdfs,
 				prefixes,query)
 			//println "${lm[0].w} ${lm[0].op} ${lm[0].cpt}"
 			//println "$cpt, ${m.size()}"
@@ -245,7 +247,7 @@ CONSTRUCT {
 		
 		def guid = workUri.substring(5)
 		def wmod = ju.queryDescribe(
-			cwva.Server.getInstance().dbm.rdfs,
+			rdfs,
 				prefixes,"""
 			describe $workUri
 """)
