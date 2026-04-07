@@ -119,6 +119,9 @@ glb:
 </td><td>
   <br><label for="background">background:</label><br>
   <input type="text" id="background" name="background" size="$inSize" value=""> 
+Also: add a tag for this work to the Series tagged with the 
+background collection for modelviewer! 
+Make sure default background is in collection.
 </td></tr><tr><td>
   <br><label for="label">label:</label><br>
   <input type="text" id="label" name="label" size="$inSize" value=""> 
