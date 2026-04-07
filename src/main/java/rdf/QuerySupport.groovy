@@ -233,7 +233,7 @@ $inst $prop ?o
 		?series the:tag ?w .
 		?series the:tag ?col .
 		?col a the:Collection ;
-			the:topic "Background" ;
+			the:topic the:Background ;
 			the:tag ?s .
 		?s a the:Image ;
 			rdfs:label ?l
@@ -241,10 +241,6 @@ $inst $prop ?o
 )
 		lm
 	}
-//	select ?s ?l { # old
-//		?s a the:Background ;
-//			rdfs:label ?l
-//		}
 		
 
 }
